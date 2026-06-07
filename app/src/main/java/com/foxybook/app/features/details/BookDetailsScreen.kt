@@ -1,0 +1,332 @@
+package com.foxybook.app.features.details
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import com.foxybook.app.core.models.BookDetailsUiState
+import com.foxybook.app.core.models.BookFormat
+import com.foxybook.app.core.models.DownloadProgress
+import com.foxybook.app.core.models.DownloadStatus
+import com.foxybook.app.ui.components.CoverWithAuthor
+import com.foxybook.app.ui.components.CoverViewer
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+fun BookDetailsScreen(
+    bookId: Int,
+    viewModel: BookDetailsViewModel,
+    onBackClick: () -> Unit,
+    onReadBook: (String, String) -> Unit
+) {
+    val state by viewModel.state.collectAsState()
+    var coverViewerUrl by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(bookId) {
+        viewModel.onEvent(BookDetailsEvent.LoadBook(bookId))
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    val title = (state.uiState as? BookDetailsUiState.Success)?.bookInfo?.title
+                        ?: "Книга"
+                    Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            )
+        }
+    ) { innerPadding ->
+        Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+            when (val uiState = state.uiState) {
+                is BookDetailsUiState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                is BookDetailsUiState.Error -> {
+                    Column(
+                        modifier = Modifier.align(Alignment.Center),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(Icons.Default.Error, contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text("Ошибка загрузки", style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.error)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(uiState.message, style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+                is BookDetailsUiState.Success -> {
+                    val info = uiState.bookInfo
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(16.dp)
+                    ) {
+                        // Header: Cover + Title/Author
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
+                            ),
+                            shape = RoundedCornerShape(20.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(20.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                CoverWithAuthor(
+                                    coverUrl = info.coverUrl,
+                                    author = info.author,
+                                    contentDescription = info.title,
+                                    width = 100.dp,
+                                    height = 140.dp,
+                                    onCoverClick = { url -> coverViewerUrl = url }
+                                )
+                                Spacer(modifier = Modifier.width(20.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(info.title, style = MaterialTheme.typography.headlineSmall,
+                                        fontWeight = FontWeight.Bold)
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(info.author, style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Description
+                        if (info.description.isNotBlank()) {
+                            SectionTitle("Описание")
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(info.description, style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
+
+                        // Genres
+                        if (info.genres.isNotEmpty()) {
+                            SectionTitle("Жанры")
+                            Spacer(modifier = Modifier.height(8.dp))
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                info.genres.forEach { genre ->
+                                    AssistChip(onClick = { }, label = { Text(genre.title) })
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
+
+                        // Download section
+                        SectionTitle("Скачать")
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        BookFormat.entries.forEach { format ->
+                            val progress = state.downloads[format] ?: DownloadProgress()
+                            DownloadButton(
+                                format = format,
+                                progress = progress,
+                                onDownload = { viewModel.onEvent(BookDetailsEvent.Download(format)) },
+                                onRead = {
+                                    val fp = progress.filePath
+                                    if (fp.isNotBlank()) {
+                                        onReadBook(fp, format.extension)
+                                    }
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+            }
+        }
+    }
+
+    // Full-screen cover viewer overlay
+    if (coverViewerUrl != null) {
+        CoverViewer(
+            coverUrl = coverViewerUrl!!,
+            onDismiss = { coverViewerUrl = null }
+        )
+    }
+}
+
+@Composable
+private fun SectionTitle(title: String) {
+    Text(text = title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+}
+
+@Composable
+private fun DownloadButton(
+    format: BookFormat,
+    progress: DownloadProgress,
+    onDownload: () -> Unit,
+    onRead: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ),
+        shape = RoundedCornerShape(14.dp)
+    ) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = when (progress.status) {
+                            DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.primaryContainer
+                            else -> MaterialTheme.colorScheme.secondaryContainer
+                        }
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = format.name,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = when (progress.status) {
+                            DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.onPrimaryContainer
+                            else -> MaterialTheme.colorScheme.onSecondaryContainer
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(14.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = when (progress.status) {
+                            DownloadStatus.IDLE -> "Готово к скачиванию"
+                            DownloadStatus.DOWNLOADING -> "Скачивание… ${progress.percent}%"
+                            DownloadStatus.DOWNLOADED -> "Скачано"
+                            DownloadStatus.ERROR -> progress.error ?: "Ошибка"
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = if (progress.status == DownloadStatus.DOWNLOADED) FontWeight.SemiBold else FontWeight.Normal,
+                        color = when (progress.status) {
+                            DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.primary
+                            DownloadStatus.ERROR -> MaterialTheme.colorScheme.error
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                }
+
+                when (progress.status) {
+                    DownloadStatus.IDLE, DownloadStatus.ERROR -> {
+                        OutlinedButton(
+                            onClick = onDownload,
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp)
+                        ) {
+                            Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Скачать")
+                        }
+                    }
+                    DownloadStatus.DOWNLOADING -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(28.dp),
+                            strokeWidth = 3.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    DownloadStatus.DOWNLOADED -> {
+                        OutlinedButton(
+                            onClick = onRead,
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp)
+                        ) {
+                            Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Читать")
+                        }
+                    }
+                }
+            }
+
+            if (progress.status == DownloadStatus.DOWNLOADING) {
+                Spacer(modifier = Modifier.height(10.dp))
+                LinearProgressIndicator(
+                    progress = { progress.percent / 100f },
+                    modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            }
+        }
+    }
+}
