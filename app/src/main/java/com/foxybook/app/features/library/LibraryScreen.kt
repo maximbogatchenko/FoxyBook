@@ -1,5 +1,10 @@
 package com.foxybook.app.features.library
 
+import android.net.Uri
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -23,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.Delete
@@ -58,16 +64,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.foxybook.app.core.models.BookCollection
 import com.foxybook.app.core.models.LibraryBook
 import com.foxybook.app.core.models.LibraryTab
-import com.foxybook.app.ui.components.CoverWithAuthor
 import com.foxybook.app.ui.components.CoverViewer
+import com.foxybook.app.ui.components.CoverWithAuthor
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -80,139 +85,201 @@ fun LibraryScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var coverViewerUrl by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
+
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let {
+            Log.d("LibraryScreen", "Importing book: $it")
+            viewModel.importBook(it, context)
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-    ) {
-        TopAppBar(
-            title = { Text("Библиотека", fontWeight = FontWeight.Bold) },
-            actions = {
-                if (state.currentTab == LibraryTab.COLLECTIONS) {
-                    IconButton(onClick = { viewModel.onEvent(LibraryEvent.CreateCollectionClicked) }) {
-                        Icon(Icons.Default.CreateNewFolder, contentDescription = "Новая коллекция")
-                    }
-                }
-            },
-            windowInsets = WindowInsets(0),
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
-        )
-
-        // Tabs
-        androidx.compose.material3.TabRow(
-            selectedTabIndex = state.currentTab.ordinal,
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.primary
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
         ) {
-            LibraryTab.entries.forEach { tab ->
-                androidx.compose.material3.Tab(
-                    selected = state.currentTab == tab,
-                    onClick = { viewModel.onEvent(LibraryEvent.TabSelected(tab)) },
-                    text = { Text(tab.label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                    icon = {
-                        Icon(
-                            when (tab) {
-                                LibraryTab.ALL -> Icons.Default.MenuBook
-                                LibraryTab.FAVORITES -> Icons.Default.Favorite
-                                LibraryTab.HISTORY -> Icons.Default.History
-                                LibraryTab.COLLECTIONS -> Icons.Default.Folder
-                            },
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
+            TopAppBar(
+                title = { Text("Библиотека", fontWeight = FontWeight.Bold) },
+                actions = {
+                    IconButton(onClick = { 
+                        importLauncher.launch(arrayOf("application/epub+zip", "application/x-fictionbook+xml", "application/octet-stream", "text/plain")) 
+                    }) {
+                        Icon(Icons.Default.Add, contentDescription = "Импорт книги")
+                    }
+                    if (state.currentTab == LibraryTab.COLLECTIONS) {
+                        IconButton(onClick = { viewModel.onEvent(LibraryEvent.CreateCollectionClicked) }) {
+                            Icon(Icons.Default.CreateNewFolder, contentDescription = "Новая коллекция")
+                        }
+                    }
+                },
+                windowInsets = WindowInsets(0),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
+            )
+
+            // Tabs
+            androidx.compose.material3.TabRow(
+                selectedTabIndex = state.currentTab.ordinal,
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary
+            ) {
+                LibraryTab.entries.forEach { tab ->
+                    androidx.compose.material3.Tab(
+                        selected = state.currentTab == tab,
+                        onClick = { viewModel.onEvent(LibraryEvent.TabSelected(tab)) },
+                        text = { Text(tab.label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        icon = {
+                            Icon(
+                                when (tab) {
+                                    LibraryTab.ALL -> Icons.Default.MenuBook
+                                    LibraryTab.FAVORITES -> Icons.Default.Favorite
+                                    LibraryTab.HISTORY -> Icons.Default.History
+                                    LibraryTab.COLLECTIONS -> Icons.Default.Folder
+                                },
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    )
+                }
+            }
+
+            AnimatedContent(
+                targetState = state.currentTab to state.selectedCollectionId,
+                transitionSpec = { fadeIn() togetherWith fadeOut() },
+                label = "library_content"
+            ) { (tab, _) ->
+                when (tab) {
+                    LibraryTab.ALL -> BookList(
+                        books = state.allBooks,
+                        emptyTitle = "Библиотека пуста",
+                        emptySubtitle = "Скачайте книги для чтения",
+                        onBookClick = onBookClick,
+                        onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
+                        onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
+                        onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
+                        onCoverClick = { url -> coverViewerUrl = url }
+                    )
+                    LibraryTab.FAVORITES -> BookList(
+                        books = state.favoriteBooks,
+                        emptyTitle = "Нет избранных",
+                        emptySubtitle = "Нажмите ♡ чтобы добавить",
+                        onBookClick = onBookClick,
+                        onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
+                        onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
+                        onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
+                        onCoverClick = { url -> coverViewerUrl = url }
+                    )
+                    LibraryTab.HISTORY -> BookList(
+                        books = state.historyBooks,
+                        emptyTitle = "История пуста",
+                        emptySubtitle = "Начните читать",
+                        onBookClick = onBookClick,
+                        onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
+                        onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
+                        onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
+                        onCoverClick = { url -> coverViewerUrl = url }
+                    )
+                    LibraryTab.COLLECTIONS -> CollectionsContent(
+                        collections = state.collections,
+                        selectedCollectionId = state.selectedCollectionId,
+                        books = state.displayedBooks,
+                        onCollectionClick = { viewModel.onEvent(LibraryEvent.CollectionSelected(it)) },
+                        onRenameCollection = { viewModel.onEvent(LibraryEvent.RenameCollectionClicked(it)) },
+                        onDeleteCollection = { viewModel.onEvent(LibraryEvent.DeleteCollection(it)) },
+                        onBookClick = onBookClick,
+                        onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
+                        onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
+                        onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
+                        onCoverClick = { url -> coverViewerUrl = url }
+                    )
+                }
+            }
+        }
+
+        // Dialogs
+        if (state.isCreateCollectionDialogOpen) {
+            CreateCollectionDialog(
+                onDismiss = { viewModel.onEvent(LibraryEvent.DismissDialogs) },
+                onConfirm = { name -> viewModel.onEvent(LibraryEvent.CreateCollection(name)) }
+            )
+        }
+        if (state.isRenameCollectionDialogOpen && state.renameCollectionId != null) {
+            val currentName = state.collections.find { it.id == state.renameCollectionId }?.name ?: ""
+            RenameCollectionDialog(
+                currentName = currentName,
+                onDismiss = { viewModel.onEvent(LibraryEvent.DismissDialogs) },
+                onConfirm = { newName ->
+                    viewModel.onEvent(
+                        LibraryEvent.RenameCollection(
+                            state.renameCollectionId!!,
+                            newName
+                        )
+                    )
+                }
+            )
+        }
+        if (state.isDeleteBookDialogOpen) {
+            AlertDialog(
+                onDismissRequest = { viewModel.onEvent(LibraryEvent.DismissDialogs) },
+                title = { Text("Удалить книгу?") },
+                text = { Text("Книга будет удалена из библиотеки и с устройства.") },
+                confirmButton = {
+                    TextButton(onClick = { viewModel.confirmDeleteBook() }) {
+                        Text(
+                            "Удалить",
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
-                )
-            }
+                },
+                dismissButton = {
+                    TextButton(onClick = { viewModel.onEvent(LibraryEvent.DismissDialogs) }) {
+                        Text(
+                            "Отмена"
+                        )
+                    }
+                }
+            )
+        }
+        if (state.isMoveBookDialogOpen && state.moveBookId != null && state.moveBookFormat != null) {
+            MoveBookDialog(
+                collections = state.collections,
+                bookId = state.moveBookId!!,
+                bookFormat = state.moveBookFormat!!,
+                currentCollections = state.allBooks.find { it.id == state.moveBookId && it.format == state.moveBookFormat }?.collectionIds
+                    ?: emptyList(),
+                onDismiss = { viewModel.onEvent(LibraryEvent.DismissDialogs) },
+                onMoveToCollection = { colId ->
+                    viewModel.onEvent(
+                        LibraryEvent.MoveBookToCollection(
+                            state.moveBookId!!,
+                            state.moveBookFormat!!,
+                            colId
+                        )
+                    )
+                },
+                onRemoveFromCollection = { colId ->
+                    viewModel.onEvent(
+                        LibraryEvent.RemoveBookFromCollection(
+                            state.moveBookId!!,
+                            state.moveBookFormat!!,
+                            colId
+                        )
+                    )
+                }
+            )
         }
 
-        AnimatedContent(
-            targetState = state.currentTab to state.selectedCollectionId,
-            transitionSpec = { fadeIn() togetherWith fadeOut() },
-            label = "library_content"
-        ) { _ ->
-            when (state.currentTab) {
-                LibraryTab.ALL -> BookList(
-                    books = state.allBooks, emptyTitle = "Библиотека пуста", emptySubtitle = "Скачайте книги для чтения",
-                    onBookClick = onBookClick,
-                    onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
-                    onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
-                    onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
-                    onCoverClick = { url -> coverViewerUrl = url }
-                )
-                LibraryTab.FAVORITES -> BookList(
-                    books = state.favoriteBooks, emptyTitle = "Нет избранных", emptySubtitle = "Нажмите ♡ чтобы добавить",
-                    onBookClick = onBookClick,
-                    onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
-                    onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
-                    onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
-                    onCoverClick = { url -> coverViewerUrl = url }
-                )
-                LibraryTab.HISTORY -> BookList(
-                    books = state.historyBooks, emptyTitle = "История пуста", emptySubtitle = "Начните читать",
-                    onBookClick = onBookClick,
-                    onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
-                    onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
-                    onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
-                    onCoverClick = { url -> coverViewerUrl = url }
-                )
-                LibraryTab.COLLECTIONS -> CollectionsContent(
-                    collections = state.collections, selectedCollectionId = state.selectedCollectionId,
-                    books = state.displayedBooks,
-                    onCollectionClick = { viewModel.onEvent(LibraryEvent.CollectionSelected(it)) },
-                    onRenameCollection = { viewModel.onEvent(LibraryEvent.RenameCollectionClicked(it)) },
-                    onDeleteCollection = { viewModel.onEvent(LibraryEvent.DeleteCollection(it)) },
-                    onBookClick = onBookClick,
-                    onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
-                    onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
-                    onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
-                    onCoverClick = { url -> coverViewerUrl = url }
-                )
-            }
+        // Full-screen cover viewer overlay
+        if (coverViewerUrl != null) {
+            CoverViewer(
+                coverUrl = coverViewerUrl!!,
+                onDismiss = { coverViewerUrl = null }
+            )
         }
-    }
-
-    // Dialogs
-    if (state.isCreateCollectionDialogOpen) {
-        CreateCollectionDialog(
-            onDismiss = { viewModel.onEvent(LibraryEvent.DismissDialogs) },
-            onConfirm = { name -> viewModel.onEvent(LibraryEvent.CreateCollection(name)) }
-        )
-    }
-    if (state.isRenameCollectionDialogOpen && state.renameCollectionId != null) {
-        val currentName = state.collections.find { it.id == state.renameCollectionId }?.name ?: ""
-        RenameCollectionDialog(currentName = currentName,
-            onDismiss = { viewModel.onEvent(LibraryEvent.DismissDialogs) },
-            onConfirm = { newName -> viewModel.onEvent(LibraryEvent.RenameCollection(state.renameCollectionId!!, newName)) }
-        )
-    }
-    if (state.isDeleteBookDialogOpen) {
-        AlertDialog(
-            onDismissRequest = { viewModel.onEvent(LibraryEvent.DismissDialogs) },
-            title = { Text("Удалить книгу?") },
-            text = { Text("Книга будет удалена из библиотеки и с устройства.") },
-            confirmButton = { TextButton(onClick = { viewModel.confirmDeleteBook() }) { Text("Удалить", color = MaterialTheme.colorScheme.error) } },
-            dismissButton = { TextButton(onClick = { viewModel.onEvent(LibraryEvent.DismissDialogs) }) { Text("Отмена") } }
-        )
-    }
-    if (state.isMoveBookDialogOpen && state.moveBookId != null && state.moveBookFormat != null) {
-        MoveBookDialog(
-            collections = state.collections, bookId = state.moveBookId!!, bookFormat = state.moveBookFormat!!,
-            currentCollections = state.allBooks.find { it.id == state.moveBookId && it.format == state.moveBookFormat }?.collectionIds ?: emptyList(),
-            onDismiss = { viewModel.onEvent(LibraryEvent.DismissDialogs) },
-            onMoveToCollection = { colId -> viewModel.onEvent(LibraryEvent.MoveBookToCollection(state.moveBookId!!, state.moveBookFormat!!, colId)) },
-            onRemoveFromCollection = { colId -> viewModel.onEvent(LibraryEvent.RemoveBookFromCollection(state.moveBookId!!, state.moveBookFormat!!, colId)) }
-        )
-    }
-
-    // Full-screen cover viewer overlay
-    if (coverViewerUrl != null) {
-        CoverViewer(
-            coverUrl = coverViewerUrl!!,
-            onDismiss = { coverViewerUrl = null }
-        )
-    }
     }
 }
 

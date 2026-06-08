@@ -1,8 +1,17 @@
 package com.foxybook.app.features.reader
 
+import android.app.Application
+import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
+import android.util.Log
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.unit.Density
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxybook.app.core.datastore.DataStoreManager
+import com.foxybook.app.core.models.BookFormat
+import com.foxybook.app.core.models.Bookmark
 import com.foxybook.app.core.models.ParsedBook
 import com.foxybook.app.core.models.ReaderMode
 import com.foxybook.app.core.models.ReaderSettings
@@ -11,6 +20,7 @@ import com.foxybook.app.core.models.ReadingPosition
 import com.foxybook.app.core.reader.BookParser
 import com.foxybook.app.core.reader.ContentBlock
 import com.foxybook.app.core.reader.HtmlBlockParser
+import com.foxybook.app.core.reader.TextPaginator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -20,21 +30,35 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.IBinder
+import android.speech.tts.Voice
+import com.foxybook.app.core.tts.TtsService
+import java.util.Locale
 
 data class ReaderState(
     val book: ParsedBook? = null,
     val currentChapter: Int = 0,
 
-    // Chapter block cache (current + prev + next)
+    // Cache
     val chapterBlocks: Map<Int, List<ContentBlock>> = emptyMap(),
+    val chapterPages: Map<Int, List<TextPaginator.Page>> = emptyMap(),
 
-    // Scroll mode
-    val scrollY: Int = 0,
+    // Dimensions
+    val pageWidth: Int = 0,
+    val pageHeight: Int = 0,
+
+    // Position
+    val textOffset: Int = 0,
+    val scrollY: Int = 0, // Block index in scroll mode
+    val scrollOffset: Int = 0, // Pixels within block
     val scrollPercentage: Int = 0,
-
-    // Page mode
-    val pageCurrent: Int = 0,
+    val pageCurrent: Int = 0, // Page index in page mode
     val pageTotal: Int = 1,
 
     // Common
@@ -42,17 +66,42 @@ data class ReaderState(
     val isLoading: Boolean = true,
     val error: String? = null,
     val settings: ReaderSettings = ReaderSettings(),
+    val bookmarks: List<Bookmark> = emptyList(),
     val showSettings: Boolean = false,
     val showChapters: Boolean = false,
+    val showBookmarks: Boolean = false,
     val isImmersive: Boolean = false,
-    val positionRestored: Boolean = false
+    val positionRestored: Boolean = false,
+    val lastPositionRestoreTrigger: Long = 0L,
+
+    // TTS
+    val isSpeaking: Boolean = false,
+    val isPaused: Boolean = false,
+    val availableVoices: List<VoiceInfo> = emptyList(),
+    val availableLanguages: List<String> = emptyList(),
+    val showTtsControls: Boolean = false,
+    val isSelectingTtsStartPosition: Boolean = false,
+    val currentTtsChapter: Int = -1,
+    val currentTtsBlockIndex: Int = -1
+)
+
+data class VoiceInfo(
+    val id: String,
+    val language: String,
+    val name: String
 )
 
 sealed interface ReaderEvent {
     data class LoadBook(val filePath: String, val bookId: Int, val format: String) : ReaderEvent
-    data class ChapterChanged(val index: Int) : ReaderEvent
-    data class ScrollProgress(val percentage: Int, val scrollY: Int) : ReaderEvent
-    data class PageInfo(val current: Int, val total: Int) : ReaderEvent
+    data class ChapterChanged(val index: Int, val resetPosition: Boolean = true) : ReaderEvent
+    data class ScrollProgress(val percentage: Int, val blockIndex: Int, val scrollOffset: Int, val offset: Int) : ReaderEvent
+    data class PageInfo(val current: Int, val total: Int, val offset: Int) : ReaderEvent
+    data class UpdatePageDimensions(
+        val width: Int, 
+        val height: Int, 
+        val textMeasurer: TextMeasurer, 
+        val density: Density
+    ) : ReaderEvent
     data object NextChapter : ReaderEvent
     data object PreviousChapter : ReaderEvent
     data class FontSizeChanged(val size: Int) : ReaderEvent
@@ -62,12 +111,30 @@ sealed interface ReaderEvent {
     data class ReaderThemeChanged(val theme: ReaderTheme) : ReaderEvent
     data object ToggleSettings : ReaderEvent
     data object ToggleChapters : ReaderEvent
+    data object ToggleBookmarks : ReaderEvent
     data object ToggleImmersive : ReaderEvent
+    data class AddBookmark(val preview: String) : ReaderEvent
+    data class RemoveBookmark(val bookmark: Bookmark) : ReaderEvent
+    data class GoToBookmark(val bookmark: Bookmark) : ReaderEvent
+    
+    // TTS
+    data object ToggleTtsControls : ReaderEvent
+    data object StartTtsSelection : ReaderEvent
+    data object CancelTtsSelection : ReaderEvent
+    data class StartTts(val chapterIndex: Int? = null, val blockIndex: Int? = null) : ReaderEvent
+    data object PauseTts : ReaderEvent
+    data object ResumeTts : ReaderEvent
+    data object StopTts : ReaderEvent
+    data class SetTtsRate(val rate: Float) : ReaderEvent
+    data class SetTtsPitch(val pitch: Float) : ReaderEvent
+    data class SetTtsLanguage(val language: String) : ReaderEvent
+    data class SetTtsVoice(val voiceId: String) : ReaderEvent
 }
 
 class ReaderViewModel(
     private val bookParser: BookParser,
-    private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: DataStoreManager,
+    private val application: Application
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ReaderState())
@@ -76,21 +143,102 @@ class ReaderViewModel(
     private var bookId: Int = -1
     private var format: String = ""
     private var saveJob: Job? = null
+    
+    private val paginationJobMap = mutableMapOf<Int, Job>()
+
+    private var ttsService: TtsService? = null
+    private var isBound = false
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as TtsService.TtsBinder
+            ttsService = binder.getService()
+            isBound = true
+            setupTtsService()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            ttsService = null
+            isBound = false
+        }
+    }
 
     init {
         viewModelScope.launch {
             dataStoreManager.readerSettings.collect { settings ->
                 _state.update { it.copy(settings = settings) }
+                // Re-pagination logic if needed...
             }
+        }
+        
+        Intent(application, TtsService::class.java).also { intent ->
+            application.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
+    }
+
+    private fun setupTtsService() {
+        ttsService?.onBlockCompleted = {
+            viewModelScope.launch {
+                val s = _state.value
+                val nextBlock = s.currentTtsBlockIndex + 1
+                speakBlock(s.currentTtsChapter, nextBlock)
+            }
+        }
+        ttsService?.onCommand = { cmd ->
+            when (cmd) {
+                "RESUME" -> onEvent(ReaderEvent.ResumeTts)
+                "PAUSE" -> onEvent(ReaderEvent.PauseTts)
+                "STOP" -> onEvent(ReaderEvent.StopTts)
+                "NEXT" -> {
+                    val s = _state.value
+                    speakBlock(s.currentTtsChapter, s.currentTtsBlockIndex + 1)
+                }
+                "PREV" -> {
+                    val s = _state.value
+                    speakBlock(s.currentTtsChapter, s.currentTtsBlockIndex - 1)
+                }
+            }
+        }
+        ttsService?.onInitComplete = {
+            loadVoices()
+        }
+        loadVoices()
+    }
+
+    private fun loadVoices() {
+        val voices = ttsService?.getVoices() ?: return
+        val voiceInfos = voices.map { voice ->
+            val lang = voice.locale.getDisplayLanguage(Locale("ru")).replaceFirstChar { it.uppercase() }
+            VoiceInfo(
+                id = voice.name,
+                language = lang,
+                name = if (voice.name.contains("female")) "Женский" else if (voice.name.contains("male")) "Мужской" else voice.name.substringAfterLast("-")
+            )
+        }.sortedWith(compareBy(
+            { it.language != "Русский" },
+            { it.language != "Английский" },
+            { it.language }
+        ))
+        
+        val languages = voiceInfos.map { it.language }.distinct()
+        _state.update { it.copy(availableVoices = voiceInfos, availableLanguages = languages) }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        if (isBound) {
+            application.unbindService(connection)
+            isBound = false
         }
     }
 
     fun onEvent(event: ReaderEvent) {
         when (event) {
             is ReaderEvent.LoadBook -> loadBook(event.filePath, event.bookId, event.format)
-            is ReaderEvent.ChapterChanged -> goToChapter(event.index)
-            is ReaderEvent.ScrollProgress -> handleScrollProgress(event.percentage, event.scrollY)
-            is ReaderEvent.PageInfo -> handlePageInfo(event.current, event.total)
+            is ReaderEvent.ChapterChanged -> goToChapter(event.index, event.resetPosition)
+            is ReaderEvent.ScrollProgress -> handleScrollProgress(event.percentage, event.blockIndex, event.scrollOffset, event.offset)
+            is ReaderEvent.PageInfo -> handlePageInfo(event.current, event.total, event.offset)
+            is ReaderEvent.UpdatePageDimensions -> updateDimensions(event.width, event.height, event.textMeasurer, event.density)
             is ReaderEvent.NextChapter -> nextChapter()
             is ReaderEvent.PreviousChapter -> previousChapter()
             is ReaderEvent.FontSizeChanged -> updateSettings { it.copy(fontSize = event.size) }
@@ -99,71 +247,286 @@ class ReaderViewModel(
             is ReaderEvent.ReaderModeChanged -> updateSettings { it.copy(readerMode = event.mode.name) }
             is ReaderEvent.ReaderThemeChanged -> updateSettings { it.copy(readerTheme = event.theme.name) }
             is ReaderEvent.ToggleSettings -> _state.update {
-                it.copy(showSettings = !it.showSettings, showChapters = false)
+                it.copy(showSettings = !it.showSettings, showChapters = false, showBookmarks = false, showTtsControls = false)
             }
             is ReaderEvent.ToggleChapters -> _state.update {
-                it.copy(showChapters = !it.showChapters, showSettings = false)
+                it.copy(showChapters = !it.showChapters, showSettings = false, showBookmarks = false)
             }
-            is ReaderEvent.ToggleImmersive -> _state.update {
-                it.copy(isImmersive = !it.isImmersive)
+            is ReaderEvent.ToggleBookmarks -> _state.update {
+                val next = !it.showBookmarks
+                it.copy(showBookmarks = next, showChapters = next, showSettings = false)
             }
+            is ReaderEvent.ToggleImmersive -> {
+                _state.update { it.copy(isImmersive = !it.isImmersive) }
+            }
+            is ReaderEvent.AddBookmark -> addBookmark(event.preview)
+            is ReaderEvent.RemoveBookmark -> removeBookmark(event.bookmark)
+            is ReaderEvent.GoToBookmark -> goToBookmark(event.bookmark)
+            
+            // TTS
+            ReaderEvent.ToggleTtsControls -> _state.update { 
+                it.copy(showTtsControls = !it.showTtsControls, isSelectingTtsStartPosition = false) 
+            }
+            ReaderEvent.StartTtsSelection -> viewModelScope.launch {
+                _state.update { it.copy(showTtsControls = false, showSettings = false) }
+                delay(400) // Wait for BottomSheet animation
+                _state.update { it.copy(isSelectingTtsStartPosition = true) }
+            }
+            ReaderEvent.CancelTtsSelection -> _state.update { 
+                it.copy(isSelectingTtsStartPosition = false, showTtsControls = true) 
+            }
+            is ReaderEvent.StartTts -> {
+                val ch = event.chapterIndex ?: _state.value.currentChapter
+                val bl = event.blockIndex ?: if (ch == _state.value.currentChapter) {
+                    calculateCurrentBlockIndex()
+                } else 0
+                speakBlock(ch, bl)
+                _state.update { it.copy(isSelectingTtsStartPosition = false) }
+            }
+            ReaderEvent.PauseTts -> {
+                ttsService?.pauseReading()
+                _state.update { it.copy(isSpeaking = false, isPaused = true) }
+            }
+            ReaderEvent.ResumeTts -> {
+                val s = _state.value
+                speakBlock(s.currentTtsChapter, s.currentTtsBlockIndex)
+            }
+            ReaderEvent.StopTts -> {
+                ttsService?.stopReading()
+                _state.update { it.copy(isSpeaking = false, isPaused = false, isSelectingTtsStartPosition = false) }
+            }
+            is ReaderEvent.SetTtsRate -> updateSettings { it.copy(ttsRate = event.rate) }
+            is ReaderEvent.SetTtsPitch -> updateSettings { it.copy(ttsPitch = event.pitch) }
+            is ReaderEvent.SetTtsLanguage -> updateSettings { it.copy(ttsLanguage = event.language, ttsVoice = null) }
+            is ReaderEvent.SetTtsVoice -> updateSettings { it.copy(ttsVoice = event.voiceId) }
         }
     }
 
-    // ─── Block access ───
+    private fun calculateCurrentBlockIndex(): Int {
+        val s = _state.value
+        val mode = ReaderMode.valueOf(s.settings.readerMode)
+        return if (mode == ReaderMode.HORIZONTAL) {
+            val pages = s.chapterPages[s.currentChapter] ?: emptyList()
+            val currentPage = pages.getOrNull(s.pageCurrent)
+            val blocks = s.chapterBlocks[s.currentChapter] ?: emptyList()
+            var offset = 0
+            var foundIndex = 0
+            for (i in blocks.indices) {
+                val blockLen = blocks[i].getTextContent().length
+                if (offset + blockLen > (currentPage?.startOffset ?: 0)) {
+                    foundIndex = i
+                    break
+                }
+                offset += blockLen
+            }
+            foundIndex
+        } else {
+            s.scrollY
+        }
+    }
+
+    private fun speakBlock(chapterIndex: Int, blockIndex: Int) {
+        viewModelScope.launch {
+            val s = _state.value
+            var ch = chapterIndex
+            var bl = blockIndex
+            
+            val blocks = getBlocksSync(ch)
+            if (bl >= blocks.size) {
+                if (ch < (s.book?.chapters?.size ?: 0) - 1) {
+                    ch++
+                    bl = 0
+                } else {
+                    onEvent(ReaderEvent.StopTts)
+                    return@launch
+                }
+            } else if (bl < 0) {
+                if (ch > 0) {
+                    ch--
+                    bl = (getBlocksSync(ch).size - 1).coerceAtLeast(0)
+                } else {
+                    bl = 0
+                }
+            }
+
+            val currentBlocks = getBlocksSync(ch)
+            val block = currentBlocks.getOrNull(bl)
+            val text = block?.getTextContent() ?: ""
+            
+            if (text.isBlank()) {
+                speakBlock(ch, bl + 1)
+                return@launch
+            }
+
+            _state.update { it.copy(
+                currentTtsChapter = ch, 
+                currentTtsBlockIndex = bl,
+                isSpeaking = true,
+                isPaused = false
+            ) }
+
+            updateSettings { it.copy(lastTtsChapter = ch, lastTtsBlockIndex = bl) }
+
+            ttsService?.startReading(
+                text = text,
+                bookTitle = s.book?.title ?: "Книга",
+                chapterTitle = s.book?.chapters?.getOrNull(ch)?.title ?: "Глава ${ch + 1}",
+                rate = s.settings.ttsRate,
+                pitch = s.settings.ttsPitch,
+                voiceName = s.settings.ttsVoice
+            )
+        }
+    }
+
+    // ─── Content Access ───
 
     fun getBlocks(chapterIndex: Int): List<ContentBlock> {
-        return _state.value.chapterBlocks[chapterIndex] ?: parseChapterBlocks(chapterIndex)
+        val cached = _state.value.chapterBlocks[chapterIndex]
+        if (cached != null) return cached
+        
+        preloadChapter(chapterIndex)
+        return emptyList()
     }
 
-    private fun parseChapterBlocks(chapterIndex: Int): List<ContentBlock> {
+    private fun preloadChapter(index: Int) {
+        val book = _state.value.book ?: return
+        if (index < 0 || index >= book.chapters.size) return
+        if (_state.value.chapterBlocks.containsKey(index)) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            getBlocksSync(index)
+        }
+    }
+
+    private suspend fun getBlocksSync(chapterIndex: Int): List<ContentBlock> {
+        val cached = _state.value.chapterBlocks[chapterIndex]
+        if (cached != null) return cached
+        
         val book = _state.value.book ?: return emptyList()
         val chapter = book.chapters.getOrNull(chapterIndex) ?: return emptyList()
-        val blocks = HtmlBlockParser.parse(chapter.htmlContent)
-        _state.update { it.copy(chapterBlocks = it.chapterBlocks + (chapterIndex to blocks)) }
-        return blocks
+        
+        Log.d("ReaderNav", "START LOAD CHAPTER: $chapterIndex")
+        return withContext(Dispatchers.IO) {
+            val html = if (chapter.htmlContent.isBlank() && chapter.contentId.isNotBlank()) {
+                bookParser.loadChapterContent(book.filePath, chapter, bookId, format)
+            } else {
+                chapter.htmlContent
+            }
+            
+            val blocks = HtmlBlockParser.parse(html)
+            Log.d("ReaderNav", "LOAD CHAPTER SUCCESS: $chapterIndex")
+            _state.update { it.copy(chapterBlocks = it.chapterBlocks + (chapterIndex to blocks)) }
+            blocks
+        }
     }
 
-    // ─── Private ───
+    // ─── Pagination ───
+
+    private fun updateDimensions(width: Int, height: Int, textMeasurer: TextMeasurer, density: Density) {
+        val current = _state.value
+        if (current.pageWidth == width && current.pageHeight == height && current.chapterPages.containsKey(current.currentChapter)) return
+
+        Log.d("ReaderNav", "updateDimensions: Triggering pagination for ch=${current.currentChapter}")
+        _state.update { it.copy(pageWidth = width, pageHeight = height, positionRestored = true, lastPositionRestoreTrigger = System.currentTimeMillis()) }
+        
+        paginateChapter(current.currentChapter, textMeasurer, density)
+        paginateChapter(current.currentChapter + 1, textMeasurer, density)
+        paginateChapter(current.currentChapter - 1, textMeasurer, density)
+    }
+
+    private fun paginateChapter(index: Int, textMeasurer: TextMeasurer, density: Density) {
+        val s = _state.value
+        val book = s.book ?: return
+        if (index < 0 || index >= book.chapters.size) return
+        if (s.pageWidth <= 0 || s.pageHeight <= 0) return
+
+        Log.d("ReaderNav", "PAGINATION START: $index")
+        paginationJobMap[index]?.cancel()
+        paginationJobMap[index] = viewModelScope.launch(Dispatchers.Default) {
+            val blocks = getBlocksSync(index)
+            val pages = TextPaginator.paginate(
+                blocks = blocks,
+                chapterIndex = index,
+                pageWidthPx = s.pageWidth,
+                pageHeightPx = s.pageHeight,
+                settings = s.settings,
+                textMeasurer = textMeasurer,
+                density = density
+            )
+            Log.d("ReaderNav", "PAGINATION DONE: $index (pages=${pages.size})")
+            _state.update { it.copy(chapterPages = it.chapterPages + (index to pages)) }
+        }
+    }
+
+    // ─── Events ───
 
     private fun loadBook(filePath: String, bId: Int, fmt: String) {
+        Log.d("ReaderNav", "loadBook: path=$filePath, id=$bId, format=$fmt")
+        if (_state.value.book?.filePath == filePath && !_state.value.isLoading) {
+            Log.d("ReaderNav", "loadBook: Book already loaded, skipping")
+            return
+        }
+        
         bookId = bId
         format = fmt
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _state.update { it.copy(isLoading = true, error = null) }
+            
+            // Diagnostic logs
+            Log.d("ReaderDiagnostic", "─── Open Book Diagnostic ───")
+            Log.d("ReaderDiagnostic", "Book ID: $bId")
+            Log.d("ReaderDiagnostic", "Format: $fmt")
+            Log.d("ReaderDiagnostic", "Saved FilePath: $filePath")
+            Log.d("ReaderDiagnostic", "Used Path For Open: $filePath")
+            Log.d("ReaderDiagnostic", "─────────────────────────────")
+
             try {
-                val file = File(filePath)
-                if (!file.exists()) {
-                    _state.update { it.copy(isLoading = false, error = "Файл не найден"); return@launch }
+                Log.d("ReaderNav", "loadBook: Calling bookParser.parse")
+                val book = bookParser.parse(filePath, fmt)
+                if (book == null) {
+                    Log.e("ReaderNav", "loadBook: bookParser returned NULL")
+                    _state.update { it.copy(isLoading = false, error = "Ошибка при открытии книги") }
+                    return@launch
                 }
-                val book = bookParser.parse(file)
-                if (book == null || book.chapters.isEmpty()) {
-                    _state.update { it.copy(isLoading = false, error = "Не удалось открыть книгу"); return@launch }
-                }
+                
+                Log.d("ReaderNav", "loadBook: Parse SUCCESS: ${book.title}")
                 _state.update { it.copy(book = book, isLoading = false) }
 
-                // Preload current + adjacent chapter blocks
-                preloadChapterBlocks(0)
-                preloadChapterBlocks(1)
-                preloadChapterBlocks(-1)
+                // Collect bookmarks for this book
+                viewModelScope.launch {
+                    dataStoreManager.bookmarksForBook(bId).collect { list ->
+                        _state.update { it.copy(bookmarks = list) }
+                    }
+                }
 
                 // Restore reading position
-                try {
-                    val pos = dataStoreManager.readingPositionForBook(bId, fmt).first()
-                    val currentBook = _state.value.book
-                    if (pos != null && currentBook != null && pos.chapterIndex < currentBook.chapters.size) {
-                        _state.update {
-                            it.copy(
-                                currentChapter = pos.chapterIndex,
-                                scrollY = pos.scrollPosition,
-                                positionRestored = true
-                            )
-                        }
-                        preloadChapterBlocks(pos.chapterIndex - 1)
-                        preloadChapterBlocks(pos.chapterIndex + 1)
-                    }
-                } catch (_: Exception) {}
+                val pos = dataStoreManager.readingPositionForBook(bId, fmt).first()
+                Log.d("ReaderNav", "loadBook: pos from dataStore = $pos")
 
+                if (pos != null && pos.chapterIndex < book.chapters.size) {
+                    Log.d("ReaderNav", "RESTORE POSITION: chapter=${pos.chapterIndex}, offset=${pos.textOffset}")
+                    _state.update {
+                        it.copy(
+                            currentChapter = pos.chapterIndex,
+                            textOffset = pos.textOffset,
+                            scrollY = pos.scrollPosition,
+                            scrollOffset = pos.scrollOffset,
+                            pageCurrent = pos.pageIndex,
+                            positionRestored = true,
+                            lastPositionRestoreTrigger = System.currentTimeMillis()
+                        )
+                    }
+                    Log.d("ReaderNav", "loadBook: Restored pos: ch=${pos.chapterIndex}, offset=${pos.textOffset}, scrollY=${pos.scrollPosition}, scrollOffset=${pos.scrollOffset}")
+                    // Load blocks for current chapter immediately
+                    getBlocksSync(pos.chapterIndex)
+                    preloadChapter(pos.chapterIndex + 1)
+                    preloadChapter(pos.chapterIndex - 1)
+                } else {
+                    Log.d("ReaderNav", "loadBook: No saved pos or invalid chapter, starting from 0")
+                    _state.update { it.copy(currentChapter = 0, positionRestored = true) }
+                    getBlocksSync(0)
+                    preloadChapter(1)
+                }
                 updateReadingPercentage()
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.message) }
@@ -171,14 +534,104 @@ class ReaderViewModel(
         }
     }
 
-    private fun goToChapter(index: Int) {
+    private fun goToChapter(index: Int, resetPosition: Boolean = true) {
         val book = _state.value.book ?: return
         if (index < 0 || index >= book.chapters.size) return
-        _state.update { it.copy(currentChapter = index, scrollY = 0, positionRestored = false) }
-        preloadChapterBlocks(index - 1)
-        preloadChapterBlocks(index + 1)
+        
+        Log.d("ReaderNav", "SELECT CHAPTER: $index (reset=$resetPosition)")
+        
+        if (resetPosition) {
+            _state.update { it.copy(
+                currentChapter = index, 
+                scrollY = 0, 
+                pageCurrent = 0, 
+                textOffset = 0, 
+                positionRestored = false
+            ) }
+        } else {
+            _state.update { it.copy(currentChapter = index, positionRestored = false) }
+        }
+
+        preloadChapter(index)
+        preloadChapter(index + 1)
+        preloadChapter(index - 1)
         updateReadingPercentage()
-        debounceSave(0)
+        debounceSave()
+    }
+
+    private fun handleScrollProgress(percentage: Int, blockIndex: Int, scrollOffset: Int, offset: Int) {
+        if (_state.value.isLoading) return
+        _state.update { it.copy(
+            scrollPercentage = percentage, 
+            scrollY = blockIndex, 
+            scrollOffset = scrollOffset,
+            textOffset = offset
+        ) }
+        updateReadingPercentage()
+        debounceSave()
+    }
+
+    private fun handlePageInfo(current: Int, total: Int, offset: Int) {
+        if (_state.value.isLoading) return
+        
+        val s = _state.value
+        // Only update if it's the SAME chapter we are currently in
+        // This prevents updates from Pager while it's settling during chapter change
+        Log.d("ReaderNav", "handlePageInfo: page $current/$total, offset $offset, currentCh=${s.currentChapter}")
+
+        _state.update { it.copy(pageCurrent = current, pageTotal = total, textOffset = offset) }
+        updateReadingPercentage()
+        debounceSave()
+    }
+
+    private fun addBookmark(preview: String) {
+        val s = _state.value
+        val book = s.book ?: return
+        val chapter = book.chapters.getOrNull(s.currentChapter)
+        
+        val bookmark = Bookmark(
+            bookId = bookId,
+            chapterIndex = s.currentChapter,
+            chapterTitle = chapter?.title ?: "Глава ${s.currentChapter + 1}",
+            pageIndex = s.pageCurrent,
+            scrollPosition = s.scrollY,
+            scrollOffset = s.scrollOffset,
+            textOffset = s.textOffset,
+            shortTextPreview = preview.take(150),
+            createdAt = System.currentTimeMillis()
+        )
+        Log.d("ReaderNav", "addBookmark: id=${bookmark.id}, ch=${s.currentChapter}, offset=${s.textOffset}")
+        viewModelScope.launch {
+            dataStoreManager.addBookmark(bookmark)
+        }
+    }
+
+    private fun removeBookmark(bookmark: Bookmark) {
+        viewModelScope.launch {
+            dataStoreManager.removeBookmark(bookmark)
+        }
+    }
+
+    private fun goToBookmark(bookmark: Bookmark) {
+        Log.d("ReaderNav", "goToBookmark: ch=${bookmark.chapterIndex}, offset=${bookmark.textOffset}")
+        _state.update {
+            it.copy(
+                currentChapter = bookmark.chapterIndex,
+                textOffset = bookmark.textOffset,
+                scrollY = bookmark.scrollPosition,
+                scrollOffset = bookmark.scrollOffset,
+                pageCurrent = bookmark.pageIndex,
+                positionRestored = true,
+                lastPositionRestoreTrigger = System.currentTimeMillis(),
+                showBookmarks = false,
+                showChapters = false
+            )
+        }
+        preloadChapter(bookmark.chapterIndex)
+        preloadChapter(bookmark.chapterIndex + 1)
+        preloadChapter(bookmark.chapterIndex - 1)
+        updateReadingPercentage()
+        debounceSave()
     }
 
     private fun nextChapter() {
@@ -190,39 +643,6 @@ class ReaderViewModel(
     private fun previousChapter() {
         val prev = _state.value.currentChapter - 1
         if (prev >= 0) goToChapter(prev)
-    }
-
-    private fun preloadChapterBlocks(chapterIndex: Int) {
-        val book = _state.value.book ?: return
-        if (chapterIndex < 0 || chapterIndex >= book.chapters.size) return
-        if (_state.value.chapterBlocks.containsKey(chapterIndex)) return
-        viewModelScope.launch(Dispatchers.IO) {
-            parseChapterBlocks(chapterIndex)
-        }
-    }
-
-    private fun handleScrollProgress(percentage: Int, scrollY: Int) {
-        _state.update { it.copy(scrollPercentage = percentage, scrollY = scrollY) }
-        updateReadingPercentage()
-        debounceSave(scrollY)
-        // Preload next chapter when near end
-        if (percentage > 75) {
-            preloadChapterBlocks(_state.value.currentChapter + 1)
-        }
-    }
-
-    private fun handlePageInfo(current: Int, total: Int) {
-        _state.update { it.copy(pageCurrent = current, pageTotal = total) }
-        updateReadingPercentage()
-        debounceSave(current)
-        // Preload next chapter when on last 3 pages
-        if (total > 0 && current >= total - 3) {
-            preloadChapterBlocks(_state.value.currentChapter + 1)
-        }
-        // Preload prev chapter when on first 2 pages
-        if (current <= 1) {
-            preloadChapterBlocks(_state.value.currentChapter - 1)
-        }
     }
 
     private fun updateReadingPercentage() {
@@ -239,20 +659,24 @@ class ReaderViewModel(
         _state.update { it.copy(readingPercentage = pct) }
     }
 
-    private fun debounceSave(scrollOrPage: Int) {
+    private fun debounceSave() {
         saveJob?.cancel()
         saveJob = viewModelScope.launch {
-            delay(800)
-            if (bookId >= 0) {
-                dataStoreManager.saveReadingPosition(
-                    ReadingPosition(
-                        bookId = bookId,
-                        format = format,
-                        chapterIndex = _state.value.currentChapter,
-                        scrollPosition = scrollOrPage,
-                        lastUpdated = System.currentTimeMillis()
-                    )
+            delay(1500) // Slightly longer delay to avoid saving intermediate states during fast scrolling
+            val s = _state.value
+            if (bookId >= 0 && !s.isLoading) {
+                val pos = ReadingPosition(
+                    bookId = bookId,
+                    format = format,
+                    chapterIndex = s.currentChapter,
+                    pageIndex = s.pageCurrent,
+                    scrollPosition = s.scrollY,
+                    scrollOffset = s.scrollOffset,
+                    textOffset = s.textOffset,
+                    lastUpdated = System.currentTimeMillis()
                 )
+                Log.d("ReaderNav", "Saving pos: ch=${pos.chapterIndex}, offset=${pos.textOffset}, scrollY=${pos.scrollPosition}")
+                dataStoreManager.saveReadingPosition(pos)
                 dataStoreManager.updateLastReadDate(bookId, format)
             }
         }
@@ -262,10 +686,5 @@ class ReaderViewModel(
         val new = transform(_state.value.settings)
         _state.update { it.copy(settings = new) }
         viewModelScope.launch { dataStoreManager.saveReaderSettings(new) }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        saveJob?.cancel()
     }
 }

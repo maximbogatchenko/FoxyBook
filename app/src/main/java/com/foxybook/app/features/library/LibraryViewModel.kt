@@ -1,5 +1,8 @@
 package com.foxybook.app.features.library
 
+import android.content.Context
+import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxybook.app.core.datastore.DataStoreManager
@@ -7,6 +10,7 @@ import com.foxybook.app.core.models.BookCollection
 import com.foxybook.app.core.models.BookFormat
 import com.foxybook.app.core.models.LibraryBook
 import com.foxybook.app.core.models.LibraryTab
+import com.foxybook.app.core.reader.BookParser
 import com.foxybook.app.core.utils.FileHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -56,7 +60,8 @@ sealed interface LibraryEvent {
 }
 
 class LibraryViewModel(
-    private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: DataStoreManager,
+    private val bookParser: BookParser
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LibraryState())
@@ -95,12 +100,34 @@ class LibraryViewModel(
         val bookId = _state.value.deleteBookId ?: return
         val format = _state.value.deleteBookFormat ?: return
         viewModelScope.launch {
-            val bookFormat = BookFormat.entries.find { it.extension == format }
-            if (bookFormat != null) {
-                // File deletion handled by repository
-            }
             dataStoreManager.removeLibraryBook(bookId, format)
             _state.value = _state.value.copy(isDeleteBookDialogOpen = false, deleteBookId = null, deleteBookFormat = null)
+        }
+    }
+
+    fun importBook(uri: Uri, context: Context) {
+        viewModelScope.launch {
+            try {
+                val path = uri.toString()
+                Log.d("LibraryVM", "Importing book from URI: $path")
+                val parsed = bookParser.parse(path)
+                if (parsed != null) {
+                    val book = LibraryBook(
+                        id = (System.currentTimeMillis() % Int.MAX_VALUE).toInt(),
+                        title = parsed.title,
+                        author = parsed.author,
+                        format = parsed.format,
+                        filePath = path,
+                        downloadDate = System.currentTimeMillis()
+                    )
+                    dataStoreManager.addLibraryBook(book)
+                    Log.d("LibraryVM", "Book imported successfully: ${parsed.title}")
+                } else {
+                    Log.e("LibraryVM", "Failed to parse imported book")
+                }
+            } catch (e: Exception) {
+                Log.e("LibraryVM", "Error importing book", e)
+            }
         }
     }
 }

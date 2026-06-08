@@ -3,6 +3,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".FoxyBookApp"
@@ -12,6 +15,24 @@
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
+
+        <service
+            android:name=".core.tts.TtsService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <receiver
+            android:name=".core.tts.TtsReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="RESUME" />
+                <action android:name="PAUSE" />
+                <action android:name="STOP" />
+                <action android:name="NEXT" />
+                <action android:name="PREV" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".MainActivity"

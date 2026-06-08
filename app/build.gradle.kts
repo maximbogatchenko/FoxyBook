@@ -14,8 +14,8 @@ android {
         applicationId = "com.foxybook.app"
         minSdk = 28
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.1"
+        versionCode = 4
+        versionName = "1.2"
 
         // ABI splits: only ARM devices (covers 99%+ of Android)
         ndk {
@@ -130,6 +130,9 @@ dependencies {
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.2.0")
 
+    // DocumentFile for Storage Access Framework
+    implementation("androidx.documentfile:documentfile:1.0.1")
+
     // Jsoup (HTML parsing for Flibusta + FB2)
     implementation("org.jsoup:jsoup:1.21.1")
 
@@ -138,6 +141,10 @@ dependencies {
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+
+    // Media3 for MediaSession/Notification
+    implementation("androidx.media3:media3-session:1.5.1")
+    implementation("androidx.media3:media3-common:1.5.1")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.foxybook.app.core.models.BookCollection
+import com.foxybook.app.core.models.Bookmark
 import com.foxybook.app.core.models.LibraryBook
 import com.foxybook.app.core.models.ReaderSettings
 import com.foxybook.app.core.models.ReadingPosition
@@ -30,6 +31,7 @@ class DataStoreManager(private val context: Context) {
         private val COLLECTIONS_KEY = stringPreferencesKey("collections")
         private val READING_POSITIONS_KEY = stringPreferencesKey("reading_positions")
         private val READER_SETTINGS_KEY = stringPreferencesKey("reader_settings_v2")
+        private val BOOKMARKS_KEY = stringPreferencesKey("bookmarks")
         private val THEME_KEY = stringPreferencesKey("theme_mode")
         private val DEFAULT_FORMAT_KEY = stringPreferencesKey("default_format")
         private val SEARCH_HISTORY_KEY = stringPreferencesKey("search_history")
@@ -44,8 +46,14 @@ class DataStoreManager(private val context: Context) {
     suspend fun addLibraryBook(book: LibraryBook) {
         context.dataStore.edit { prefs ->
             val books = decodeList<LibraryBook>(prefs[LIBRARY_BOOKS_KEY])
-            if (books.none { it.id == book.id && it.format == book.format }) {
+            val index = books.indexOfFirst { it.id == book.id && it.format == book.format }
+            if (index == -1) {
                 prefs[LIBRARY_BOOKS_KEY] = json.encodeToString(books + book)
+            } else {
+                // Update existing book (e.g. new filePath after re-download)
+                val updatedBooks = books.toMutableList()
+                updatedBooks[index] = book
+                prefs[LIBRARY_BOOKS_KEY] = json.encodeToString(updatedBooks)
             }
         }
     }
@@ -141,6 +149,32 @@ class DataStoreManager(private val context: Context) {
             decodeList<ReadingPosition>(prefs[READING_POSITIONS_KEY])
                 .firstOrNull { it.bookId == bookId && it.format == format }
         }
+
+    // ─── Bookmarks ───
+
+    val allBookmarks: Flow<List<Bookmark>> = context.dataStore.data.map { prefs ->
+        decodeList(prefs[BOOKMARKS_KEY])
+    }
+
+    fun bookmarksForBook(bookId: Int): Flow<List<Bookmark>> = allBookmarks.map { list ->
+        list.filter { it.bookId == bookId }.sortedByDescending { it.createdAt }
+    }
+
+    suspend fun addBookmark(bookmark: Bookmark) {
+        context.dataStore.edit { prefs ->
+            val list = decodeList<Bookmark>(prefs[BOOKMARKS_KEY])
+            prefs[BOOKMARKS_KEY] = json.encodeToString(list + bookmark)
+        }
+    }
+
+    suspend fun removeBookmark(bookmark: Bookmark) {
+        context.dataStore.edit { prefs ->
+            val list = decodeList<Bookmark>(prefs[BOOKMARKS_KEY])
+            prefs[BOOKMARKS_KEY] = json.encodeToString(
+                list.filterNot { it.id == bookmark.id }
+            )
+        }
+    }
 
     // ─── Reader Settings ───
 

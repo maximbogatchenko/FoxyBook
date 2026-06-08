@@ -32,10 +32,18 @@ data class BookInfo(
     val coverUrl: String = ""
 )
 
-enum class BookFormat(val extension: String) {
-    EPUB("epub"),
-    FB2("fb2"),
-    MOBI("mobi")
+enum class BookFormat(val extension: String, val mimeType: String) {
+    EPUB("epub", "application/epub+zip"),
+    FB2("fb2", "application/x-fictionbook+xml"),
+    MOBI("mobi", "application/x-mobipocket-ebook"),
+    TXT("txt", "text/plain");
+
+    companion object {
+        fun fromExtension(ext: String?): BookFormat? {
+            val normalized = ext?.lowercase() ?: return null
+            return entries.find { it.extension == normalized || normalized.contains(it.extension) }
+        }
+    }
 }
 
 // ─── Series Model ───
@@ -76,8 +84,25 @@ data class ReadingPosition(
     val bookId: Int,
     val format: String,
     val chapterIndex: Int = 0,
+    val pageIndex: Int = 0,
     val scrollPosition: Int = 0,
+    val scrollOffset: Int = 0,
+    val textOffset: Int = 0,
     val lastUpdated: Long = System.currentTimeMillis()
+)
+
+@Serializable
+data class Bookmark(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val bookId: Int,
+    val chapterIndex: Int,
+    val chapterTitle: String = "",
+    val pageIndex: Int = 0,
+    val scrollPosition: Int = 0,
+    val scrollOffset: Int = 0,
+    val textOffset: Int = 0,
+    val shortTextPreview: String,
+    val createdAt: Long = System.currentTimeMillis()
 )
 
 // ─── Reader Models ───
@@ -92,13 +117,20 @@ data class ReaderSettings(
     val lineHeight: Float = 1.8f,
     val margins: Int = 16,
     val readerMode: String = ReaderMode.VERTICAL.name,
-    val readerTheme: String = ReaderTheme.SYSTEM.name
+    val readerTheme: String = ReaderTheme.SYSTEM.name,
+    val ttsRate: Float = 1.0f,
+    val ttsPitch: Float = 1.0f,
+    val ttsVoice: String? = null,
+    val ttsLanguage: String? = null,
+    val lastTtsChapter: Int = -1,
+    val lastTtsBlockIndex: Int = -1
 )
 
 @Serializable
 data class EpubChapter(
     val title: String,
-    val htmlContent: String
+    val htmlContent: String,
+    val href: String = ""
 )
 
 @Serializable
@@ -111,7 +143,8 @@ data class EpubBook(
 @Serializable
 data class Fb2Chapter(
     val title: String,
-    val htmlContent: String
+    val htmlContent: String,
+    val sectionId: Int = -1
 )
 
 @Serializable
@@ -140,7 +173,8 @@ data class MobiBook(
 @Serializable
 data class ParsedChapter(
     val title: String,
-    val htmlContent: String
+    val htmlContent: String = "",
+    val contentId: String = "" // Can be href (EPUB) or section index (FB2)
 )
 
 @Serializable
@@ -148,7 +182,8 @@ data class ParsedBook(
     val title: String,
     val author: String,
     val chapters: List<ParsedChapter>,
-    val format: String
+    val format: String,
+    val filePath: String = ""
 )
 
 // ─── Search ───

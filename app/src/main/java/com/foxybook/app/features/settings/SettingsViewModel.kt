@@ -1,5 +1,6 @@
 package com.foxybook.app.features.settings
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxybook.app.core.datastore.DataStoreManager

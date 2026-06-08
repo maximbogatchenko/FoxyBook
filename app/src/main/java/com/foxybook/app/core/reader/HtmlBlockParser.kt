@@ -16,6 +16,7 @@ object HtmlBlockParser {
             val doc = Jsoup.parse(htmlContent)
             val body = doc.body() ?: doc
             walkElement(body, blocks)
+            blocks.forEachIndexed { index, block -> block.originalIndex = index }
         } catch (_: Exception) {
             // Fallback: treat entire content as one paragraph
             val text = Jsoup.parse(htmlContent).text()

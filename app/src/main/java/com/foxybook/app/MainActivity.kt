@@ -81,7 +81,7 @@ fun MainApp() {
     val api = remember { FlibustaApiImpl(context) }
     val dataStoreManager = remember { DataStoreManager(context) }
     val repository = remember { BookRepositoryImpl(api, context, dataStoreManager) }
-    val bookParser = remember { BookParser() }
+    val bookParser = remember { BookParser(context) }
 
     val searchBooksUseCase = remember { SearchBooksUseCase(repository) }
     val searchByAuthorUseCase = remember { SearchByAuthorUseCase(repository) }
@@ -130,7 +130,7 @@ fun MainApp() {
                 val vm: LibraryViewModel = viewModel(factory = object : ViewModelProvider.Factory {
                     @Suppress("UNCHECKED_CAST")
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                        return LibraryViewModel(dataStoreManager) as T
+                        return LibraryViewModel(dataStoreManager, bookParser) as T
                     }
                 })
                 LibraryScreen(viewModel = vm, onBookClick = { filePath, bookId, format ->
@@ -156,7 +156,7 @@ fun MainApp() {
                 val vm: BookDetailsViewModel = viewModel(factory = object : ViewModelProvider.Factory {
                     @Suppress("UNCHECKED_CAST")
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                        return BookDetailsViewModel(getBookInfoUseCase, downloadBookUseCase) as T
+                        return BookDetailsViewModel(getBookInfoUseCase, downloadBookUseCase, dataStoreManager) as T
                     }
                 })
                 BookDetailsScreen(
@@ -165,7 +165,8 @@ fun MainApp() {
                     onBackClick = { navController.popBackStack() },
                     onReadBook = { filePath, format ->
                         navController.navigate(Routes.reader(bookId, format, filePath))
-                    }
+                    },
+                    onGoToSettings = { navController.navigate(Routes.SETTINGS) }
                 )
             }
 
@@ -210,7 +211,7 @@ fun MainApp() {
                 val vm: ReaderViewModel = viewModel(factory = object : ViewModelProvider.Factory {
                     @Suppress("UNCHECKED_CAST")
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                        return ReaderViewModel(bookParser, dataStoreManager) as T
+                        return ReaderViewModel(bookParser, dataStoreManager, context.applicationContext as android.app.Application) as T
                     }
                 })
                 ReaderScreen(

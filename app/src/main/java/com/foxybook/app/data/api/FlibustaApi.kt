@@ -40,7 +40,6 @@ interface FlibustaApi {
     suspend fun downloadBook(
         id: String,
         format: BookFormat,
-        destDir: File,
         onProgress: (Float) -> Unit = {}
-    ): File
+    ): okhttp3.ResponseBody?
 }

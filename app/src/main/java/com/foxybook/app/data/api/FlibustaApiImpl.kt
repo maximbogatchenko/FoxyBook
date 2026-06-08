@@ -473,15 +473,9 @@ class FlibustaApiImpl(context: Context) : FlibustaApi {
     override suspend fun downloadBook(
         id: String,
         format: BookFormat,
-        destDir: File,
         onProgress: (Float) -> Unit
-    ): File = withContext(Dispatchers.IO) {
+    ): okhttp3.ResponseBody? = withContext(Dispatchers.IO) {
         val url = getDownloadUrl(id, format)
-        val fileName = "${id}.${format.extension}"
-        val destFile = File(destDir, fileName)
-
-        if (!destDir.exists()) destDir.mkdirs()
-
         var lastException: Exception? = null
 
         for (attempt in 1..MAX_RETRIES) {
@@ -495,32 +489,7 @@ class FlibustaApiImpl(context: Context) : FlibustaApi {
                     continue
                 }
 
-                val body = response.body ?: run {
-                    lastException = Exception("Empty response body")
-                    continue
-                }
-
-                val contentLength = body.contentLength().toFloat()
-                var bytesDownloaded = 0L
-
-                body.byteStream().use { input ->
-                    FileOutputStream(destFile).use { output ->
-                        val buffer = ByteArray(8192)
-                        var bytesRead: Int
-                        while (input.read(buffer).also { bytesRead = it } != -1) {
-                            output.write(buffer, 0, bytesRead)
-                            bytesDownloaded += bytesRead
-                            if (contentLength > 0f) {
-                                onProgress(bytesDownloaded / contentLength)
-                            }
-                        }
-                        output.flush()
-                    }
-                }
-
-                onProgress(1f)
-                response.close()
-                return@withContext destFile
+                return@withContext response.body
             } catch (e: Exception) {
                 lastException = e
                 if (attempt < MAX_RETRIES) {
@@ -528,7 +497,6 @@ class FlibustaApiImpl(context: Context) : FlibustaApi {
                 }
             }
         }
-
         throw lastException ?: Exception("Download failed")
     }
 

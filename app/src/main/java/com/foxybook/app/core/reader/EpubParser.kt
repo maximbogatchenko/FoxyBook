@@ -1,237 +1,186 @@
 package com.foxybook.app.core.reader
 
 import android.content.Context
+import android.net.Uri
 import android.util.Base64
 import android.util.Log
 import com.foxybook.app.core.models.EpubBook
 import com.foxybook.app.core.models.EpubChapter
 import com.foxybook.app.core.utils.BookImageCache
+import com.foxybook.app.core.utils.UriUtils
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.io.File
-import java.net.URI
 import java.net.URLDecoder
 import java.util.zip.ZipFile
 
 class EpubParser(private val context: Context? = null) {
 
     companion object {
-        private const val TAG = "BOOK_IMAGES"
+        private const val TAG = "EPUB_PARSER"
     }
 
-    fun parse(file: File, bookId: Int = 0): EpubBook? {
-        if (!file.exists() || file.length() == 0L) return null
+    private fun getFileFromUri(context: Context, uri: Uri): File? {
+        Log.d(TAG, "getFileFromUri: uri=$uri, scheme=${uri.scheme}")
+        if (uri.scheme == "file") return uri.path?.let { File(it) }
+        val temp = UriUtils.copyUriToTempFile(context, uri, "temp_epub_${System.currentTimeMillis()}.epub")
+        if (temp == null) {
+            Log.e(TAG, "getFileFromUri: Failed to copy URI to temp file")
+        } else {
+            Log.d(TAG, "getFileFromUri: Successfully copied to ${temp.absolutePath}, size=${temp.length()}")
+        }
+        return temp
+    }
+
+    /**
+     * Quickly parses metadata and chapter list without reading full content.
+     */
+    fun parse(context: Context, uri: Uri, bookId: Int = 0): EpubBook? {
+        val file = getFileFromUri(context, uri) ?: return null
         var zip: ZipFile? = null
         return try {
             zip = ZipFile(file)
-
             val opfPath = findOpfPath(zip) ?: return null
             val opfDir = opfPath.substringBeforeLast("/", "")
-
             val opfXml = zip.readEntry(opfPath) ?: return null
             val doc = Jsoup.parse(opfXml, "", Parser.xmlParser())
 
-            val title = doc.selectFirst("dc\\:title, title")?.text()?.trim()?.ifBlank { null } ?: "Без названия"
-            val author = doc.selectFirst("dc\\:creator, creator")?.text()?.trim()?.ifBlank { null } ?: "Неизвестный автор"
+            val title = doc.selectFirst("dc\\:title, title")?.text()?.trim() ?: "Без названия"
+            val author = doc.selectFirst("dc\\:creator, creator")?.text()?.trim() ?: "Неизвестный автор"
 
-            // Build manifest: id -> href
             val manifest = mutableMapOf<String, String>()
             for (item in doc.select("manifest > item")) {
                 val id = item.attr("id") ?: continue
                 val href = item.attr("href") ?: continue
-                if (href.isNotBlank()) manifest[id] = href
+                manifest[id] = href
             }
 
-            // ─── Extract all images to cache ───
-            val imageMap = mutableMapOf<String, String>() // various keys -> file:// URL
-            var imagesFound = 0
-            var imagesSaved = 0
-
-            val allEntries = zip.entries().toList()
-            for (entry in allEntries) {
-                if (!entry.isDirectory && BookImageCache.isImageName(entry.name)) {
-                    imagesFound++
-                    try {
-                        val bytes = zip.getInputStream(entry).readBytes()
-                        val fileName = entry.name.substringAfterLast("/")
-
-                        if (context != null && bookId > 0) {
-                            val cachedFile = BookImageCache.saveImage(context, bookId, fileName, bytes)
-                            val fileUrl = "file://${cachedFile.absolutePath}"
-
-                            // Map by full path inside ZIP
-                            imageMap[entry.name] = fileUrl
-                            // Map by filename only
-                            imageMap[fileName] = fileUrl
-                            // Map by OPF-relative path
-                            if (opfDir.isNotBlank()) {
-                                imageMap["$opfDir/$fileName"] = fileUrl
-                                val opfRelative = "$opfDir/${entry.name.substringAfterLast("/")}"
-                                if (opfRelative != fileName) imageMap[opfRelative] = fileUrl
-                            }
-                            imagesSaved++
-                        } else {
-                            // No context — embed as base64 data URI
-                            val mime = BookImageCache.getMimeType(entry.name)
-                            val b64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
-                            val dataUri = "data:$mime;base64,$b64"
-                            imageMap[entry.name] = dataUri
-                            imageMap[fileName] = dataUri
-                            imagesSaved++
-                        }
-                    } catch (e: Exception) {
-                        Log.e(TAG, "EPUB: Failed to extract image ${entry.name}", e)
-                    }
-                }
-            }
-            Log.d(TAG, "EPUB: Found $imagesFound images, saved $imagesSaved for book $bookId")
-
-            // ─── Build spine ───
-            val spineIds = mutableListOf<String>()
-            for (ref in doc.select("spine > itemref")) {
-                val idref = ref.attr("idref") ?: continue
-                if (idref.isNotBlank()) spineIds.add(idref)
-            }
-
-            // ─── Build chapters ───
-            val chapters = mutableListOf<EpubChapter>()
-            for ((idx, idref) in spineIds.withIndex()) {
-                val href = manifest[idref] ?: continue
+            val spineIds = doc.select("spine > itemref").mapNotNull { it.attr("idref").ifBlank { null } }
+            
+            val chapters = spineIds.mapIndexed { idx, idref ->
+                val href = manifest[idref] ?: ""
                 val entryPath = resolveHref(opfDir, href)
-                val html = zip.readEntry(entryPath) ?: continue
-
-                val chapterDir = entryPath.substringBeforeLast("/", "")
-                val processedHtml = replaceImageSrc(html, imageMap, chapterDir)
-                val cleanHtml = cleanChapterHtml(processedHtml)
-                val chapterTitle = extractChapterTitle(cleanHtml, idx)
-
-                if (cleanHtml.isNotBlank()) {
-                    chapters.add(EpubChapter(title = chapterTitle, htmlContent = cleanHtml))
-                }
+                EpubChapter(title = "Глава ${idx + 1}", htmlContent = "", href = entryPath)
             }
 
-            if (chapters.isEmpty()) {
-                Log.w(TAG, "EPUB: No chapters found for book $bookId")
-                return null
-            }
-
-            Log.d(TAG, "EPUB: Parsed ${chapters.size} chapters for book $bookId")
             EpubBook(title = title, author = author, chapters = chapters)
         } catch (e: Exception) {
-            Log.e(TAG, "EPUB: Parse error for book $bookId", e)
+            Log.e(TAG, "EPUB: Quick parse error", e)
             null
         } finally {
             try { zip?.close() } catch (_: Exception) {}
+            if (uri.scheme != "file") file.delete()
         }
     }
 
+    /**
+     * Loads full content of a single chapter.
+     */
+    fun loadChapterContent(context: Context, uri: Uri, href: String, bookId: Int = 0): String {
+        val file = getFileFromUri(context, uri) ?: return ""
+        var zip: ZipFile? = null
+        return try {
+            zip = ZipFile(file)
+            val html = zip.readEntry(href) ?: return ""
+            
+            val chapterDir = href.substringBeforeLast("/", "")
+            val imageMap = preloadImagesForBook(zip, bookId)
+            
+            val processedHtml = replaceImageSrc(html, imageMap, chapterDir)
+            val cleanHtml = cleanChapterHtml(processedHtml)
+            
+            cleanHtml
+        } catch (e: Exception) {
+            Log.e(TAG, "EPUB: Failed to load chapter $href", e)
+            ""
+        } finally {
+            try { zip?.close() } catch (_: Exception) {}
+            if (uri.scheme != "file") file.delete()
+        }
+    }
+
+    private fun preloadImagesForBook(zip: ZipFile, bookId: Int): Map<String, String> {
+        val imageMap = mutableMapOf<String, String>()
+        val allEntries = zip.entries().toList()
+        for (entry in allEntries) {
+            if (!entry.isDirectory && BookImageCache.isImageName(entry.name)) {
+                val fileName = entry.name.substringAfterLast("/")
+                if (context != null && bookId > 0) {
+                    val cachedFile = BookImageCache.getImageFile(context, bookId, fileName)
+                    if (cachedFile.exists()) {
+                        imageMap[entry.name] = "file://${cachedFile.absolutePath}"
+                        imageMap[fileName] = "file://${cachedFile.absolutePath}"
+                        continue
+                    }
+                    // If not in cache, extract it
+                    try {
+                        val bytes = zip.getInputStream(entry).readBytes()
+                        val savedFile = BookImageCache.saveImage(context, bookId, fileName, bytes)
+                        imageMap[entry.name] = "file://${savedFile.absolutePath}"
+                        imageMap[fileName] = "file://${savedFile.absolutePath}"
+                    } catch (_: Exception) {}
+                } else {
+                    // Fallback to data URI if context missing (though it shouldn't be for cached books)
+                    try {
+                        val bytes = zip.getInputStream(entry).readBytes()
+                        val mime = BookImageCache.getMimeType(entry.name)
+                        val b64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
+                        imageMap[entry.name] = "data:$mime;base64,$b64"
+                    } catch (_: Exception) {}
+                }
+            }
+        }
+        return imageMap
+    }
+
     private fun findOpfPath(zip: ZipFile): String? {
-        // Try container.xml first
         val containerEntry = zip.getEntry("META-INF/container.xml")
         if (containerEntry != null) {
             try {
                 val xml = zip.getInputStream(containerEntry).bufferedReader(Charsets.UTF_8).readText()
                 val doc = Jsoup.parse(xml, "", Parser.xmlParser())
-                val rootfile = doc.selectFirst("rootfile")
-                val path = rootfile?.attr("full-path")
+                val path = doc.selectFirst("rootfile")?.attr("full-path")
                 if (!path.isNullOrBlank()) return path.trim()
             } catch (_: Exception) {}
         }
-        // Fallback: find any .opf
-        for (entry in zip.entries().toList()) {
-            if (entry.name.endsWith(".opf", ignoreCase = true)) return entry.name
-        }
-        return null
+        return zip.entries().toList().find { it.name.endsWith(".opf", ignoreCase = true) }?.name
     }
 
     private fun replaceImageSrc(html: String, imageMap: Map<String, String>, chapterDir: String): String {
-        if (imageMap.isEmpty()) return html
-
         val doc = Jsoup.parse(html, "", Parser.xmlParser())
-        var replaced = 0
-
-        for (img in doc.select("img")) {
-            val src = img.attr("src") ?: continue
+        for (img in doc.select("img, image")) {
+            val src = if (img.tagName() == "img") img.attr("src") else (img.attr("xlink:href").ifBlank { img.attr("href") })
             if (src.isBlank() || src.startsWith("data:")) continue
 
             val resolved = resolveImagePath(src, chapterDir)
             val target = imageMap[resolved] ?: imageMap[src] ?: imageMap[src.substringAfterLast("/")]
-
             if (target != null) {
-                img.attr("src", target)
-                replaced++
-            } else {
-                Log.w(TAG, "EPUB: Image not found in map: src='$src' resolved='$resolved'")
+                if (img.tagName() == "img") img.attr("src", target)
+                else {
+                    img.attr("xlink:href", target)
+                    img.attr("href", target)
+                }
             }
-        }
-
-        // Also handle <image> tags (SVG/XHTML)
-        for (img in doc.select("image")) {
-            val href = img.attr("xlink:href") ?: img.attr("href") ?: continue
-            if (href.isBlank() || href.startsWith("data:")) continue
-
-            val resolved = resolveImagePath(href, chapterDir)
-            val target = imageMap[resolved] ?: imageMap[href] ?: imageMap[href.substringAfterLast("/")]
-
-            if (target != null) {
-                img.attr("xlink:href", target)
-                if (img.hasAttr("href")) img.attr("href", target)
-                replaced++
-            }
-        }
-
-        if (replaced > 0) {
-            Log.d(TAG, "EPUB: Replaced $replaced image references in chapter")
         }
         return doc.outerHtml()
     }
 
     private fun resolveImagePath(src: String, chapterDir: String): String {
-        if (src.startsWith("data:") || src.startsWith("file:") || src.startsWith("http")) return src
-
         val decoded = try { URLDecoder.decode(src, "UTF-8") } catch (_: Exception) { src }
-
-        // If already absolute path within ZIP
-        if (!decoded.startsWith(".") && !decoded.startsWith("/")) {
-            // Try as-is first
-            if (chapterDir.isNotBlank()) {
-                val combined = "$chapterDir/$decoded"
-                val normalized = normalizePath(combined)
-                return normalized
-            }
-            return decoded
-        }
-
-        // Handle relative paths (../  ./)
-        if (chapterDir.isNotBlank()) {
-            val combined = "$chapterDir/$decoded"
-            return normalizePath(combined)
-        }
-
-        return normalizePath(decoded)
+        if (chapterDir.isBlank()) return normalizePath(decoded)
+        return normalizePath("$chapterDir/$decoded")
     }
 
     private fun normalizePath(path: String): String {
-        val parts = path.split("/").toMutableList()
         val result = mutableListOf<String>()
-        for (part in parts) {
+        for (part in path.split("/")) {
             when {
-                part.isEmpty() || part == "." -> { /* skip */ }
-                part == ".." -> { if (result.isNotEmpty()) result.removeLast() }
+                part.isEmpty() || part == "." -> {}
+                part == ".." -> if (result.isNotEmpty()) result.removeLast()
                 else -> result.add(part)
             }
         }
         return result.joinToString("/")
-    }
-
-    private fun isImageEntry(name: String): Boolean = BookImageCache.isImageName(name)
-
-    private fun extractChapterTitle(html: String, fallbackIndex: Int): String {
-        return try {
-            val d = Jsoup.parse(html)
-            d.selectFirst("h1, h2, h3, title")?.text()?.trim()?.ifBlank { null }
-                ?: "Глава ${fallbackIndex + 1}"
-        } catch (_: Exception) { "Глава ${fallbackIndex + 1}" }
     }
 
     private fun cleanChapterHtml(html: String): String {

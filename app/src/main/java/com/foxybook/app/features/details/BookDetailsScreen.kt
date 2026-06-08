@@ -1,5 +1,6 @@
 package com.foxybook.app.features.details
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,20 +16,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.remember
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -40,26 +38,33 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.foxybook.app.core.models.BookDetailsUiState
 import com.foxybook.app.core.models.BookFormat
+import com.foxybook.app.core.models.Bookmark
 import com.foxybook.app.core.models.DownloadProgress
 import com.foxybook.app.core.models.DownloadStatus
-import com.foxybook.app.ui.components.CoverWithAuthor
+import com.foxybook.app.navigation.Routes
 import com.foxybook.app.ui.components.CoverViewer
+import com.foxybook.app.ui.components.CoverWithAuthor
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -67,7 +72,8 @@ fun BookDetailsScreen(
     bookId: Int,
     viewModel: BookDetailsViewModel,
     onBackClick: () -> Unit,
-    onReadBook: (String, String) -> Unit
+    onReadBook: (String, String) -> Unit,
+    onGoToSettings: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     var coverViewerUrl by remember { mutableStateOf<String?>(null) }
@@ -204,11 +210,54 @@ fun BookDetailsScreen(
                             Spacer(modifier = Modifier.height(10.dp))
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Bookmarks section
+                        if (state.bookmarks.isNotEmpty()) {
+                            SectionTitle("Закладки")
+                            Spacer(modifier = Modifier.height(12.dp))
+                            state.bookmarks.forEach { bookmark ->
+                                BookmarkItem(
+                                    bookmark = bookmark,
+                                    onDelete = { viewModel.onEvent(BookDetailsEvent.RemoveBookmark(bookmark)) },
+                                    onClick = {
+                                        val downloadedFormat = state.downloads.entries.find { it.value.status == DownloadStatus.DOWNLOADED }
+                                        if (downloadedFormat != null) {
+                                            viewModel.onEvent(BookDetailsEvent.JumpToBookmark(bookmark, downloadedFormat.key.extension))
+                                            onReadBook(downloadedFormat.value.filePath, downloadedFormat.key.extension)
+                                        }
+                                    }
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(32.dp))
                     }
                 }
             }
         }
+    }
+
+    if (state.showFolderErrorDialog) {
+        AlertDialog(
+            onDismissRequest = { viewModel.onEvent(BookDetailsEvent.DismissFolderError) },
+            title = { Text("Доступ к папке потерян") },
+            text = { Text("Выбранная папка для загрузок больше не доступна. Пожалуйста, выберите папку заново в настройках.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.onEvent(BookDetailsEvent.DismissFolderError)
+                    onGoToSettings()
+                }) {
+                    Text("В настройки")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.onEvent(BookDetailsEvent.DismissFolderError) }) {
+                    Text("Отмена")
+                }
+            }
+        )
     }
 
     // Full-screen cover viewer overlay
@@ -223,6 +272,64 @@ fun BookDetailsScreen(
 @Composable
 private fun SectionTitle(title: String) {
     Text(text = title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+}
+
+@Composable
+private fun BookmarkItem(
+    bookmark: Bookmark,
+    onDelete: () -> Unit,
+    onClick: () -> Unit
+) {
+    val dateFormat = remember { SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
+        ),
+        shape = RoundedCornerShape(12.dp),
+        onClick = onClick
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Default.Bookmark,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Глава ${bookmark.chapterIndex + 1}",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = dateFormat.format(Date(bookmark.createdAt)),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Удалить",
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = bookmark.shortTextPreview,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
 }
 
 @Composable

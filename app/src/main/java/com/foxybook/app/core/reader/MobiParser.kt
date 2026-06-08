@@ -1,10 +1,12 @@
 package com.foxybook.app.core.reader
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import com.foxybook.app.core.models.MobiBook
 import com.foxybook.app.core.models.MobiChapter
 import com.foxybook.app.core.utils.BookImageCache
+import com.foxybook.app.core.utils.UriUtils
 import java.io.File
 import java.io.RandomAccessFile
 import java.nio.charset.Charset
@@ -17,7 +19,20 @@ class MobiParser(private val context: Context? = null) {
 
     private val cp1252: Charset = Charset.forName("windows-1252")
 
-    fun parse(file: File, bookId: Int = 0): MobiBook? {
+    private fun getFileFromUri(context: Context, uri: Uri): File? {
+        Log.d(TAG, "getFileFromUri: uri=$uri, scheme=${uri.scheme}")
+        if (uri.scheme == "file") return uri.path?.let { File(it) }
+        val temp = UriUtils.copyUriToTempFile(context, uri, "temp_mobi_${System.currentTimeMillis()}.mobi")
+        if (temp == null) {
+            Log.e(TAG, "getFileFromUri: Failed to copy URI to temp file")
+        } else {
+            Log.d(TAG, "getFileFromUri: Successfully copied to ${temp.absolutePath}, size=${temp.length()}")
+        }
+        return temp
+    }
+
+    fun parse(context: Context, uri: Uri, bookId: Int = 0): MobiBook? {
+        val file = getFileFromUri(context, uri) ?: return null
         return try {
             val raf = RandomAccessFile(file, "r")
             val result = parseMobi(raf, bookId)
@@ -26,6 +41,8 @@ class MobiParser(private val context: Context? = null) {
         } catch (e: Exception) {
             Log.e(TAG, "MOBI: Parse error for book $bookId", e)
             null
+        } finally {
+            if (uri.scheme != "file") file.delete()
         }
     }
 
