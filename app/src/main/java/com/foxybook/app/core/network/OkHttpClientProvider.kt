@@ -81,9 +81,9 @@ class OkHttpClientProvider(context: Context) {
     fun createDownloadClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .connectionPool(connectionPool)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(120, TimeUnit.SECONDS) // Longer timeout for downloads
+            .writeTimeout(60, TimeUnit.SECONDS)
             .addInterceptor { chain ->
                 val request = chain.request().newBuilder()
                     .header("User-Agent", USER_AGENT)

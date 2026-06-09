@@ -12,6 +12,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.TextNode
 import org.jsoup.parser.Parser
+import java.io.File
 import java.io.InputStream
 import java.util.zip.ZipInputStream
 
@@ -190,10 +191,20 @@ class Fb2Parser(private val context: Context? = null) {
     private fun readFb2Xml(context: Context, uri: Uri): String? {
         Log.d(TAG, "readFb2Xml: uri=$uri")
         return try {
-            val inputStream = context.contentResolver.openInputStream(uri) ?: run {
+            val getInputStream = {
+                if (uri.scheme == "file") {
+                    val file = File(uri.path!!)
+                    file.inputStream()
+                } else {
+                    context.contentResolver.openInputStream(uri)
+                }
+            }
+
+            val inputStream = getInputStream() ?: run {
                 Log.e(TAG, "readFb2Xml: Failed to open InputStream for $uri")
                 return null
             }
+
             Log.d(TAG, "readFb2Xml: InputStream opened successfully")
             val buf = ByteArray(4)
             inputStream.read(buf)
@@ -203,7 +214,7 @@ class Fb2Parser(private val context: Context? = null) {
             Log.d(TAG, "readFb2Xml: isZip=$isZip")
             
             if (isZip) {
-                val zis = ZipInputStream(context.contentResolver.openInputStream(uri))
+                val zis = ZipInputStream(getInputStream()!!)
                 zis.use { z ->
                     var entry = z.nextEntry
                     while (entry != null) {
@@ -216,7 +227,7 @@ class Fb2Parser(private val context: Context? = null) {
                 }
             }
             
-            context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { 
+            getInputStream()?.bufferedReader()?.use {
                 val text = it.readText()
                 Log.d(TAG, "readFb2Xml: Read ${text.length} chars from XML")
                 text

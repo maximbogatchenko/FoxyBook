@@ -2,6 +2,7 @@ package com.foxybook.app.data.repository
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.os.Build
@@ -68,7 +69,12 @@ class BookRepositoryImpl(
 
             val fileName = "$id.${format.extension}"
 
-            val resultPath = saveToDefaultDownload(format, fileName, responseBody, onProgress)
+            val customDirUri = dataStoreManager.downloadDirectory.first()
+            val resultPath = if (customDirUri != null) {
+                saveToCustomDownload(customDirUri, format, fileName, responseBody, onProgress)
+            } else {
+                saveToDefaultDownload(format, fileName, responseBody, onProgress)
+            }
             
             Log.d("BookRepository", "downloadBook: SUCCESS, path=$resultPath")
             Result.success(resultPath)
@@ -76,6 +82,58 @@ class BookRepositoryImpl(
             Log.e("BookRepository", "downloadBook: ERROR", e)
             Result.failure(e)
         }
+    }
+
+    private fun saveToCustomDownload(
+        uriString: String,
+        format: BookFormat,
+        fileName: String,
+        body: ResponseBody,
+        onProgress: (Float) -> Unit
+    ): String {
+        val rootUri = Uri.parse(uriString)
+        val rootDir = DocumentFile.fromTreeUri(context, rootUri)
+            ?: throw Exception("Failed to access custom directory")
+
+        // Создаем папку FoxyBook
+        val foxyDir = rootDir.findFile("FoxyBook")?.takeIf { it.isDirectory } 
+            ?: rootDir.createDirectory("FoxyBook")
+        val finalDir = foxyDir ?: throw Exception("Failed to create FoxyBook directory")
+
+        // Создаем подпапку для формата (как в дефолтном поведении)
+        val formatDir = finalDir.findFile(format.extension)?.takeIf { it.isDirectory }
+            ?: finalDir.createDirectory(format.extension)
+        val targetDir = formatDir ?: finalDir
+
+        // Очищаем имя от расширения для createFile, так как SAF добавит его сам на основе MIME-типа
+        // или используем полное имя, но проверяем результат
+        val displayName = if (fileName.endsWith(".${format.extension}")) {
+            fileName.substringBeforeLast(".")
+        } else {
+            fileName
+        }
+
+        val existingFile = targetDir.findFile(fileName)
+        existingFile?.delete()
+
+        val file = targetDir.createFile(format.mimeType, displayName)
+            ?: throw Exception("Failed to create file in custom directory")
+
+        // Запрашиваем постоянные права на сам файл (дополнительно к правам на дерево)
+        try {
+            context.contentResolver.takePersistableUriPermission(
+                file.uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+        } catch (e: Exception) {
+            Log.w("BookRepository", "Failed to take persistable permission for file: ${file.uri}", e)
+        }
+
+        context.contentResolver.openOutputStream(file.uri)?.use { output ->
+            writeBodyToStream(body, output, onProgress)
+        } ?: throw Exception("Failed to open output stream for custom directory")
+
+        return file.uri.toString()
     }
 
     private fun saveToDefaultDownload(
@@ -120,7 +178,7 @@ class BookRepositoryImpl(
     private fun writeBodyToStream(body: ResponseBody, output: OutputStream, onProgress: (Float) -> Unit) {
         val contentLength = body.contentLength().toFloat()
         var bytesDownloaded = 0L
-        val buffer = ByteArray(8192)
+        val buffer = ByteArray(16384) // Larger buffer
         
         body.byteStream().use { input ->
             var bytesRead: Int
@@ -129,6 +187,12 @@ class BookRepositoryImpl(
                 bytesDownloaded += bytesRead
                 if (contentLength > 0f) {
                     onProgress(bytesDownloaded / contentLength)
+                } else {
+                    // If no content length, simulate progress or just signal it's alive
+                    // Every 64KB we can update a "fake" progress or just keep it moving
+                    if (bytesDownloaded % 65536 == 0L) {
+                        onProgress(-1f) // Signal indeterminate progress
+                    }
                 }
             }
             output.flush()

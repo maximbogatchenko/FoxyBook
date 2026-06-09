@@ -34,6 +34,7 @@ class DataStoreManager(private val context: Context) {
         private val BOOKMARKS_KEY = stringPreferencesKey("bookmarks")
         private val THEME_KEY = stringPreferencesKey("theme_mode")
         private val DEFAULT_FORMAT_KEY = stringPreferencesKey("default_format")
+        private val DOWNLOAD_DIR_KEY = stringPreferencesKey("download_directory")
         private val SEARCH_HISTORY_KEY = stringPreferencesKey("search_history")
     }
 
@@ -206,6 +207,20 @@ class DataStoreManager(private val context: Context) {
 
     suspend fun setDefaultFormat(format: String) {
         context.dataStore.edit { prefs -> prefs[DEFAULT_FORMAT_KEY] = format }
+    }
+
+    val downloadDirectory: Flow<String?> = context.dataStore.data.map { prefs ->
+        prefs[DOWNLOAD_DIR_KEY]
+    }
+
+    suspend fun setDownloadDirectory(uri: String?) {
+        context.dataStore.edit { prefs ->
+            if (uri == null) {
+                prefs.remove(DOWNLOAD_DIR_KEY)
+            } else {
+                prefs[DOWNLOAD_DIR_KEY] = uri
+            }
+        }
     }
 
     // ─── Search History ───

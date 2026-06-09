@@ -78,10 +78,6 @@ fun BookDetailsScreen(
     val state by viewModel.state.collectAsState()
     var coverViewerUrl by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(bookId) {
-        viewModel.onEvent(BookDetailsEvent.LoadBook(bookId))
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -378,7 +374,9 @@ private fun DownloadButton(
                     Text(
                         text = when (progress.status) {
                             DownloadStatus.IDLE -> "Готово к скачиванию"
-                            DownloadStatus.DOWNLOADING -> "Скачивание… ${progress.percent}%"
+                            DownloadStatus.DOWNLOADING -> {
+                                if (progress.percent < 0) "Скачивание…" else "Скачивание… ${progress.percent}%"
+                            }
                             DownloadStatus.DOWNLOADED -> "Скачано"
                             DownloadStatus.ERROR -> progress.error ?: "Ошибка"
                         },
@@ -427,12 +425,20 @@ private fun DownloadButton(
 
             if (progress.status == DownloadStatus.DOWNLOADING) {
                 Spacer(modifier = Modifier.height(10.dp))
-                LinearProgressIndicator(
-                    progress = { progress.percent / 100f },
-                    modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                )
+                if (progress.percent >= 0) {
+                    LinearProgressIndicator(
+                        progress = { progress.percent / 100f },
+                        modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                } else {
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                }
             }
         }
     }

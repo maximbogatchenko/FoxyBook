@@ -1,73 +1,66 @@
 package com.foxybook.app.core.utils
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
-import com.foxybook.app.core.models.BookFormat
+import coil3.ImageLoader
+import coil3.request.CachePolicy
+import coil3.request.crossfade
 import java.io.File
-import java.security.MessageDigest
+import java.io.FileOutputStream
 
 object BookImageCache {
 
-    private const val TAG = "BOOK_IMAGES"
-    private const val CACHE_DIR = "book_cache"
+    private const val TAG = "BOOK_IMAGE_CACHE"
+
+    fun getImageLoader(context: Context): ImageLoader {
+        return ImageLoader.Builder(context)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .crossfade(true)
+            .build()
+    }
+
+    fun isImageName(name: String): Boolean {
+        val n = name.lowercase()
+        return n.endsWith(".jpg") || n.endsWith(".jpeg") || n.endsWith(".png") ||
+                n.endsWith(".gif") || n.endsWith(".webp") || n.endsWith(".bmp")
+    }
+
+    fun getMimeType(name: String): String {
+        val n = name.lowercase()
+        return when {
+            n.endsWith(".png") -> "image/png"
+            n.endsWith(".gif") -> "image/gif"
+            n.endsWith(".webp") -> "image/webp"
+            n.endsWith(".bmp") -> "image/bmp"
+            else -> "image/jpeg"
+        }
+    }
 
     fun getCacheDir(context: Context, bookId: Int): File {
-        val dir = File(context.getExternalFilesDir(null), "$CACHE_DIR/$bookId")
+        val dir = File(context.cacheDir, "book_images/$bookId")
         if (!dir.exists()) dir.mkdirs()
         return dir
     }
 
-    fun isCached(context: Context, bookId: Int): Boolean {
-        val dir = getCacheDir(context, bookId)
-        return dir.exists() && dir.listFiles()?.isNotEmpty() == true
+    fun getImageFile(context: Context, bookId: Int, fileName: String): File {
+        return File(getCacheDir(context, bookId), fileName)
+    }
+
+    fun saveImage(context: Context, bookId: Int, fileName: String, bytes: ByteArray): File {
+        val file = getImageFile(context, bookId, fileName)
+        try {
+            FileOutputStream(file).use { it.write(bytes) }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to save image $fileName for book $bookId", e)
+        }
+        return file
     }
 
     fun clearCache(context: Context, bookId: Int) {
         val dir = getCacheDir(context, bookId)
         if (dir.exists()) dir.deleteRecursively()
-    }
-
-    fun saveImage(context: Context, bookId: Int, name: String, data: ByteArray): File {
-        val safeName = sanitizeFileName(name)
-        val file = File(getCacheDir(context, bookId), safeName)
-        file.writeBytes(data)
-        Log.d(TAG, "Saved image: $safeName (${data.size} bytes) for book $bookId")
-        return file
-    }
-
-    fun getImageFile(context: Context, bookId: Int, name: String): File {
-        return File(getCacheDir(context, bookId), sanitizeFileName(name))
-    }
-
-    fun getBaseFileUrl(context: Context, bookId: Int): String {
-        return getCacheDir(context, bookId).toURI().toString()
-    }
-
-    private fun sanitizeFileName(name: String): String {
-        return name.replace("/", "_")
-            .replace("\\", "_")
-            .replace(":", "_")
-            .replace("?", "_")
-            .replace("*", "_")
-            .replace("<", "_")
-            .replace(">", "_")
-            .replace("|", "_")
-            .replace("\"", "_")
-    }
-
-    fun getMimeType(name: String): String = when {
-        name.endsWith(".jpg", true) || name.endsWith(".jpeg", true) -> "image/jpeg"
-        name.endsWith(".png", true) -> "image/png"
-        name.endsWith(".gif", true) -> "image/gif"
-        name.endsWith(".webp", true) -> "image/webp"
-        name.endsWith(".svg", true) -> "image/svg+xml"
-        else -> "image/jpeg"
-    }
-
-    fun isImageName(name: String): Boolean {
-        val lower = name.lowercase()
-        return lower.endsWith(".jpg") || lower.endsWith(".jpeg") ||
-               lower.endsWith(".png") || lower.endsWith(".gif") ||
-               lower.endsWith(".webp") || lower.endsWith(".svg")
     }
 }

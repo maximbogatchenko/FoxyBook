@@ -3,6 +3,7 @@ package com.foxybook.app.features.details
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxybook.app.core.datastore.DataStoreManager
+import com.foxybook.app.core.models.Book
 import com.foxybook.app.core.models.BookFormat
 import com.foxybook.app.core.models.BookInfo
 import com.foxybook.app.core.models.BookDetailsUiState
@@ -26,7 +27,7 @@ data class BookDetailsState(
 )
 
 sealed interface BookDetailsEvent {
-    data class LoadBook(val id: Int) : BookDetailsEvent
+    data class LoadBook(val id: Int, val initialData: Book? = null) : BookDetailsEvent
     data class Download(val format: BookFormat) : BookDetailsEvent
     data class RemoveBookmark(val bookmark: Bookmark) : BookDetailsEvent
     data class JumpToBookmark(val bookmark: Bookmark, val format: String) : BookDetailsEvent
@@ -44,7 +45,7 @@ class BookDetailsViewModel(
 
     fun onEvent(event: BookDetailsEvent) {
         when (event) {
-            is BookDetailsEvent.LoadBook -> loadBookInfo(event.id)
+            is BookDetailsEvent.LoadBook -> loadBookInfo(event.id, event.initialData)
             is BookDetailsEvent.Download -> downloadBook(event.format)
             is BookDetailsEvent.RemoveBookmark -> removeBookmark(event.bookmark)
             is BookDetailsEvent.JumpToBookmark -> jumpToBookmark(event.bookmark, event.format)
@@ -52,7 +53,27 @@ class BookDetailsViewModel(
         }
     }
 
-    private fun loadBookInfo(id: Int) {
+    private fun loadBookInfo(id: Int, initialData: Book? = null) {
+        // If we have initial data, show it immediately
+        if (initialData != null) {
+            _state.update { 
+                it.copy(
+                    uiState = BookDetailsUiState.Success(
+                        BookInfo(
+                            id = initialData.id,
+                            title = initialData.title,
+                            author = initialData.author,
+                            description = "Загрузка описания...",
+                            genres = emptyList(),
+                            coverUrl = initialData.coverUrl
+                        )
+                    )
+                )
+            }
+        } else {
+            _state.update { it.copy(uiState = BookDetailsUiState.Loading) }
+        }
+
         viewModelScope.launch {
             dataStoreManager.bookmarksForBook(id).collect { list ->
                 _state.update { it.copy(bookmarks = list) }
@@ -79,16 +100,22 @@ class BookDetailsViewModel(
         }
 
         viewModelScope.launch {
-            _state.update { it.copy(uiState = BookDetailsUiState.Loading) }
+            // Only update to loading if we don't have success state from initial data
+            if (_state.value.uiState !is BookDetailsUiState.Success) {
+                _state.update { it.copy(uiState = BookDetailsUiState.Loading) }
+            }
+            
             try {
                 val info = getBookInfoUseCase(id)
                 if (info != null) {
                     _state.update { it.copy(uiState = BookDetailsUiState.Success(info)) }
-                } else {
+                } else if (_state.value.uiState !is BookDetailsUiState.Success) {
                     _state.update { it.copy(uiState = BookDetailsUiState.Error("Книга не найдена")) }
                 }
             } catch (e: Exception) {
-                _state.update { it.copy(uiState = BookDetailsUiState.Error(e.message ?: "Ошибка")) }
+                if (_state.value.uiState !is BookDetailsUiState.Success) {
+                    _state.update { it.copy(uiState = BookDetailsUiState.Error(e.message ?: "Ошибка")) }
+                }
             }
         }
     }
@@ -108,7 +135,7 @@ class BookDetailsViewModel(
                 ) { progress ->
                     setProgress(format, DownloadProgress(
                         status = DownloadStatus.DOWNLOADING,
-                        percent = (progress * 100).toInt().coerceIn(0, 100)
+                        percent = if (progress < 0f) -1 else (progress * 100).toInt().coerceIn(0, 100)
                     ))
                 }
 

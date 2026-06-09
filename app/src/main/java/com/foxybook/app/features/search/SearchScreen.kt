@@ -62,7 +62,7 @@ import com.foxybook.app.ui.components.CoverWithAuthor
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
-    onBookClick: (Int) -> Unit,
+    onBookClick: (Book) -> Unit,
     onSeriesClick: (String, String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -282,7 +282,7 @@ private fun ErrorContent(message: String) {
 private fun SearchResultsList(
     books: List<Book>,
     series: List<Series>,
-    onBookClick: (Int) -> Unit,
+    onBookClick: (Book) -> Unit,
     onSeriesClick: (String, String) -> Unit
 ) {
     LazyColumn(
@@ -312,7 +312,7 @@ private fun SearchResultsList(
                 }
             }
             items(books, key = { "b_${it.id}" }) { book ->
-                BookCard(book = book, onClick = { onBookClick(book.id) })
+                BookCard(book = book, onClick = { onBookClick(book) })
             }
         }
     }

@@ -7,11 +7,13 @@ import com.foxybook.app.core.datastore.DataStoreManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class SettingsState(
     val themeMode: String = "system",
-    val defaultFormat: String = "epub"
+    val defaultFormat: String = "epub",
+    val downloadDirectory: String? = null
 )
 
 class SettingsViewModel(
@@ -24,12 +26,17 @@ class SettingsViewModel(
     init {
         viewModelScope.launch {
             dataStoreManager.themeMode.collect { mode ->
-                _state.value = _state.value.copy(themeMode = mode)
+                _state.update { it.copy(themeMode = mode) }
             }
         }
         viewModelScope.launch {
             dataStoreManager.defaultFormat.collect { format ->
-                _state.value = _state.value.copy(defaultFormat = format)
+                _state.update { it.copy(defaultFormat = format) }
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.downloadDirectory.collect { dir ->
+                _state.update { it.copy(downloadDirectory = dir) }
             }
         }
     }
@@ -43,6 +50,12 @@ class SettingsViewModel(
     fun setDefaultFormat(format: String) {
         viewModelScope.launch {
             dataStoreManager.setDefaultFormat(format)
+        }
+    }
+
+    fun setDownloadDirectory(uri: String?) {
+        viewModelScope.launch {
+            dataStoreManager.setDownloadDirectory(uri)
         }
     }
 }

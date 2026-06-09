@@ -1,8 +1,10 @@
 package com.foxybook.app.features.library
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import java.io.File
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxybook.app.core.datastore.DataStoreManager
@@ -108,22 +110,60 @@ class LibraryViewModel(
     fun importBook(uri: Uri, context: Context) {
         viewModelScope.launch {
             try {
-                val path = uri.toString()
-                Log.d("LibraryVM", "Importing book from URI: $path")
-                val parsed = bookParser.parse(path)
+                val fileName = com.foxybook.app.core.utils.UriUtils.getFileName(context, uri) 
+                    ?: "book_${System.currentTimeMillis()}"
+                
+                var extension = fileName.substringAfterLast(".", "").lowercase()
+                
+                // Fallback to MIME type if extension is missing or unknown
+                if (extension.isEmpty() || BookFormat.fromExtension(extension) == null) {
+                    val mimeType = context.contentResolver.getType(uri)
+                    extension = when {
+                        mimeType?.contains("epub") == true -> "epub"
+                        mimeType?.contains("fictionbook") == true || mimeType?.contains("fb2") == true -> "fb2"
+                        mimeType?.contains("mobipocket") == true -> "mobi"
+                        mimeType?.contains("text/plain") == true -> "txt"
+                        else -> extension
+                    }
+                }
+
+                if (BookFormat.fromExtension(extension) == null) {
+                    Log.e("LibraryVM", "Unsupported format for file: $fileName (ext: $extension)")
+                    return@launch
+                }
+
+                // Copy to internal storage to ensure permanent access
+                val internalDir = File(context.filesDir, "imported_books")
+                if (!internalDir.exists()) internalDir.mkdirs()
+                
+                // Ensure the file has an extension
+                val finalFileName = if (fileName.contains(".")) fileName else "$fileName.$extension"
+                val destFile = File(internalDir, "${System.currentTimeMillis()}_$finalFileName")
+                
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    destFile.outputStream().use { output ->
+                        input.copyTo(output)
+                    }
+                }
+                
+                val internalPath = destFile.absolutePath
+                Log.d("LibraryVM", "Book copied to internal storage: $internalPath")
+
+                val parsed = bookParser.parse(internalPath, extension)
                 if (parsed != null) {
                     val book = LibraryBook(
                         id = (System.currentTimeMillis() % Int.MAX_VALUE).toInt(),
                         title = parsed.title,
                         author = parsed.author,
                         format = parsed.format,
-                        filePath = path,
+                        filePath = internalPath,
                         downloadDate = System.currentTimeMillis()
                     )
                     dataStoreManager.addLibraryBook(book)
                     Log.d("LibraryVM", "Book imported successfully: ${parsed.title}")
                 } else {
-                    Log.e("LibraryVM", "Failed to parse imported book")
+                    Log.e("LibraryVM", "Failed to parse imported book from $internalPath")
+                    if (destFile.exists()) destFile.delete()
                 }
             } catch (e: Exception) {
                 Log.e("LibraryVM", "Error importing book", e)

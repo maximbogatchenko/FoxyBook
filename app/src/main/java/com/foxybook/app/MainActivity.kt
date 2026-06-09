@@ -17,6 +17,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -33,7 +34,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.foxybook.app.core.datastore.DataStoreManager
 import com.foxybook.app.core.reader.BookParser
+import com.foxybook.app.data.api.FlibustaApi
 import com.foxybook.app.data.api.FlibustaApiImpl
+import com.foxybook.app.data.api.FlibustaApiOpdsImpl
 import com.foxybook.app.data.repository.BookRepositoryImpl
 import com.foxybook.app.domain.usecases.DownloadBookUseCase
 import com.foxybook.app.domain.usecases.GetBookInfoUseCase
@@ -43,6 +46,7 @@ import com.foxybook.app.domain.usecases.RemoveBookUseCase
 import com.foxybook.app.domain.usecases.SearchBooksUseCase
 import com.foxybook.app.domain.usecases.SearchByAuthorUseCase
 import com.foxybook.app.domain.usecases.SearchBySeriesUseCase
+import com.foxybook.app.features.details.BookDetailsEvent
 import com.foxybook.app.features.details.BookDetailsScreen
 import com.foxybook.app.features.details.BookDetailsViewModel
 import com.foxybook.app.features.library.LibraryScreen
@@ -78,7 +82,7 @@ fun MainApp() {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    val api = remember { FlibustaApiImpl(context) }
+    val api: FlibustaApi = remember { FlibustaApiImpl(context) }
     val dataStoreManager = remember { DataStoreManager(context) }
     val repository = remember { BookRepositoryImpl(api, context, dataStoreManager) }
     val bookParser = remember { BookParser(context) }
@@ -119,7 +123,9 @@ fun MainApp() {
                 })
                 SearchScreen(
                     viewModel = vm,
-                    onBookClick = { bookId -> navController.navigate(Routes.bookDetails(bookId)) },
+                    onBookClick = { book -> 
+                        navController.navigate(Routes.bookDetails(book.id, book.title, book.author, book.coverUrl)) 
+                    },
                     onSeriesClick = { seriesId, seriesTitle ->
                         navController.navigate(Routes.seriesDetails(seriesId, seriesTitle))
                     }
@@ -150,15 +156,40 @@ fun MainApp() {
 
             composable(
                 route = Routes.BOOK_DETAILS,
-                arguments = listOf(navArgument("bookId") { type = NavType.IntType })
+                arguments = listOf(
+                    navArgument("bookId") { type = NavType.IntType },
+                    navArgument("title") { type = NavType.StringType; nullable = true; defaultValue = null },
+                    navArgument("author") { type = NavType.StringType; nullable = true; defaultValue = null },
+                    navArgument("cover") { type = NavType.StringType; nullable = true; defaultValue = null }
+                )
             ) { backStackEntry ->
                 val bookId = backStackEntry.arguments?.getInt("bookId") ?: return@composable
+                val title = backStackEntry.arguments?.getString("title")
+                val author = backStackEntry.arguments?.getString("author")
+                val cover = backStackEntry.arguments?.getString("cover")
+
+                val initialBook = if (title != null && author != null) {
+                    com.foxybook.app.core.models.Book(
+                        id = bookId,
+                        title = title,
+                        author = author,
+                        link = "/b/$bookId",
+                        sendLink = "/send/$bookId",
+                        coverUrl = cover ?: ""
+                    )
+                } else null
+
                 val vm: BookDetailsViewModel = viewModel(factory = object : ViewModelProvider.Factory {
                     @Suppress("UNCHECKED_CAST")
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
                         return BookDetailsViewModel(getBookInfoUseCase, downloadBookUseCase, dataStoreManager) as T
                     }
                 })
+
+                LaunchedEffect(bookId) {
+                    vm.onEvent(BookDetailsEvent.LoadBook(bookId, initialBook))
+                }
+
                 BookDetailsScreen(
                     bookId = bookId,
                     viewModel = vm,
@@ -177,10 +208,10 @@ fun MainApp() {
                     navArgument("seriesTitle") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
-                val encodedId = backStackEntry.arguments?.getString("seriesId") ?: return@composable
-                val encodedTitle = backStackEntry.arguments?.getString("seriesTitle") ?: return@composable
-                val seriesId = URLDecoder.decode(encodedId, "UTF-8")
-                val seriesTitle = URLDecoder.decode(encodedTitle, "UTF-8")
+                val seriesId = backStackEntry.arguments?.getString("seriesId") ?: return@composable
+                val rawTitle = backStackEntry.arguments?.getString("seriesTitle") ?: return@composable
+                val seriesTitle = try { URLDecoder.decode(rawTitle, "UTF-8") } catch (_: Exception) { rawTitle.replace("+", " ") }
+
                 val vm: SeriesDetailsViewModel = viewModel(factory = object : ViewModelProvider.Factory {
                     @Suppress("UNCHECKED_CAST")
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -192,7 +223,9 @@ fun MainApp() {
                     seriesTitle = seriesTitle,
                     viewModel = vm,
                     onBackClick = { navController.popBackStack() },
-                    onBookClick = { bookId -> navController.navigate(Routes.bookDetails(bookId)) }
+                    onBookClick = { book -> 
+                        navController.navigate(Routes.bookDetails(book.id, book.title, book.author, book.coverUrl)) 
+                    }
                 )
             }
 
@@ -206,8 +239,7 @@ fun MainApp() {
             ) { backStackEntry ->
                 val bookId = backStackEntry.arguments?.getInt("bookId") ?: return@composable
                 val bookFormat = backStackEntry.arguments?.getString("bookFormat") ?: return@composable
-                val encodedPath = backStackEntry.arguments?.getString("filePath") ?: return@composable
-                val filePath = URLDecoder.decode(encodedPath, "UTF-8")
+                val filePath = backStackEntry.arguments?.getString("filePath") ?: return@composable
                 val vm: ReaderViewModel = viewModel(factory = object : ViewModelProvider.Factory {
                     @Suppress("UNCHECKED_CAST")
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {

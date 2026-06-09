@@ -14,7 +14,15 @@ class TxtParser(private val context: Context) {
     fun parse(uri: Uri): ParsedBook? {
         Log.d(TAG, "parse: uri=$uri")
         return try {
-            val text = context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+            val getInputStream = {
+                if (uri.scheme == "file") {
+                    java.io.File(uri.path!!).inputStream()
+                } else {
+                    context.contentResolver.openInputStream(uri)
+                }
+            }
+
+            val text = getInputStream()?.bufferedReader()?.use { it.readText() }
                 ?: return null
             
             val fileName = com.foxybook.app.core.utils.UriUtils.getFileName(context, uri) ?: "Document.txt"

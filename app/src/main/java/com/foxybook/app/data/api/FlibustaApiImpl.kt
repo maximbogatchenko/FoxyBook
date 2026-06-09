@@ -9,6 +9,8 @@ import com.foxybook.app.core.models.BookInfo
 import com.foxybook.app.core.models.Series
 import com.foxybook.app.core.network.OkHttpClientProvider
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 import org.jsoup.Jsoup
@@ -106,6 +108,7 @@ class FlibustaApiImpl(context: Context) : FlibustaApi {
 
                 val authorLinks = main.select("a[href^=/a/]")
                     .filter { isRealAuthorLink(it) }
+                    .take(3) // Limit number of authors to crawl to keep it fast
 
                 if (authorLinks.isEmpty()) {
                     Log.w(TAG, "searchByAuthor | no authors found for '$author'")
@@ -113,40 +116,43 @@ class FlibustaApiImpl(context: Context) : FlibustaApi {
                 }
 
                 val results = mutableListOf<Book>()
-
-                for (authorLink in authorLinks) {
-                    if (results.size >= limit) break
-                    val authorHref = authorLink.attr("href")
-                    val authorName = authorLink.text().trim()
-
-                    val authorUrl = "$baseUrl$authorHref"
-                    Log.d(TAG, "searchByAuthor | opening $authorUrl")
-                    val authorHtml = fetchHtml(authorUrl) ?: continue
-                    val authorDoc = Jsoup.parse(authorHtml, baseUrl)
-                    val authorMain = authorDoc.selectFirst("#main") ?: authorDoc
-
-                    val bookLinks = authorMain.select("a[href^=/b/]")
-                    for (bookLink in bookLinks) {
-                        if (results.size >= limit) break
-                        val href = bookLink.attr("href")
-                        val match = BOOK_LINK_REGEX.find(href) ?: continue
-                        val id = match.groupValues[1].toIntOrNull() ?: continue
-                        val title = bookLink.text().trim()
-                        if (title.isBlank()) continue
-                        if (results.any { it.id == id }) continue
-
-                        results.add(
-                            Book(
-                                id = id,
-                                title = title,
-                                author = authorName,
-                                link = "/b/$id",
-                                sendLink = "/send/$id",
-                                coverUrl = "$baseUrl/b/$id/cover"
-                            )
-                        )
+                
+                // Fetch author pages in parallel
+                val authorBooks = authorLinks.map { authorLink ->
+                    async {
+                        val authorHref = authorLink.attr("href")
+                        val authorName = authorLink.text().trim()
+                        val authorUrl = "$baseUrl$authorHref"
+                        
+                        try {
+                            val authorHtml = fetchHtml(authorUrl) ?: return@async emptyList<Book>()
+                            val authorDoc = Jsoup.parse(authorHtml, baseUrl)
+                            val authorMain = authorDoc.selectFirst("#main") ?: authorDoc
+                            
+                            authorMain.select("a[href^=/b/]").mapNotNull { bookLink ->
+                                val href = bookLink.attr("href")
+                                val match = BOOK_LINK_REGEX.find(href) ?: return@mapNotNull null
+                                val id = match.groupValues[1].toIntOrNull() ?: return@mapNotNull null
+                                val title = bookLink.text().trim()
+                                if (title.isBlank()) return@mapNotNull null
+                                
+                                Book(
+                                    id = id,
+                                    title = title,
+                                    author = authorName,
+                                    link = "/b/$id",
+                                    sendLink = "/send/$id",
+                                    coverUrl = "$baseUrl/b/$id/cover"
+                                )
+                            }
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Error fetching author page: $authorUrl", e)
+                            emptyList<Book>()
+                        }
                     }
-                }
+                }.awaitAll().flatten()
+
+                results.addAll(authorBooks.distinctBy { it.id }.take(limit))
 
                 Log.d(TAG, "searchByAuthor | found=${results.size}")
                 results
@@ -234,125 +240,65 @@ class FlibustaApiImpl(context: Context) : FlibustaApi {
                 val url = "$baseUrl/sequence/$seriesId"
                 Log.d(TAG, "SERIES_OPEN | url=$url | seriesId=$seriesId")
 
-                val html = fetchHtml(url)
-                if (html == null) {
-                    Log.e(TAG, "SERIES_OPEN | fetchHtml returned NULL for url=$url")
-                    return@withContext emptyList()
-                }
-                Log.d(TAG, "SERIES_OPEN | html length=${html.length}")
-
+                val html = fetchHtml(url) ?: return@withContext emptyList()
                 val doc = Jsoup.parse(html, baseUrl)
                 val main = doc.selectFirst("#main") ?: doc
 
+                // Extract global author for the series (often at the top)
+                val globalAuthorEl = main.select("a[href^=/a/]").firstOrNull { isRealAuthorLink(it) }
+                val globalAuthor = globalAuthorEl?.text()?.trim() ?: "Unknown Author"
+
                 // ── Strategy 1: Parse <li> items ──
                 val liItems = main.select("li")
-                Log.d(TAG, "SERIES_OPEN | li items found=${liItems.size}")
-
                 val results = mutableListOf<Book>()
                 val seenIds = mutableSetOf<Int>()
-                var fallbackOrder = 0
 
-                for (li in liItems) {
-                    if (results.size >= limit) break
+                if (liItems.isNotEmpty()) {
+                    liItems.forEachIndexed { index, li ->
+                        if (results.size >= limit) return@forEachIndexed
+                        val bookLink = li.selectFirst("a[href^=/b/]") ?: return@forEachIndexed
+                        val id = Regex("/b/(\\d+)").find(bookLink.attr("href"))?.groupValues?.get(1)?.toIntOrNull() ?: return@forEachIndexed
+                        if (id in seenIds) return@forEachIndexed
+                        seenIds.add(id)
 
-                    val bookLink = li.selectFirst("a[href^=/b/]") ?: continue
-                    val href = bookLink.attr("href")
-                    // Lenient match: /b/12345 or /b/12345/anything
-                    val idMatch = Regex("/b/(\\d+)").find(href)
-                    val id = idMatch?.groupValues?.get(1)?.toIntOrNull()
-                    if (id == null) {
-                        Log.w(TAG, "SERIES_OPEN | skipped li: href='$href' did not match /b/N")
-                        continue
-                    }
+                        // In li items, author is often listed after the title if it's different from the series author
+                        val bookAuthor = extractAuthorFromSeriesPage(bookLink).takeIf { it != "Unknown Author" } ?: globalAuthor
+                        val seqNumber = extractSequenceNumber(li).let { if (it > 0) it else index + 1 }
 
-                    if (id in seenIds) continue
-                    seenIds.add(id)
-
-                    val title = bookLink.text().trim()
-                    if (title.isBlank()) continue
-
-                    val bookAuthor = extractAuthorFromSeriesPage(bookLink)
-
-                    val sequenceNumber = extractSequenceNumber(li)
-                    fallbackOrder++
-
-                    // CRITICAL: if sequenceNumber is 0 (not found), use fallbackOrder.
-                    // NEVER skip a book because it has no sequence number.
-                    val effectiveNumber = if (sequenceNumber > 0) sequenceNumber else fallbackOrder
-
-                    Log.d(
-                        TAG,
-                        "SERIES_BOOK_TITLE='$title' | SERIES_BOOK_NUMBER=$effectiveNumber (parsed=$sequenceNumber, fallback=$fallbackOrder) | id=$id"
-                    )
-
-                    results.add(
-                        Book(
+                        results.add(Book(
                             id = id,
-                            title = title,
+                            title = bookLink.text().trim(),
                             author = bookAuthor,
                             link = "/b/$id",
                             sendLink = "/send/$id",
                             coverUrl = "$baseUrl/b/$id/cover",
-                            sequenceNumber = effectiveNumber
-                        )
-                    )
+                            sequenceNumber = seqNumber
+                        ))
+                    }
                 }
 
-                Log.d(TAG, "SERIES_BOOKS_PARSED | from li items=${results.size}")
-
-                // ── Strategy 2: If <li> parsing found nothing, try direct <a> links ──
+                // ── Strategy 2: Direct <a> links (if liItems failed) ──
                 if (results.isEmpty()) {
-                    Log.w(TAG, "SERIES_OPEN | li parsing returned 0 books, trying direct <a> links")
                     val allBookLinks = main.select("a[href^=/b/]")
-                    Log.d(TAG, "SERIES_OPEN | direct <a> links found=${allBookLinks.size}")
-
-                    for (link in allBookLinks) {
-                        if (results.size >= limit) break
-                        val href = link.attr("href")
-                        val idMatch = Regex("/b/(\\d+)").find(href)
-                        val id = idMatch?.groupValues?.get(1)?.toIntOrNull() ?: continue
-                        if (id in seenIds) continue
+                    allBookLinks.forEachIndexed { index, link ->
+                        if (results.size >= limit) return@forEachIndexed
+                        val id = Regex("/b/(\\d+)").find(link.attr("href"))?.groupValues?.get(1)?.toIntOrNull() ?: return@forEachIndexed
+                        if (id in seenIds) return@forEachIndexed
                         seenIds.add(id)
 
-                        val title = link.text().trim()
-                        if (title.isBlank()) continue
-
-                        val bookAuthor = extractAuthorFromSeriesPage(link)
-                        fallbackOrder++
-
-                        Log.d(
-                            TAG,
-                            "SERIES_BOOK_TITLE='$title' | SERIES_BOOK_NUMBER=$fallbackOrder (fallback, no li) | id=$id"
-                        )
-
-                        results.add(
-                            Book(
-                                id = id,
-                                title = title,
-                                author = bookAuthor,
-                                link = "/b/$id",
-                                sendLink = "/send/$id",
-                                coverUrl = "$baseUrl/b/$id/cover",
-                                sequenceNumber = fallbackOrder
-                            )
-                        )
+                        results.add(Book(
+                            id = id,
+                            title = link.text().trim(),
+                            author = globalAuthor, // Fallback to global series author
+                            link = "/b/$id",
+                            sendLink = "/send/$id",
+                            coverUrl = "$baseUrl/b/$id/cover",
+                            sequenceNumber = index + 1
+                        ))
                     }
-                    Log.d(TAG, "SERIES_BOOKS_PARSED | from direct links=${results.size}")
                 }
 
-                // ── Sort: by sequenceNumber (stable sort) ──
-                // Books with real sequence numbers are sorted by number.
-                // Books with fallback numbers keep their page order (stable sort).
-                // NO book is ever removed or filtered out.
-                val sorted = results.sortedBy { it.sequenceNumber }
-
-                Log.d(TAG, "SERIES_BOOKS_BEFORE_SORT | count=${results.size}")
-                Log.d(TAG, "SERIES_BOOKS_AFTER_SORT | count=${sorted.size}")
-                sorted.forEachIndexed { idx, book ->
-                    Log.d(TAG, "SERIES_BOOKS_AFTER_SORT | [$idx] SERIES_BOOK_TITLE='${book.title}' | SERIES_BOOK_NUMBER=${book.sequenceNumber}")
-                }
-
-                sorted
+                results.sortedBy { it.sequenceNumber }
             } catch (e: Exception) {
                 Log.e(TAG, "SERIES_OPEN | EXCEPTION", e)
                 emptyList()

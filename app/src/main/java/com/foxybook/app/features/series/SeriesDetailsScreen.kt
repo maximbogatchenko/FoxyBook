@@ -59,7 +59,7 @@ fun SeriesDetailsScreen(
     seriesTitle: String,
     viewModel: SeriesDetailsViewModel,
     onBackClick: () -> Unit,
-    onBookClick: (Int) -> Unit
+    onBookClick: (Book) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -198,7 +198,7 @@ fun SeriesDetailsScreen(
                             items(books, key = { it.id }) { book ->
                                 SeriesBookCard(
                                     book = book,
-                                    onClick = { onBookClick(book.id) }
+                                    onClick = { onBookClick(book) }
                                 )
                             }
                         }

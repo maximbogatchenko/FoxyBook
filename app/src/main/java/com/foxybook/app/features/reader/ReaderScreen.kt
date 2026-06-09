@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -78,6 +80,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import android.content.Intent
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -274,86 +277,111 @@ fun ReaderScreen(
                             Text(
                                 text = state.book?.title ?: "Чтение",
                                 maxLines = 1, overflow = TextOverflow.Ellipsis,
-                                style = MaterialTheme.typography.titleSmall
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = colors.text
                             )
                         },
                         navigationIcon = {
                             IconButton(onClick = onBackClick) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack, 
+                                    contentDescription = "Назад",
+                                    tint = colors.text
+                                )
                             }
                         },
                         actions = {
-                            Text(
-                                "${state.readingPercentage}%",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(end = 4.dp)
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    "${state.readingPercentage}%",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = colors.text.copy(alpha = 0.7f),
+                                    modifier = Modifier.padding(end = 4.dp)
+                                )
 
-                            val isBookmarked = remember(state.bookmarks, state.currentChapter, state.textOffset) {
-                                state.bookmarks.any {
-                                    it.chapterIndex == state.currentChapter && 
-                                    (it.textOffset in state.textOffset - 20..state.textOffset + 20)
-                                }
-                            }
-
-                            IconButton(onClick = {
-                                if (isBookmarked) {
-                                    val b = state.bookmarks.find {
-                                        it.chapterIndex == state.currentChapter &&
+                                val isBookmarked = remember(state.bookmarks, state.currentChapter, state.textOffset) {
+                                    state.bookmarks.any {
+                                        it.chapterIndex == state.currentChapter && 
                                         (it.textOffset in state.textOffset - 20..state.textOffset + 20)
                                     }
-                                    if (b != null) {
-                                        viewModel.onEvent(ReaderEvent.RemoveBookmark(b))
-                                        scope.launch { snackbarHostState.showSnackbar("Закладка удалена") }
-                                    }
-                                } else {
-                                    val preview = if (ReaderMode.valueOf(settings.readerMode) == ReaderMode.HORIZONTAL) {
-                                        state.chapterPages[state.currentChapter]?.getOrNull(state.pageCurrent)?.blocks?.firstOrNull { it.getTextContent().isNotBlank() }?.getTextContent() ?: ""
-                                    } else {
-                                        state.chapterBlocks[state.currentChapter]?.getOrNull(state.scrollY)?.getTextContent() ?: ""
-                                    }
-                                    viewModel.onEvent(ReaderEvent.AddBookmark(preview))
-                                    scope.launch { snackbarHostState.showSnackbar("Закладка добавлена") }
                                 }
-                            }) {
-                                Icon(
-                                    if (isBookmarked) Icons.Default.Star else Icons.Default.StarBorder,
-                                    contentDescription = "Закладка",
-                                    tint = if (isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                                )
-                            }
 
-                            IconButton(onClick = { viewModel.onEvent(ReaderEvent.ToggleChapters) }) {
-                                Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = "Книга")
-                            }
+                                IconButton(onClick = {
+                                    if (isBookmarked) {
+                                        val b = state.bookmarks.find {
+                                            it.chapterIndex == state.currentChapter &&
+                                            (it.textOffset in state.textOffset - 20..state.textOffset + 20)
+                                        }
+                                        if (b != null) {
+                                            viewModel.onEvent(ReaderEvent.RemoveBookmark(b))
+                                            scope.launch { snackbarHostState.showSnackbar("Закладка удалена") }
+                                        }
+                                    } else {
+                                        val preview = if (ReaderMode.valueOf(settings.readerMode) == ReaderMode.HORIZONTAL) {
+                                            state.chapterPages[state.currentChapter]?.getOrNull(state.pageCurrent)?.blocks?.firstOrNull { it.getTextContent().isNotBlank() }?.getTextContent() ?: ""
+                                        } else {
+                                            state.chapterBlocks[state.currentChapter]?.getOrNull(state.scrollY)?.getTextContent() ?: ""
+                                        }
+                                        viewModel.onEvent(ReaderEvent.AddBookmark(preview))
+                                        scope.launch { snackbarHostState.showSnackbar("Закладка добавлена") }
+                                    }
+                                }) {
+                                    Icon(
+                                        if (isBookmarked) Icons.Default.Star else Icons.Default.StarBorder,
+                                        contentDescription = "Закладка",
+                                        tint = if (isBookmarked) MaterialTheme.colorScheme.primary else colors.text
+                                    )
+                                }
 
-                            IconButton(onClick = { viewModel.onEvent(ReaderEvent.ToggleSettings) }) {
-                                Icon(Icons.Default.Settings, contentDescription = "Настройки")
+                                IconButton(onClick = { viewModel.onEvent(ReaderEvent.ToggleChapters) }) {
+                                    Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = "Книга", tint = colors.text)
+                                }
+
+                                IconButton(onClick = { viewModel.onEvent(ReaderEvent.ToggleSettings) }) {
+                                    Icon(Icons.Default.Settings, contentDescription = "Настройки", tint = colors.text)
+                                }
                             }
                         },
-                        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f))
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = colors.background.copy(alpha = 0.95f),
+                            titleContentColor = colors.text,
+                            navigationIconContentColor = colors.text,
+                            actionIconContentColor = colors.text
+                        ),
+                        windowInsets = TopAppBarDefaults.windowInsets // This handles status bar padding internally
                     )
                 }
 
                 // Bottom Overlay
                 if (state.book != null) {
-                    Box(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).background(MaterialTheme.colorScheme.surface.copy(alpha = 0.95f))) {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .background(colors.background.copy(alpha = 0.95f))
+                        .navigationBarsPadding()
+                    ) {
                         Column {
                             LinearProgressIndicator(
                                 progress = { state.readingPercentage / 100f },
                                 modifier = Modifier.fillMaxWidth().height(2.dp),
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
                                 trackColor = Color.Transparent,
                             )
-                            ReaderBottomBar(state = state, viewModel = viewModel)
+                            ReaderBottomBar(state = state, viewModel = viewModel, colors = colors)
                         }
                     }
                 }
             }
 
             // Snackbar Overlay
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = if (state.isImmersive || state.isSelectingTtsStartPosition) 0.dp else 100.dp)
+                    .navigationBarsPadding(), 
+                contentAlignment = Alignment.BottomCenter
+            ) {
                 SnackbarHost(snackbarHostState)
             }
 
@@ -981,6 +1009,7 @@ private fun BlockComposable(
 private fun ReaderBottomBar(
     state: ReaderState,
     viewModel: ReaderViewModel,
+    colors: ReaderColors,
     modifier: Modifier = Modifier
 ) {
     val book = state.book ?: return
@@ -990,16 +1019,16 @@ private fun ReaderBottomBar(
     Row(modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         IconButton(onClick = { viewModel.onEvent(ReaderEvent.PreviousChapter) }, enabled = state.currentChapter > 0, modifier = Modifier.size(36.dp)) {
             Icon(Icons.AutoMirrored.Filled.MenuBook, "Пред.", modifier = Modifier.size(18.dp),
-                tint = if (state.currentChapter > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
+                tint = if (state.currentChapter > 0) MaterialTheme.colorScheme.primary else colors.text.copy(alpha = 0.2f))
         }
         Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = chapter?.title ?: "", style = MaterialTheme.typography.labelSmall, maxLines = 1, overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = chapter?.title ?: "", style = MaterialTheme.typography.labelSmall, maxLines = 1, overflow = TextOverflow.Ellipsis, color = colors.text)
             Text(text = if (mode == ReaderMode.HORIZONTAL) "Стр. ${state.pageCurrent + 1}/${state.pageTotal}" else "Гл. ${state.currentChapter + 1}/${book.chapters.size}",
-                style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f))
+                style = MaterialTheme.typography.labelSmall, color = colors.text.copy(alpha = 0.6f))
         }
         IconButton(onClick = { viewModel.onEvent(ReaderEvent.NextChapter) }, enabled = state.currentChapter < book.chapters.size - 1, modifier = Modifier.size(36.dp)) {
             Icon(Icons.AutoMirrored.Filled.MenuBook, "След.", modifier = Modifier.size(18.dp),
-                tint = if (state.currentChapter < book.chapters.size - 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
+                tint = if (state.currentChapter < book.chapters.size - 1) MaterialTheme.colorScheme.primary else colors.text.copy(alpha = 0.2f))
         }
     }
 }
@@ -1065,6 +1094,7 @@ private fun SettingsSheet(settings: ReaderSettings, viewModel: ReaderViewModel) 
 
 @Composable
 private fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
+    val context = LocalContext.current
     var selectedLang by remember(state.settings.ttsLanguage) { 
         mutableStateOf(state.settings.ttsLanguage ?: state.availableLanguages.firstOrNull { it == "Русский" } ?: state.availableLanguages.firstOrNull() ?: "") 
     }
@@ -1079,6 +1109,25 @@ private fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
             }
             Text("Озвучивание книги", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(onClick = {
+                try {
+                    val intent = Intent().apply {
+                        action = "com.android.settings.TTS_SETTINGS"
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    // Fallback
+                    val intent = Intent().apply {
+                        action = android.provider.Settings.ACTION_SETTINGS
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
+                    context.startActivity(intent)
+                }
+            }) {
+                Icon(Icons.Default.Settings, contentDescription = "Выбор движка TTS")
+            }
         }
         
         Spacer(modifier = Modifier.height(16.dp))
