@@ -239,7 +239,8 @@ fun MainApp() {
             ) { backStackEntry ->
                 val bookId = backStackEntry.arguments?.getInt("bookId") ?: return@composable
                 val bookFormat = backStackEntry.arguments?.getString("bookFormat") ?: return@composable
-                val filePath = backStackEntry.arguments?.getString("filePath") ?: return@composable
+                val rawFilePath = backStackEntry.arguments?.getString("filePath") ?: return@composable
+                val filePath = try { URLDecoder.decode(rawFilePath, "UTF-8") } catch (_: Exception) { rawFilePath }
                 val vm: ReaderViewModel = viewModel(factory = object : ViewModelProvider.Factory {
                     @Suppress("UNCHECKED_CAST")
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {

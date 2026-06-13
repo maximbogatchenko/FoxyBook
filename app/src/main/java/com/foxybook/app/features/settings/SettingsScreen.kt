@@ -321,7 +321,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        "v1.3",
+                        "v1.4",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium,

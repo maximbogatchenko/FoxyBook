@@ -202,7 +202,7 @@ class DataStoreManager(private val context: Context) {
     }
 
     val defaultFormat: Flow<String> = context.dataStore.data.map { prefs ->
-        prefs[DEFAULT_FORMAT_KEY] ?: "epub"
+        prefs[DEFAULT_FORMAT_KEY] ?: "fb2"
     }
 
     suspend fun setDefaultFormat(format: String) {

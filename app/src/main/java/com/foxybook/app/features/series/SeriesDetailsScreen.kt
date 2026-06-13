@@ -228,7 +228,6 @@ private fun SeriesBookCard(book: Book, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             // ── Sequence number badge ──
-            // Shows the volume number like "1", "2", "3" etc.
             if (book.sequenceNumber > 0) {
                 Box(
                     modifier = Modifier
@@ -257,12 +256,7 @@ private fun SeriesBookCard(book: Book, onClick: () -> Unit) {
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    // Display: "1 • Последнее желание" if we have a number
-                    text = if (book.sequenceNumber > 0) {
-                        "${book.sequenceNumber} \u2022 ${book.title}"
-                    } else {
-                        book.title
-                    },
+                    text = book.title,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 2,

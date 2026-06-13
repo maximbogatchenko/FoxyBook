@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Error
@@ -30,6 +31,8 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -190,21 +193,11 @@ fun BookDetailsScreen(
                         SectionTitle("Скачать")
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        BookFormat.entries.forEach { format ->
-                            val progress = state.downloads[format] ?: DownloadProgress()
-                            DownloadButton(
-                                format = format,
-                                progress = progress,
-                                onDownload = { viewModel.onEvent(BookDetailsEvent.Download(format)) },
-                                onRead = {
-                                    val fp = progress.filePath
-                                    if (fp.isNotBlank()) {
-                                        onReadBook(fp, format.extension)
-                                    }
-                                }
-                            )
-                            Spacer(modifier = Modifier.height(10.dp))
-                        }
+                        SingleDownloadButton(
+                            state = state,
+                            viewModel = viewModel,
+                            onReadBook = onReadBook
+                        )
 
                         Spacer(modifier = Modifier.height(24.dp))
 
@@ -441,5 +434,219 @@ private fun DownloadButton(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun SingleDownloadButton(
+    state: BookDetailsState,
+    viewModel: BookDetailsViewModel,
+    onReadBook: (String, String) -> Unit
+) {
+    val selectedFormat = state.selectedFormat
+    val progress = state.downloads[selectedFormat] ?: DownloadProgress()
+    val isDownloaded = progress.status == DownloadStatus.DOWNLOADED
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ),
+        shape = RoundedCornerShape(14.dp)
+    ) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Format selector
+                Card(
+                    modifier = Modifier.clickable {
+                        if (state.availableFormats.size > 1) {
+                            viewModel.onEvent(BookDetailsEvent.ToggleFormatSelector)
+                        }
+                    },
+                    colors = CardDefaults.cardColors(
+                        containerColor = when (progress.status) {
+                            DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.primaryContainer
+                            else -> MaterialTheme.colorScheme.secondaryContainer
+                        }
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = selectedFormat.name,
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = when {
+                                state.formatAvailability[selectedFormat] == false -> MaterialTheme.colorScheme.error
+                                progress.status == DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.onPrimaryContainer
+                                else -> MaterialTheme.colorScheme.onSecondaryContainer
+                            }
+                        )
+                        if (state.availableFormats.size > 1) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                Icons.Default.ChevronRight,
+                                contentDescription = "Выбрать формат",
+                                modifier = Modifier.size(16.dp),
+                                tint = when {
+                                    state.formatAvailability[selectedFormat] == false -> MaterialTheme.colorScheme.error
+                                    progress.status == DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.onPrimaryContainer
+                                    else -> MaterialTheme.colorScheme.onSecondaryContainer
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(14.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = when (progress.status) {
+                            DownloadStatus.IDLE -> "Готово к скачиванию"
+                            DownloadStatus.DOWNLOADING -> {
+                                if (progress.percent < 0) "Скачивание…" else "Скачивание… ${progress.percent}%"
+                            }
+                            DownloadStatus.DOWNLOADED -> "Скачано"
+                            DownloadStatus.ERROR -> progress.error ?: "Ошибка"
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = if (progress.status == DownloadStatus.DOWNLOADED) FontWeight.SemiBold else FontWeight.Normal,
+                        color = when (progress.status) {
+                            DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.primary
+                            DownloadStatus.ERROR -> MaterialTheme.colorScheme.error
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                }
+
+                when (progress.status) {
+                    DownloadStatus.IDLE, DownloadStatus.ERROR -> {
+                        OutlinedButton(
+                            onClick = { viewModel.onEvent(BookDetailsEvent.DownloadPrimary) },
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp)
+                        ) {
+                            Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Скачать")
+                        }
+                    }
+                    DownloadStatus.DOWNLOADING -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(28.dp),
+                            strokeWidth = 3.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    DownloadStatus.DOWNLOADED -> {
+                        OutlinedButton(
+                            onClick = {
+                                val fp = progress.filePath
+                                if (fp.isNotBlank()) {
+                                    onReadBook(fp, selectedFormat.extension)
+                                }
+                            },
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp)
+                        ) {
+                            Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Читать")
+                        }
+                    }
+                }
+            }
+
+            if (progress.status == DownloadStatus.DOWNLOADING) {
+                Spacer(modifier = Modifier.height(10.dp))
+                if (progress.percent >= 0) {
+                    LinearProgressIndicator(
+                        progress = { progress.percent / 100f },
+                        modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                } else {
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                }
+            }
+        }
+    }
+
+    // Format selector dialog
+    if (state.showFormatSelector) {
+        AlertDialog(
+            onDismissRequest = { viewModel.onEvent(BookDetailsEvent.ToggleFormatSelector) },
+            title = { Text("Выберите формат") },
+            text = {
+                Column {
+                    state.availableFormats.forEach { format ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clickable { viewModel.onEvent(BookDetailsEvent.SelectFormat(format)) },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (format == state.selectedFormat) {
+                                    MaterialTheme.colorScheme.primaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceVariant
+                                }
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    format.name,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = if (format == state.selectedFormat) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (format == state.selectedFormat) {
+                                        MaterialTheme.colorScheme.onPrimaryContainer
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface
+                                    }
+                                )
+                                if (format == state.selectedFormat) {
+                                    Icon(
+                                        Icons.Default.Bookmark,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(20.dp),
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                } else if (state.formatAvailability[format] == false) {
+                                    Icon(
+                                        Icons.Default.Error,
+                                        contentDescription = "Недоступно",
+                                        modifier = Modifier.size(20.dp),
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { viewModel.onEvent(BookDetailsEvent.ToggleFormatSelector) }) {
+                    Text("Закрыть")
+                }
+            }
+        )
     }
 }

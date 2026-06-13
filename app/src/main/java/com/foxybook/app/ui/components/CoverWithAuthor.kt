@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,6 +53,7 @@ fun CoverWithAuthor(
     val onContainerColor = MaterialTheme.colorScheme.onPrimaryContainer
 
     var imageLoadFailed by remember(coverUrl) { mutableStateOf(false) }
+    var isLoading by remember(coverUrl) { mutableStateOf(false) }
     val showFallback = coverUrl.isBlank() || imageLoadFailed
 
     if (coverUrl.isNotBlank()) {
@@ -75,26 +77,45 @@ fun CoverWithAuthor(
         if (showFallback) {
             AuthorFallback(author = author, showFullName = showFullName, color = onContainerColor)
         } else {
-            AsyncImage(
-                model = coverUrl,
-                contentDescription = contentDescription,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(shape),
-                contentScale = ContentScale.Crop,
-                onState = { state ->
-                    when (state) {
-                        is AsyncImagePainter.State.Success -> {
-                            Log.d(TAG, "COVER_LOADED | url=$coverUrl")
+            Box(modifier = Modifier.fillMaxSize()) {
+                AsyncImage(
+                    model = coverUrl,
+                    contentDescription = contentDescription,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(shape),
+                    contentScale = ContentScale.Crop,
+                    onState = { state ->
+                        when (state) {
+                            is AsyncImagePainter.State.Loading -> {
+                                isLoading = true
+                            }
+                            is AsyncImagePainter.State.Success -> {
+                                isLoading = false
+                                Log.d(TAG, "COVER_LOADED | url=$coverUrl")
+                            }
+                            is AsyncImagePainter.State.Error -> {
+                                isLoading = false
+                                Log.e(TAG, "COVER_ERROR | url=$coverUrl error=${state.result.throwable?.message}")
+                                imageLoadFailed = true
+                            }
+                            else -> {
+                                isLoading = false
+                            }
                         }
-                        is AsyncImagePainter.State.Error -> {
-                            Log.e(TAG, "COVER_ERROR | url=$coverUrl error=${state.result.throwable?.message}")
-                            imageLoadFailed = true
-                        }
-                        else -> {}
                     }
+                )
+
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .align(Alignment.Center),
+                        strokeWidth = 2.dp,
+                        color = onContainerColor.copy(alpha = 0.6f)
+                    )
                 }
-            )
+            }
         }
     }
 }
