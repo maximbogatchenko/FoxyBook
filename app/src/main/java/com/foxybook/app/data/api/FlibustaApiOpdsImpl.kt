@@ -327,20 +327,20 @@ class FlibustaApiOpdsImpl(context: Context) : FlibustaApi {
     }
 
     private fun fetchXml(url: String): String? {
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).execute()
         return try {
-            val request = Request.Builder().url(url).build()
-            val response = client.newCall(request).execute()
             if (!response.isSuccessful) {
                 Log.w(TAG, "fetchXml | HTTP ${response.code} for $url")
-                response.close()
-                return null
+                null
+            } else {
+                response.body?.string()
             }
-            val xml = response.body?.string()
-            response.close()
-            xml
         } catch (e: Exception) {
             Log.e(TAG, "fetchXml | failed for $url", e)
             null
+        } finally {
+            response.close()
         }
     }
 }

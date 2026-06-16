@@ -122,6 +122,12 @@ fun BookDetailsScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(uiState.message, style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        OutlinedButton(onClick = {
+                            viewModel.onEvent(BookDetailsEvent.LoadBook(bookId, null))
+                        }) {
+                            Text("Повторить")
+                        }
                     }
                 }
                 is BookDetailsUiState.Success -> {
@@ -445,7 +451,6 @@ private fun SingleDownloadButton(
 ) {
     val selectedFormat = state.selectedFormat
     val progress = state.downloads[selectedFormat] ?: DownloadProgress()
-    val isDownloaded = progress.status == DownloadStatus.DOWNLOADED
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -455,130 +460,151 @@ private fun SingleDownloadButton(
         shape = RoundedCornerShape(14.dp)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Format selector
-                Card(
-                    modifier = Modifier.clickable {
-                        if (state.availableFormats.size > 1) {
-                            viewModel.onEvent(BookDetailsEvent.ToggleFormatSelector)
-                        }
-                    },
-                    colors = CardDefaults.cardColors(
-                        containerColor = when (progress.status) {
-                            DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.primaryContainer
-                            else -> MaterialTheme.colorScheme.secondaryContainer
-                        }
-                    ),
-                    shape = RoundedCornerShape(8.dp)
+            if (state.formatsLoading) {
+                // Пока проверяются доступные форматы — показываем индикатор
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = selectedFormat.name,
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = when {
-                                state.formatAvailability[selectedFormat] == false -> MaterialTheme.colorScheme.error
-                                progress.status == DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.onPrimaryContainer
-                                else -> MaterialTheme.colorScheme.onSecondaryContainer
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 3.dp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        "Проверка доступных форматов…",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Format selector
+                    Card(
+                        modifier = Modifier.clickable {
+                            if (state.availableFormats.size > 1) {
+                                viewModel.onEvent(BookDetailsEvent.ToggleFormatSelector)
                             }
-                        )
-                        if (state.availableFormats.size > 1) {
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Icon(
-                                Icons.Default.ChevronRight,
-                                contentDescription = "Выбрать формат",
-                                modifier = Modifier.size(16.dp),
-                                tint = when {
+                        },
+                        colors = CardDefaults.cardColors(
+                            containerColor = when (progress.status) {
+                                DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.primaryContainer
+                                else -> MaterialTheme.colorScheme.secondaryContainer
+                            }
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = selectedFormat.name,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = when {
                                     state.formatAvailability[selectedFormat] == false -> MaterialTheme.colorScheme.error
                                     progress.status == DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.onPrimaryContainer
                                     else -> MaterialTheme.colorScheme.onSecondaryContainer
                                 }
                             )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(14.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = when (progress.status) {
-                            DownloadStatus.IDLE -> "Готово к скачиванию"
-                            DownloadStatus.DOWNLOADING -> {
-                                if (progress.percent < 0) "Скачивание…" else "Скачивание… ${progress.percent}%"
+                            if (state.availableFormats.size > 1) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Icon(
+                                    Icons.Default.ChevronRight,
+                                    contentDescription = "Выбрать формат",
+                                    modifier = Modifier.size(16.dp),
+                                    tint = when {
+                                        state.formatAvailability[selectedFormat] == false -> MaterialTheme.colorScheme.error
+                                        progress.status == DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.onPrimaryContainer
+                                        else -> MaterialTheme.colorScheme.onSecondaryContainer
+                                    }
+                                )
                             }
-                            DownloadStatus.DOWNLOADED -> "Скачано"
-                            DownloadStatus.ERROR -> progress.error ?: "Ошибка"
-                        },
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = if (progress.status == DownloadStatus.DOWNLOADED) FontWeight.SemiBold else FontWeight.Normal,
-                        color = when (progress.status) {
-                            DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.primary
-                            DownloadStatus.ERROR -> MaterialTheme.colorScheme.error
-                            else -> MaterialTheme.colorScheme.onSurfaceVariant
-                        }
-                    )
-                }
-
-                when (progress.status) {
-                    DownloadStatus.IDLE, DownloadStatus.ERROR -> {
-                        OutlinedButton(
-                            onClick = { viewModel.onEvent(BookDetailsEvent.DownloadPrimary) },
-                            shape = RoundedCornerShape(10.dp),
-                            contentPadding = PaddingValues(horizontal = 14.dp)
-                        ) {
-                            Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Скачать")
                         }
                     }
-                    DownloadStatus.DOWNLOADING -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(28.dp),
-                            strokeWidth = 3.dp,
-                            color = MaterialTheme.colorScheme.primary
+
+                    Spacer(modifier = Modifier.width(14.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = when (progress.status) {
+                                DownloadStatus.IDLE -> "Готово к скачиванию"
+                                DownloadStatus.DOWNLOADING -> {
+                                    if (progress.percent < 0) "Скачивание…" else "Скачивание… ${progress.percent}%"
+                                }
+                                DownloadStatus.DOWNLOADED -> "Скачано"
+                                DownloadStatus.ERROR -> progress.error ?: "Ошибка"
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = if (progress.status == DownloadStatus.DOWNLOADED) FontWeight.SemiBold else FontWeight.Normal,
+                            color = when (progress.status) {
+                                DownloadStatus.DOWNLOADED -> MaterialTheme.colorScheme.primary
+                                DownloadStatus.ERROR -> MaterialTheme.colorScheme.error
+                                else -> MaterialTheme.colorScheme.onSurfaceVariant
+                            }
                         )
                     }
-                    DownloadStatus.DOWNLOADED -> {
-                        OutlinedButton(
-                            onClick = {
-                                val fp = progress.filePath
-                                if (fp.isNotBlank()) {
-                                    onReadBook(fp, selectedFormat.extension)
-                                }
-                            },
-                            shape = RoundedCornerShape(10.dp),
-                            contentPadding = PaddingValues(horizontal = 14.dp)
-                        ) {
-                            Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Читать")
+
+                    when (progress.status) {
+                        DownloadStatus.IDLE, DownloadStatus.ERROR -> {
+                            OutlinedButton(
+                                onClick = { viewModel.onEvent(BookDetailsEvent.DownloadPrimary) },
+                                shape = RoundedCornerShape(10.dp),
+                                contentPadding = PaddingValues(horizontal = 14.dp)
+                            ) {
+                                Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Скачать")
+                            }
+                        }
+                        DownloadStatus.DOWNLOADING -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(28.dp),
+                                strokeWidth = 3.dp,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        DownloadStatus.DOWNLOADED -> {
+                            OutlinedButton(
+                                onClick = {
+                                    val fp = progress.filePath
+                                    if (fp.isNotBlank()) {
+                                        onReadBook(fp, selectedFormat.extension)
+                                    }
+                                },
+                                shape = RoundedCornerShape(10.dp),
+                                contentPadding = PaddingValues(horizontal = 14.dp)
+                            ) {
+                                Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Читать")
+                            }
                         }
                     }
                 }
-            }
 
-            if (progress.status == DownloadStatus.DOWNLOADING) {
-                Spacer(modifier = Modifier.height(10.dp))
-                if (progress.percent >= 0) {
-                    LinearProgressIndicator(
-                        progress = { progress.percent / 100f },
-                        modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                    )
-                } else {
-                    LinearProgressIndicator(
-                        modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                    )
+                if (progress.status == DownloadStatus.DOWNLOADING) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    if (progress.percent >= 0) {
+                        LinearProgressIndicator(
+                            progress = { progress.percent / 100f },
+                            modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+                    } else {
+                        LinearProgressIndicator(
+                            modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+                    }
                 }
             }
         }

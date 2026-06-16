@@ -83,7 +83,18 @@ object TextPaginator {
 
         while (remainingBlocks.isNotEmpty()) {
             val block = remainingBlocks.removeFirst()
-            val remainingHeight = usableHeightPx - currentHeight
+            // Small tolerance prevents floating-point accumulation from causing overflows
+            val remainingHeight = (usableHeightPx - currentHeight).coerceAtLeast(0f) + 0.5f
+
+            // If less than one line remains, finalize the page so next block
+            // starts on a fresh page instead of being force-added and overflowing.
+            if (remainingHeight < lineHeightPx && currentPageBlocks.isNotEmpty()) {
+                val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
+                pages.add(page)
+                cumulativeOffsetInChapter = page.endOffset
+                currentPageBlocks = mutableListOf()
+                currentHeight = 0f
+            }
 
             when (block) {
                 is ContentBlock.Heading -> {
@@ -139,8 +150,18 @@ object TextPaginator {
                                 val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
                                 pages.add(page)
                                 cumulativeOffsetInChapter = page.endOffset
-                                
+
                                 remainingBlocks.addFirst(ContentBlock.Paragraph(text = secondPart, isSplit = block.isSplit).apply { originalIndex = block.originalIndex })
+                                currentPageBlocks = mutableListOf()
+                                currentHeight = 0f
+                                continue
+                            } else if (splitIndex > 0) {
+                                // All text content fits, only bottom padding overflows.
+                                // Add without padding and finalize the page.
+                                currentPageBlocks.add(ContentBlock.Paragraph(text = block.text, isSplit = true).apply { originalIndex = block.originalIndex })
+                                val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
+                                pages.add(page)
+                                cumulativeOffsetInChapter = page.endOffset
                                 currentPageBlocks = mutableListOf()
                                 currentHeight = 0f
                                 continue

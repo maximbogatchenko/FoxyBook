@@ -2,6 +2,7 @@ package com.foxybook.app.core.tts
 
 import android.app.*
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.MediaMetadata
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
@@ -13,8 +14,6 @@ import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import com.foxybook.app.MainActivity
 import kotlinx.coroutines.*
-import java.util.concurrent.TimeUnit
-import java.util.*
 
 class TtsService : Service(), TextToSpeech.OnInitListener {
 
@@ -25,6 +24,10 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
     private var currentBookTitle: String = ""
     private var currentChapterTitle: String = ""
     private var isPaused = false
+
+    // TTS engine tracking
+    private var currentEnginePackage: String? = null
+    private var ttsReady = false
 
     // Sleep timer
     private var sleepTimerJob: Job? = null
@@ -42,7 +45,6 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
 
     override fun onCreate() {
         super.onCreate()
-        tts = TextToSpeech(this, this)
         setupMediaSession()
     }
 
@@ -59,28 +61,104 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
         }
     }
 
+    fun switchEngine(enginePackage: String?) {
+        currentEnginePackage = enginePackage
+        Log.d("TtsService", "switchEngine: $enginePackage")
+        tts?.shutdown()
+        tts = null
+        ttsReady = false
+    }
+
     override fun onInit(status: Int) {
-        if (status == TextToSpeech.SUCCESS) {
+        val success = status == TextToSpeech.SUCCESS
+        ttsReady = success
+        if (success) {
+            try {
+                val m = TextToSpeech::class.java.getMethod("getCurrentEngine")
+                currentEnginePackage = m.invoke(tts) as? String
+            } catch (_: Exception) {}
+            Log.d("TtsService", "onInit: SUCCESS, engine=$currentEnginePackage")
+
             tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                 override fun onStart(utteranceId: String?) {
                     updatePlaybackState(PlaybackState.STATE_PLAYING)
                 }
                 override fun onDone(utteranceId: String?) {
+                    Log.d("TtsService", "onDone: utteranceId=$utteranceId isPaused=$isPaused")
                     if (!isPaused) {
                         onBlockCompleted?.invoke()
                     }
                 }
                 override fun onError(utteranceId: String?) {
+                    Log.e("TtsService", "onError: utteranceId=$utteranceId")
                     updatePlaybackState(PlaybackState.STATE_ERROR)
                 }
             })
+
+            // Если есть отложенный запуск речи — стартуем
+            pendingSpeech?.let { (text, bookTitle, chapterTitle, rate, pitch, voiceName) ->
+                pendingSpeech = null
+                doStartReading(text, bookTitle, chapterTitle, rate, pitch, voiceName)
+            }
             onInitComplete?.invoke()
+        } else {
+            Log.e("TtsService", "onInit: FAILED, status=$status")
         }
     }
 
+    private var pendingSpeech: Params? = null
+    private data class Params(
+        val text: String, val bookTitle: String, val chapterTitle: String,
+        val rate: Float, val pitch: Float, val voiceName: String?
+    )
+
     fun getVoices() = tts?.voices?.toList() ?: emptyList()
 
+    fun getCurrentEngine(): String? = currentEnginePackage
+
+    data class EngineInfo(val packageName: String, val label: String)
+
+    fun getEngines(): List<EngineInfo> {
+        val engines = mutableListOf<EngineInfo>()
+        try {
+            val resolveInfos = packageManager.queryIntentServices(
+                Intent(TextToSpeech.Engine.INTENT_ACTION_TTS_SERVICE),
+                PackageManager.GET_META_DATA
+            )
+            for (info in resolveInfos) {
+                val pkg = info.serviceInfo.packageName
+                val label = info.loadLabel(packageManager)?.toString() ?: pkg.substringAfterLast(".")
+                engines.add(EngineInfo(pkg, label))
+            }
+        } catch (e: Exception) {
+            Log.e("TtsService", "Failed to query TTS engines", e)
+        }
+        return engines
+    }
+
     fun startReading(text: String, bookTitle: String, chapterTitle: String, rate: Float, pitch: Float, voiceName: String?) {
+        Log.d("TtsService", "startReading: engine=$currentEnginePackage")
+
+        if (tts == null) {
+            Log.d("TtsService", "startReading: creating TTS")
+            tts = if (currentEnginePackage != null) {
+                TextToSpeech(this, this, currentEnginePackage!!)
+            } else {
+                TextToSpeech(this, this)
+            }
+        }
+
+        // Если TTS уже готов — говорим сразу, иначе ждём onInit
+        if (ttsReady) {
+            doStartReading(text, bookTitle, chapterTitle, rate, pitch, voiceName)
+        } else {
+            pendingSpeech = Params(text, bookTitle, chapterTitle, rate, pitch, voiceName)
+        }
+    }
+
+    private fun doStartReading(text: String, bookTitle: String, chapterTitle: String, rate: Float, pitch: Float, voiceName: String?) {
+        Log.d("TtsService", "doStartReading | engine=$currentEnginePackage | voiceName=$voiceName")
+
         currentBookTitle = bookTitle
         currentChapterTitle = chapterTitle
         isPaused = false
@@ -129,8 +207,6 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
         isPaused = true
         tts?.stop()
         updatePlaybackState(PlaybackState.STATE_PAUSED)
-        // Note: sleep timer continues running but won't count down during pause
-        // In a real implementation, you might want to pause the timer during pause
         updateNotification()
     }
 
@@ -261,26 +337,18 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
         return START_NOT_STICKY
     }
 
-    // Sleep timer methods
     fun startSleepTimer(minutes: Int) {
-        stopSleepTimer() // Stop any existing timer first
-
+        stopSleepTimer()
         sleepTimerRemainingSeconds = minutes * 60L
-
         sleepTimerJob = serviceScope.launch(Dispatchers.IO) {
             while (sleepTimerRemainingSeconds > 0) {
                 delay(1000L)
                 sleepTimerRemainingSeconds--
-
-                // Update notification every second
                 withContext(Dispatchers.Main) {
                     updateNotificationWithTimer(sleepTimerRemainingSeconds)
                 }
-
                 if (sleepTimerRemainingSeconds <= 0) {
-                    withContext(Dispatchers.Main) {
-                        stopReading()
-                    }
+                    withContext(Dispatchers.Main) { stopReading() }
                     break
                 }
             }
@@ -295,11 +363,7 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
     }
 
     fun getSleepTimerRemaining(): Long {
-        return if (sleepTimerJob?.isActive == true) {
-            sleepTimerRemainingSeconds
-        } else {
-            0L
-        }
+        return if (sleepTimerJob?.isActive == true) sleepTimerRemainingSeconds else 0L
     }
 
     override fun onDestroy() {

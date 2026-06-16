@@ -3,6 +3,7 @@ package com.foxybook.app.features.details
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import android.util.Log
+import com.foxybook.app.core.database.BookDataRepository
 import com.foxybook.app.core.datastore.DataStoreManager
 import com.foxybook.app.core.models.Book
 import com.foxybook.app.core.models.BookFormat
@@ -35,7 +36,8 @@ data class BookDetailsState(
     val availableFormats: List<BookFormat> = emptyList(),
     val selectedFormat: BookFormat = BookFormat.EPUB,
     val showFormatSelector: Boolean = false,
-    val formatAvailability: Map<BookFormat, Boolean> = BookFormat.entries.associateWith { true }
+    val formatAvailability: Map<BookFormat, Boolean> = BookFormat.entries.associateWith { true },
+    val formatsLoading: Boolean = false
 )
 
 sealed interface BookDetailsEvent {
@@ -53,6 +55,7 @@ class BookDetailsViewModel(
     private val getBookInfoUseCase: GetBookInfoUseCase,
     private val downloadBookUseCase: DownloadBookUseCase,
     private val dataStoreManager: DataStoreManager,
+    private val bookDataRepository: BookDataRepository,
     private val baseUrl: String = "https://flibusta.is"
 ) : ViewModel() {
 
@@ -84,7 +87,7 @@ class BookDetailsViewModel(
     private fun loadBookInfo(id: Int, initialData: Book? = null) {
         // If we have initial data, show it immediately
         if (initialData != null) {
-            _state.update { 
+            _state.update {
                 it.copy(
                     uiState = BookDetailsUiState.Success(
                         BookInfo(
@@ -95,7 +98,8 @@ class BookDetailsViewModel(
                             genres = emptyList(),
                             coverUrl = initialData.coverUrl
                         )
-                    )
+                    ),
+                    formatsLoading = true // hide download button until formats checked
                 )
             }
         } else {
@@ -103,13 +107,13 @@ class BookDetailsViewModel(
         }
 
         viewModelScope.launch {
-            dataStoreManager.bookmarksForBook(id).collect { list ->
+            bookDataRepository.getBookmarksForBook(id).collect { list ->
                 _state.update { it.copy(bookmarks = list) }
             }
         }
 
         viewModelScope.launch {
-            dataStoreManager.libraryBooks.collect { books ->
+            bookDataRepository.getAllBooks().collect { books ->
                 val bookDownloads = books.filter { it.id == id }
                 _state.update { s ->
                     val newDownloads = s.downloads.toMutableMap()
@@ -198,13 +202,13 @@ class BookDetailsViewModel(
 
     private fun removeBookmark(bookmark: Bookmark) {
         viewModelScope.launch {
-            dataStoreManager.removeBookmark(bookmark)
+            bookDataRepository.removeBookmark(bookmark)
         }
     }
 
     private fun jumpToBookmark(bookmark: Bookmark, format: String) {
         viewModelScope.launch {
-            dataStoreManager.saveReadingPosition(
+            bookDataRepository.saveReadingPosition(
                 ReadingPosition(
                     bookId = bookmark.bookId,
                     format = format,
@@ -221,11 +225,15 @@ class BookDetailsViewModel(
 
     private fun checkAvailableFormats(bookId: Int) {
         viewModelScope.launch {
-            // Получаем формат по умолчанию из настроек
-            val defaultFormatExtension = dataStoreManager.defaultFormat.first()
+            _state.update { it.copy(formatsLoading = true) }
 
-            // Проверяем доступность каждого формата параллельно
-            val availabilityChecks = BookFormat.entries.map { format ->
+            val defaultFormatExtension = dataStoreManager.defaultFormat.first()
+            val preferredFormat = BookFormat.entries.firstOrNull { it.extension == defaultFormatExtension } ?: BookFormat.FB2
+
+            // Проверяем только предпочтительный формат + FB2 как запасной
+            val formatsToCheck = listOf(preferredFormat, BookFormat.FB2, BookFormat.EPUB).distinct()
+
+            val availabilityChecks = formatsToCheck.map { format ->
                 async(Dispatchers.IO) {
                     format to checkFormatAvailable(bookId, format)
                 }
@@ -241,15 +249,15 @@ class BookDetailsViewModel(
             Log.d("BookDetailsVM", "Available formats for book $bookId: ${available.map { it.name }}")
 
             if (available.isEmpty()) {
-                // Если ни один формат не доступен, показываем все (возможно проблема с сетью)
                 Log.w("BookDetailsVM", "No formats available, showing all")
-                val allFormats = BookFormat.entries.toList()
+                val allFormats = formatsToCheck
                 val preferred = selectPreferredFormat(allFormats, defaultFormatExtension)
                 _state.update {
                     it.copy(
                         availableFormats = allFormats,
                         formatAvailability = availabilityMap,
-                        selectedFormat = preferred
+                        selectedFormat = preferred,
+                        formatsLoading = false
                     )
                 }
             } else {
@@ -258,7 +266,8 @@ class BookDetailsViewModel(
                     it.copy(
                         availableFormats = available,
                         formatAvailability = availabilityMap,
-                        selectedFormat = preferred
+                        selectedFormat = preferred,
+                        formatsLoading = false
                     )
                 }
             }
@@ -266,9 +275,7 @@ class BookDetailsViewModel(
     }
 
     private fun selectPreferredFormat(available: List<BookFormat>, defaultFormatExtension: String): BookFormat {
-        // Пытаемся использовать формат из настроек
         return available.firstOrNull { it.extension == defaultFormatExtension }
-            // Если не найден, используем приоритет: FB2 > EPUB > MOBI > TXT
             ?: available.firstOrNull { it == BookFormat.FB2 }
             ?: available.firstOrNull { it == BookFormat.EPUB }
             ?: available.firstOrNull { it == BookFormat.MOBI }

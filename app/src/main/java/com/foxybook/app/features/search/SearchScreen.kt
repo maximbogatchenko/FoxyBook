@@ -37,6 +37,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -137,7 +138,9 @@ fun SearchScreen(
                     else SearchResultsList(books = emptyList(), series = targetState.series,
                         onBookClick = onBookClick, onSeriesClick = onSeriesClick)
                 }
-                is SearchUiState.Error -> ErrorContent(targetState.message)
+                is SearchUiState.Error -> ErrorContent(targetState.message, onSearch = {
+                    viewModel.onEvent(SearchEvent.SearchRequested)
+                })
                 is SearchUiState.Empty -> EmptyContent()
             }
         }
@@ -260,7 +263,7 @@ private fun EmptyContent() {
 }
 
 @Composable
-private fun ErrorContent(message: String) {
+private fun ErrorContent(message: String, onSearch: () -> Unit = {}) {
     Column(
         modifier = Modifier.fillMaxSize().padding(vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -271,6 +274,10 @@ private fun ErrorContent(message: String) {
         Text("Ошибка поиска", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.error)
         Spacer(modifier = Modifier.height(4.dp))
         Text(message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedButton(onClick = onSearch) {
+            Text("Повторить")
+        }
     }
 }
 

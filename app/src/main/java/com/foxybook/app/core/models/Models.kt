@@ -53,7 +53,8 @@ data class Series(
     val seriesId: String,
     val seriesTitle: String,
     val seriesUrl: String,
-    val bookCount: Int = 0
+    val bookCount: Int = 0,
+    val coverUrl: String = ""
 )
 
 // ─── Library Models ───
@@ -69,7 +70,8 @@ data class LibraryBook(
     val downloadDate: Long,
     val isFavorite: Boolean = false,
     val lastReadDate: Long = 0L,
-    val collectionIds: List<String> = emptyList()
+    val collectionIds: List<String> = emptyList(),
+    val readingProgress: Int = 0
 )
 
 @Serializable
@@ -116,14 +118,17 @@ data class ReaderSettings(
     val fontSize: Int = 18,
     val lineHeight: Float = 1.8f,
     val margins: Int = 16,
-    val readerMode: String = ReaderMode.VERTICAL.name,
+    val readerMode: String = ReaderMode.HORIZONTAL.name,
     val readerTheme: String = ReaderTheme.SYSTEM.name,
     val ttsRate: Float = 1.0f,
     val ttsPitch: Float = 1.0f,
     val ttsVoice: String? = null,
     val ttsLanguage: String? = null,
     val lastTtsChapter: Int = -1,
-    val lastTtsBlockIndex: Int = -1
+    val lastTtsBlockIndex: Int = -1,
+    val brightness: Float = -1f, // -1 = system default, 0.0..1.0 = custom
+    val ttsEngine: String? = null,
+    val showProgressAsPercentage: Boolean = true
 )
 
 @Serializable

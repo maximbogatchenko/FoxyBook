@@ -191,50 +191,43 @@ class Fb2Parser(private val context: Context? = null) {
     private fun readFb2Xml(context: Context, uri: Uri): String? {
         Log.d(TAG, "readFb2Xml: uri=$uri")
         return try {
-            val getInputStream = {
-                if (uri.scheme == "file") {
-                    val file = File(uri.path!!)
-                    file.inputStream()
-                } else {
-                    context.contentResolver.openInputStream(uri)
-                }
-            }
-
-            val inputStream = getInputStream() ?: run {
+            val stream = if (uri.scheme == "file") {
+                File(uri.path!!).inputStream()
+            } else {
+                context.contentResolver.openInputStream(uri)
+            } ?: run {
                 Log.e(TAG, "readFb2Xml: Failed to open InputStream for $uri")
                 return null
             }
 
-            Log.d(TAG, "readFb2Xml: InputStream opened successfully")
-            val buf = ByteArray(4)
-            inputStream.read(buf)
-            inputStream.close()
-            
-            val isZip = buf[0] == 0x50.toByte() && buf[1] == 0x4B.toByte()
-            Log.d(TAG, "readFb2Xml: isZip=$isZip")
-            
+            val bytes = stream.use { it.readBytes() }
+            Log.d(TAG, "readFb2Xml: Read ${bytes.size} bytes")
+
+            val isZip = bytes.size >= 4 &&
+                bytes[0] == 0x50.toByte() && bytes[1] == 0x4B.toByte()
+
             if (isZip) {
-                val zis = ZipInputStream(getInputStream()!!)
+                val zis = java.util.zip.ZipInputStream(bytes.inputStream())
                 zis.use { z ->
                     var entry = z.nextEntry
                     while (entry != null) {
                         if (entry.name.endsWith(".fb2")) {
-                             Log.d(TAG, "readFb2Xml: Found .fb2 entry in zip: ${entry.name}")
-                             return z.bufferedReader().readText()
+                            Log.d(TAG, "readFb2Xml: Found .fb2 entry in zip: ${entry.name}")
+                            return z.bufferedReader().readText()
                         }
                         entry = z.nextEntry
                     }
                 }
+                Log.w(TAG, "readFb2Xml: No .fb2 entry found in zip")
+                return null
             }
-            
-            getInputStream()?.bufferedReader()?.use {
-                val text = it.readText()
-                Log.d(TAG, "readFb2Xml: Read ${text.length} chars from XML")
-                text
-            }
-        } catch (e: Exception) { 
+
+            val text = bytes.toString(Charsets.UTF_8)
+            Log.d(TAG, "readFb2Xml: Read ${text.length} chars from XML")
+            text
+        } catch (e: Exception) {
             Log.e(TAG, "readFb2Xml: Exception reading $uri", e)
-            null 
+            null
         }
     }
 }

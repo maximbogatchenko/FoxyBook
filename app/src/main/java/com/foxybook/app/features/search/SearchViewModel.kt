@@ -6,16 +6,21 @@ import com.foxybook.app.core.models.Book
 import com.foxybook.app.core.models.SearchMode
 import com.foxybook.app.core.models.SearchUiState
 import com.foxybook.app.core.models.Series
+import com.foxybook.app.domain.usecases.GetBookInfoUseCase
 import com.foxybook.app.domain.usecases.SearchBooksUseCase
 import com.foxybook.app.domain.usecases.SearchByAuthorUseCase
 import com.foxybook.app.domain.usecases.SearchBySeriesUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 
 data class SearchState(
     val query: String = "",
@@ -32,7 +37,8 @@ sealed interface SearchEvent {
 class SearchViewModel(
     private val searchBooksUseCase: SearchBooksUseCase,
     private val searchByAuthorUseCase: SearchByAuthorUseCase,
-    private val searchBySeriesUseCase: SearchBySeriesUseCase
+    private val searchBySeriesUseCase: SearchBySeriesUseCase,
+    private val getBookInfoUseCase: GetBookInfoUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SearchState())
@@ -90,6 +96,7 @@ class SearchViewModel(
                                 else SearchUiState.BookSuccess(books)
                             )
                         }
+                        fetchCovers(books)
                     }
                     SearchMode.AUTHOR -> {
                         val books: List<Book> = searchByAuthorUseCase(query)
@@ -99,6 +106,7 @@ class SearchViewModel(
                                 else SearchUiState.BookSuccess(books)
                             )
                         }
+                        fetchCovers(books)
                     }
                     SearchMode.SERIES -> {
                         val series: List<Series> = searchBySeriesUseCase(query)
@@ -113,6 +121,34 @@ class SearchViewModel(
             } catch (e: Exception) {
                 _state.update { it.copy(uiState = SearchUiState.Error(e.message ?: "Unknown error")) }
             }
+        }
+    }
+
+    private suspend fun fetchCovers(books: List<Book>) {
+        val booksNeedingCovers = books.filter { it.coverUrl.isBlank() || it.coverUrl.endsWith("/cover") }
+        if (booksNeedingCovers.isEmpty()) return
+
+        val coverUrls = supervisorScope {
+            booksNeedingCovers.map { book ->
+                async(Dispatchers.IO) {
+                    try {
+                        val info = getBookInfoUseCase(book.id)
+                        if (info != null && info.coverUrl.isNotBlank()) {
+                            book.id to info.coverUrl
+                        } else null
+                    } catch (_: Exception) { null }
+                }
+            }.awaitAll().filterNotNull().toMap()
+        }
+
+        if (coverUrls.isEmpty()) return
+
+        _state.update { state ->
+            val bookSuccess = state.uiState as? SearchUiState.BookSuccess ?: return@update state
+            val updatedBooks = bookSuccess.books.map { book ->
+                coverUrls[book.id]?.let { book.copy(coverUrl = it) } ?: book
+            }
+            state.copy(uiState = SearchUiState.BookSuccess(updatedBooks))
         }
     }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Разрешаем HTTP только для зеркал Флибусты -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">flibusta.is</domain>
+        <domain includeSubdomains="true">flibusta.site</domain>
+        <domain includeSubdomains="true">flibusta.su</domain>
+        <domain includeSubdomains="true">flibusta.net</domain>
+        <domain includeSubdomains="true">flibusta.info</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+    <!-- Всё остальное — только HTTPS -->
+</network-security-config>

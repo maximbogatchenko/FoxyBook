@@ -4,13 +4,12 @@ import com.foxybook.app.core.models.Book
 import com.foxybook.app.core.models.BookFormat
 import com.foxybook.app.core.models.BookInfo
 import com.foxybook.app.core.models.Series
-import java.io.File
 
 interface FlibustaApi {
 
     suspend fun searchBooks(
         query: String,
-        limit: Int = 20
+        limit: Int = 50
     ): List<Book>
 
     suspend fun searchByAuthor(

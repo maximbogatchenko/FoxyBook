@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.activity.compose.BackHandler
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import java.io.File
 import kotlin.math.abs
 
 /**
@@ -57,6 +58,14 @@ fun CoverViewer(
     var offsetY by remember { mutableFloatStateOf(0f) }
     var dragOffsetY by remember { mutableFloatStateOf(0f) }
 
+    // Coil надёжнее работает с File для локальных файлов, чем с file:// строкой
+    val coverModel: Any = remember(coverUrl) {
+        when {
+            coverUrl.startsWith("file://") -> File(coverUrl.removePrefix("file://"))
+            else -> coverUrl
+        }
+    }
+
     BackHandler(onBack = onDismiss)
 
     AnimatedVisibility(
@@ -78,7 +87,7 @@ fun CoverViewer(
 
             // Zoomable image with swipe-to-dismiss
             AsyncImage(
-                model = coverUrl,
+                model = coverModel,
                 contentDescription = "Обложка",
                 modifier = Modifier
                     .fillMaxSize()

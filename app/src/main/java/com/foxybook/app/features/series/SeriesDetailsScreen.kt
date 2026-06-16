@@ -31,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -119,6 +120,12 @@ fun SeriesDetailsScreen(
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.error
                         )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        OutlinedButton(onClick = {
+                            viewModel.loadSeriesBooks(seriesId, seriesTitle)
+                        }) {
+                            Text("Повторить")
+                        }
                     }
                 }
 

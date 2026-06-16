@@ -2,13 +2,11 @@ package com.foxybook.app.features.reader
 
 import android.app.Activity
 import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,88 +17,61 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Smartphone
-import androidx.compose.material.icons.filled.Swipe
-import androidx.compose.material.icons.filled.ViewAgenda
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
-import androidx.compose.material3.Button
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material.icons.filled.TouchApp
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import android.content.Intent
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
@@ -113,15 +84,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import coil3.compose.SubcomposeAsyncImage
 import com.foxybook.app.core.models.ReaderMode
-import com.foxybook.app.core.models.ReaderSettings
 import com.foxybook.app.core.models.ReaderTheme
 import com.foxybook.app.core.reader.ContentBlock
-import com.foxybook.app.core.reader.TextPaginator
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 // ─── Reader Colors ───
 
-private data class ReaderColors(
+data class ReaderColors(
     val background: Color,
     val text: Color,
     val textSecondary: Color,
@@ -130,7 +107,7 @@ private data class ReaderColors(
     val selectionHighlight: Color
 )
 
-private fun readerColors(darkTheme: Boolean): ReaderColors = if (darkTheme) {
+fun readerColors(darkTheme: Boolean): ReaderColors = if (darkTheme) {
     ReaderColors(
         background = Color(0xFF1A1A1A),
         text = Color(0xFFE0E0E0),
@@ -167,7 +144,22 @@ fun ReaderScreen(
         ReaderTheme.DARK -> true
         ReaderTheme.SYSTEM -> isSystemInDarkTheme()
     }
-    val colors = readerColors(darkTheme)
+
+    // Animated reader colors for smooth theme transitions
+    val themeAnimProgress by animateFloatAsState(
+        targetValue = if (darkTheme) 1f else 0f,
+        animationSpec = tween(500), label = "readerTheme"
+    )
+    val lightCols = readerColors(false)
+    val darkCols = readerColors(true)
+    val colors = ReaderColors(
+        background = lerp(lightCols.background, darkCols.background, themeAnimProgress),
+        text = lerp(lightCols.text, darkCols.text, themeAnimProgress),
+        textSecondary = lerp(lightCols.textSecondary, darkCols.textSecondary, themeAnimProgress),
+        quoteBackground = lerp(lightCols.quoteBackground, darkCols.quoteBackground, themeAnimProgress),
+        quoteBorder = lerp(lightCols.quoteBorder, darkCols.quoteBorder, themeAnimProgress),
+        selectionHighlight = lerp(lightCols.selectionHighlight, darkCols.selectionHighlight, themeAnimProgress)
+    )
 
     LaunchedEffect(filePath) {
         Log.d("ReaderScreen", "LaunchedEffect: filePath=$filePath, bookId=$bookId")
@@ -178,14 +170,38 @@ fun ReaderScreen(
     val textMeasurer = rememberTextMeasurer()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    
+
+    // Capture the nav bar height once at first composition (non-immersive).
+    // This MUST be constant to prevent re-pagination on immersive toggle.
+    val rawNavBarHeight = with(density) { WindowInsets.navigationBars.getBottom(this) }
+    val rawStatusBarHeight = with(density) { WindowInsets.statusBars.getTop(this) }
+
+    // Top padding: base 16dp + status bar + extra 12dp for notch
+    val topPadPx = with(density) { 16.dp.roundToPx() } + rawStatusBarHeight + with(density) { 12.dp.roundToPx() }
+    val topPadDp = with(density) { topPadPx.toDp() }
+
     val view = LocalView.current
     val context = LocalContext.current
 
-    androidx.compose.runtime.DisposableEffect(state.isImmersive, state.isSelectingTtsStartPosition) {
+    // Sync status bar appearance with the reader theme (save & restore on exit)
+    DisposableEffect(darkTheme) {
+        val w = (context as? Activity)?.window
+        if (w != null) {
+            val controller = WindowCompat.getInsetsController(w, view)
+            val prevAppearance = controller.isAppearanceLightStatusBars
+            controller.isAppearanceLightStatusBars = !darkTheme
+            onDispose {
+                controller.isAppearanceLightStatusBars = prevAppearance
+            }
+        } else {
+            onDispose {}
+        }
+    }
+
+    DisposableEffect(state.isImmersive, state.isSelectingTtsStartPosition) {
         val window = (context as? Activity)?.window ?: return@DisposableEffect onDispose {}
         val controller = WindowCompat.getInsetsController(window, view)
-        
+
         if (state.isImmersive || state.isSelectingTtsStartPosition) {
             controller.hide(WindowInsetsCompat.Type.systemBars())
             controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
@@ -194,20 +210,26 @@ fun ReaderScreen(
         }
 
         onDispose {
-            // Restore system bars when leaving the screen or changing state
             controller.show(WindowInsetsCompat.Type.systemBars())
         }
+    }
+
+    // Apply custom brightness to the reading window
+    LaunchedEffect(settings.brightness) {
+        val window = (context as? Activity)?.window ?: return@LaunchedEffect
+        val lp = window.attributes
+        lp.screenBrightness = if (settings.brightness < 0f) -1f else settings.brightness
+        window.attributes = lp
     }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenHeightPx = constraints.maxHeight
         val screenWidthPx = constraints.maxWidth
 
-        // availableHeightPx MUST be constant to prevent re-pagination.
-        // We reserve enough space at the bottom to prevent text from being
-        // clipped by the navigation overlay in non-immersive mode.
-        // This leaves some unused space in fullscreen, but prevents jumps.
-        val availableHeightPx = screenHeightPx - with(density) { 100.dp.roundToPx() }
+        // Fixed bottom reserve prevents text from being hidden behind the bottom toolbar.
+        // Not dependent on isImmersive — no re-pagination on immersive toggle.
+        val pageBottomReservePx = with(density) { 20.dp.roundToPx() }
+        val availableHeightPx = remember { screenHeightPx - topPadPx - rawNavBarHeight - pageBottomReservePx }
         val availableWidthPx = screenWidthPx - with(density) { settings.margins.dp.roundToPx() * 2 }
 
         Box(
@@ -215,7 +237,6 @@ fun ReaderScreen(
                 .fillMaxSize()
                 .background(colors.background)
         ) {
-            // 1. Content Area (Fixed size, Overlay UI will float on top)
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -260,6 +281,7 @@ fun ReaderScreen(
                                 contentHeightPx = availableHeightPx,
                                 textMeasurer = textMeasurer,
                                 density = density,
+                                topPadDp = topPadDp,
                                 onToggleImmersive = { viewModel.onEvent(ReaderEvent.ToggleImmersive) }
                             )
                         } else {
@@ -275,9 +297,7 @@ fun ReaderScreen(
                 }
             }
 
-            // 2. UI Overlays (TopBar, BottomBar)
             if (!state.isImmersive && !state.isSelectingTtsStartPosition) {
-                // Top Overlay
                 Box(modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter)) {
                     TopAppBar(
                         title = {
@@ -292,7 +312,7 @@ fun ReaderScreen(
                         navigationIcon = {
                             IconButton(onClick = onBackClick) {
                                 Icon(
-                                    Icons.AutoMirrored.Filled.ArrowBack, 
+                                    Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = "Назад",
                                     tint = colors.text
                                 )
@@ -300,8 +320,19 @@ fun ReaderScreen(
                         },
                         actions = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
+                                val topText = if (settings.showProgressAsPercentage) {
+                                    "${state.readingPercentage}%"
+                                } else if (ReaderMode.valueOf(settings.readerMode) == ReaderMode.HORIZONTAL) {
+                                    "${state.pageCurrent + 1}/${state.pageTotal}"
+                                } else {
+                                    val blocks = state.chapterBlocks[state.currentChapter]
+                                    val blockProgress = if (blocks != null && blocks.size > 1) {
+                                        (state.scrollY + 1).coerceIn(1, blocks.size)
+                                    } else 1
+                                    "$blockProgress/${blocks?.size ?: 1}"
+                                }
                                 Text(
-                                    "${state.readingPercentage}%",
+                                    topText,
                                     style = MaterialTheme.typography.labelMedium,
                                     color = colors.text.copy(alpha = 0.7f),
                                     modifier = Modifier.padding(end = 4.dp)
@@ -368,11 +399,10 @@ fun ReaderScreen(
                             navigationIconContentColor = colors.text,
                             actionIconContentColor = colors.text
                         ),
-                        windowInsets = TopAppBarDefaults.windowInsets // This handles status bar padding internally
+                        windowInsets = TopAppBarDefaults.windowInsets
                     )
                 }
 
-                // Bottom Overlay
                 if (state.book != null) {
                     Box(modifier = Modifier
                         .fillMaxWidth()
@@ -393,18 +423,16 @@ fun ReaderScreen(
                 }
             }
 
-            // Snackbar Overlay
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(bottom = if (state.isImmersive || state.isSelectingTtsStartPosition) 0.dp else 100.dp)
-                    .navigationBarsPadding(), 
+                    .navigationBarsPadding(),
                 contentAlignment = Alignment.BottomCenter
             ) {
                 SnackbarHost(snackbarHostState)
             }
 
-            // Selection Mode Overlay
             if (state.isSelectingTtsStartPosition) {
                 Box(
                     modifier = Modifier
@@ -425,7 +453,7 @@ fun ReaderScreen(
                             modifier = Modifier.weight(1f),
                             color = colors.text
                         )
-                        androidx.compose.material3.TextButton(
+                        TextButton(
                             onClick = { viewModel.onEvent(ReaderEvent.CancelTtsSelection) },
                             contentPadding = PaddingValues(horizontal = 12.dp)
                         ) {
@@ -450,7 +478,6 @@ fun ReaderScreen(
             snackbarHostState = snackbarHostState
         )
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -595,7 +622,7 @@ private fun BookmarksList(
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                         )
                     }
-                    IconButton(onClick = { 
+                    IconButton(onClick = {
                         viewModel.onEvent(ReaderEvent.RemoveBookmark(bookmark))
                         scope.launch { snackbarHostState.showSnackbar("Закладка удалена") }
                     }) {
@@ -607,398 +634,8 @@ private fun BookmarksList(
     }
 }
 
-// ─── Scroll Mode (Seamless) ───
-
-private data class GlobalBlock(
-    val block: ContentBlock,
-    val chapterIndex: Int,
-    val blockIndexInChapter: Int,
-    val offsetInChapter: Int
-)
-
 @Composable
-private fun ScrollModeContent(
-    viewModel: ReaderViewModel,
-    state: ReaderState,
-    settings: ReaderSettings,
-    colors: ReaderColors,
-    onToggleImmersive: () -> Unit
-) {
-    val lazyListState = rememberLazyListState()
-    val book = state.book ?: return
-// ... (omitted for brevity, will provide full body in actual call)
-
-    // Simple approach: only show loaded chapters in order
-    val globalBlocks = remember(state.chapterBlocks) {
-        val list = mutableListOf<GlobalBlock>()
-
-        // Get all loaded chapter indices and sort them
-        val loadedChapters = state.chapterBlocks.keys.sorted()
-
-        loadedChapters.forEach { chIdx ->
-            val blocks = state.chapterBlocks[chIdx] ?: emptyList()
-            var currentOffset = 0
-            blocks.forEachIndexed { bIdx, block ->
-                list.add(GlobalBlock(block, chIdx, bIdx, currentOffset))
-                currentOffset += block.getTextContent().length
-            }
-        }
-
-        Log.d("ReaderNav", "ScrollMode: Built ${list.size} blocks from chapters $loadedChapters")
-        list
-    }
-
-    // Aggressive preloading on scroll
-    LaunchedEffect(Unit) {
-        snapshotFlow { lazyListState.firstVisibleItemIndex }
-            .collect { index ->
-                if (index >= 0 && index < globalBlocks.size) {
-                    val currentBlock = globalBlocks[index]
-                    val chapterIndex = currentBlock.chapterIndex
-
-                    // Load next 10 chapters aggressively
-                    for (i in 1..10) {
-                        val nextChapter = chapterIndex + i
-                        if (nextChapter < book.chapters.size && !state.chapterBlocks.containsKey(nextChapter)) {
-                            Log.d("ReaderNav", "ScrollMode: Loading chapter $nextChapter")
-                            viewModel.getBlocks(nextChapter)
-                        }
-                    }
-                }
-            }
-    }
-
-    // Early preloading: load next chapter when in last third of current chapter
-    LaunchedEffect(lazyListState) {
-        snapshotFlow {
-            val idx = lazyListState.firstVisibleItemIndex
-            val block = globalBlocks.getOrNull(idx)
-            Pair(idx, block?.chapterIndex ?: -1)
-        }.collect { (idx, chIdx) ->
-            if (chIdx >= 0 && idx + 20 < globalBlocks.size) {
-                // Find how many blocks are in the current chapter ahead of us
-                val currentChapterBlocks = globalBlocks.filter { it.chapterIndex == chIdx }
-                val currentBlockInChapter = globalBlocks.indexOfFirst { it.chapterIndex == chIdx && it.blockIndexInChapter == globalBlocks[idx].blockIndexInChapter }
-                val chapterBlockCount = currentChapterBlocks.size
-                if (currentBlockInChapter > chapterBlockCount * 2 / 3) {
-                    // We're in the last third of the chapter, preload next chapter
-                    val nextCh = chIdx + 1
-                    if (nextCh < book.chapters.size && !state.chapterBlocks.containsKey(nextCh)) {
-                        Log.d("ReaderNav", "ScrollMode: Early loading chapter $nextCh (near end of ch$chIdx)")
-                        viewModel.getBlocks(nextCh)
-                    }
-                }
-            }
-        }
-    }
-
-    // Initial load
-    LaunchedEffect(state.currentChapter) {
-        // Load current and next chapters
-        for (i in 0..5) {
-            val chIdx = state.currentChapter + i
-            if (chIdx < book.chapters.size && !state.chapterBlocks.containsKey(chIdx)) {
-                viewModel.getBlocks(chIdx)
-            }
-        }
-    }
-
-    // Restore scroll position
-    var isRestoring by remember { mutableStateOf(true) }
-    var lastHandledRestoreTrigger by remember { mutableLongStateOf(-1L) }
-
-    LaunchedEffect(state.lastPositionRestoreTrigger, globalBlocks) {
-        if (globalBlocks.isEmpty() || state.lastPositionRestoreTrigger == lastHandledRestoreTrigger) {
-            isRestoring = false
-            return@LaunchedEffect
-        }
-
-        // Find the right block by textOffset (works across modes) or fall back to scrollY
-        val targetIdx = globalBlocks.indexOfFirst {
-            it.chapterIndex == state.currentChapter &&
-            state.textOffset in it.offsetInChapter until (it.offsetInChapter + it.block.getTextContent().length)
-        }.let { if (it == -1) globalBlocks.indexOfFirst { gb -> gb.chapterIndex == state.currentChapter && gb.blockIndexInChapter == state.scrollY } else it }
-
-        if (targetIdx >= 0) {
-            Log.d("ReaderNav", "ScrollMode: Restoring to index $targetIdx (block=${state.scrollY})")
-            isRestoring = true
-            lazyListState.scrollToItem(targetIdx, state.scrollOffset)
-            lastHandledRestoreTrigger = state.lastPositionRestoreTrigger
-            delay(100)
-        }
-        isRestoring = false
-    }
-
-    // Track scroll position
-    LaunchedEffect(lazyListState) {
-        snapshotFlow {
-            lazyListState.firstVisibleItemIndex to lazyListState.isScrollInProgress
-        }.collect { (index, isScrolling) ->
-            if (!isScrolling && !isRestoring && index >= 0 && index < globalBlocks.size) {
-                val block = globalBlocks[index]
-
-                // Update chapter if changed
-                if (block.chapterIndex != state.currentChapter) {
-                    Log.d("ReaderNav", "ScrollMode: Chapter changed to ${block.chapterIndex} via scroll")
-                    viewModel.onEvent(ReaderEvent.ChapterChanged(block.chapterIndex, resetPosition = false))
-                }
-
-                // Save position
-                viewModel.onEvent(ReaderEvent.ScrollProgress(
-                    (index * 100 / globalBlocks.size.coerceAtLeast(1)),
-                    block.blockIndexInChapter,
-                    lazyListState.firstVisibleItemScrollOffset,
-                    block.offsetInChapter
-                ))
-            }
-        }
-    }
-
-    LazyColumn(
-        state = lazyListState,
-        contentPadding = PaddingValues(horizontal = settings.margins.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(count = globalBlocks.size, key = { index ->
-            val gb = globalBlocks[index]
-            "ch${gb.chapterIndex}_b${gb.blockIndexInChapter}"
-        }) { index ->
-            val gb = globalBlocks[index]
-            BlockComposable(
-                block = gb.block,
-                fontSize = settings.fontSize,
-                lineHeight = settings.lineHeight,
-                colors = colors,
-                isSelectionMode = state.isSelectingTtsStartPosition,
-                isCurrentTtsBlock = state.currentTtsChapter == gb.chapterIndex && state.currentTtsBlockIndex == gb.blockIndexInChapter,
-                onTtsClick = { viewModel.onEvent(ReaderEvent.StartTts(gb.chapterIndex, gb.blockIndexInChapter)) },
-                onToggleImmersive = onToggleImmersive
-            )
-        }
-
-        // End of book marker
-        if (globalBlocks.isNotEmpty()) {
-            val lastChapter = globalBlocks.last().chapterIndex
-            if (lastChapter == book.chapters.size - 1) {
-                item {
-                    Spacer(modifier = Modifier.height(100.dp))
-                    Text(
-                        "Конец книги",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        color = colors.textSecondary
-                    )
-                    Spacer(modifier = Modifier.height(100.dp))
-                }
-            }
-        }
-    }
-}
-
-// ─── Page Mode (Seamless) ───
-
-private data class GlobalPage(
-    val page: TextPaginator.Page,
-    val chapterIndex: Int,
-    val pageIndexInChapter: Int
-)
-
-@Composable
-private fun PageModeContent(
-    viewModel: ReaderViewModel,
-    state: ReaderState,
-    settings: ReaderSettings,
-    colors: ReaderColors,
-    contentWidthPx: Int,
-    contentHeightPx: Int,
-    textMeasurer: TextMeasurer,
-    density: Density,
-    onToggleImmersive: () -> Unit
-) {
-    // Trigger pagination when dimensions change
-    LaunchedEffect(contentWidthPx, contentHeightPx, settings.fontSize, settings.lineHeight, settings.margins) {
-        Log.d("ReaderNav", "PageMode: Dimensions changed")
-        viewModel.onEvent(ReaderEvent.UpdatePageDimensions(contentWidthPx, contentHeightPx, textMeasurer, density))
-    }
-
-    val book = state.book ?: return
-
-    // Simple approach: only show paginated chapters in order
-    val globalPages = remember(state.chapterPages) {
-        val list = mutableListOf<GlobalPage>()
-
-        // Get all paginated chapter indices and sort them
-        val paginatedChapters = state.chapterPages.keys.sorted()
-
-        paginatedChapters.forEach { chIdx ->
-            val pages = state.chapterPages[chIdx] ?: emptyList()
-            pages.forEachIndexed { pIdx, page ->
-                list.add(GlobalPage(page, chIdx, pIdx))
-            }
-        }
-
-        Log.d("ReaderNav", "PageMode: Built ${list.size} pages from chapters $paginatedChapters")
-        list
-    }
-
-    // Aggressive preloading
-    LaunchedEffect(Unit) {
-        snapshotFlow { if (globalPages.isEmpty()) -1 else globalPages[kotlin.math.min(state.pageCurrent, globalPages.size - 1)].chapterIndex }
-            .collect { visibleChapter ->
-                if (visibleChapter >= 0) {
-                    // Load and paginate next 10 chapters
-                    for (i in 1..10) {
-                        val nextChapter = visibleChapter + i
-                        if (nextChapter < book.chapters.size) {
-                            if (!state.chapterBlocks.containsKey(nextChapter)) {
-                                Log.d("ReaderNav", "PageMode: Loading chapter $nextChapter")
-                                viewModel.getBlocks(nextChapter)
-                            }
-                            viewModel.ensurePaginated(nextChapter)
-                        }
-                    }
-                }
-            }
-    }
-
-    // Initial load
-    LaunchedEffect(state.currentChapter) {
-        for (i in 0..5) {
-            val chIdx = state.currentChapter + i
-            if (chIdx < book.chapters.size) {
-                if (!state.chapterBlocks.containsKey(chIdx)) {
-                    viewModel.getBlocks(chIdx)
-                }
-                viewModel.ensurePaginated(chIdx)
-            }
-        }
-    }
-
-    // Show loading if no pages yet
-    if (globalPages.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
-    }
-
-    // Initial page calculation based on textOffset for better accuracy across font size changes
-    val initialPage = remember(globalPages) {
-        val idx = globalPages.indexOfFirst {
-            it.chapterIndex == state.currentChapter &&
-            (state.textOffset in it.page.startOffset until it.page.endOffset || 
-             (it.pageIndexInChapter == 0 && state.textOffset == 0))
-        }.coerceAtLeast(globalPages.indexOfFirst { it.chapterIndex == state.currentChapter })
-        
-        if (idx >= 0) idx else 0
-    }
-
-    val pagerState = rememberPagerState(
-        initialPage = initialPage,
-        pageCount = { globalPages.size.coerceAtLeast(1) }
-    )
-
-    // Restore position / Handle chapter navigation
-    var isRestoring by remember { mutableStateOf(true) }
-    var lastHandledRestoreTrigger by remember { mutableLongStateOf(-1L) }
-
-    LaunchedEffect(state.lastPositionRestoreTrigger, globalPages) {
-        if (globalPages.isEmpty() || state.lastPositionRestoreTrigger == lastHandledRestoreTrigger) {
-            isRestoring = false
-            return@LaunchedEffect
-        }
-
-        val targetIdx = globalPages.indexOfFirst {
-            it.chapterIndex == state.currentChapter &&
-            (state.textOffset in it.page.startOffset until it.page.endOffset ||
-             (it.pageIndexInChapter == 0 && state.textOffset == 0))
-        }.let { if (it == -1) globalPages.indexOfFirst { p -> p.chapterIndex == state.currentChapter } else it }
-
-        if (targetIdx >= 0) {
-            Log.d("ReaderNav", "PageMode: Restoring to page $targetIdx (ch=${state.currentChapter}, offset=${state.textOffset})")
-            isRestoring = true
-            pagerState.scrollToPage(targetIdx)
-            lastHandledRestoreTrigger = state.lastPositionRestoreTrigger
-            delay(250)
-        }
-        isRestoring = false
-    }
-
-    // Track current page
-    LaunchedEffect(pagerState) {
-        snapshotFlow {
-            pagerState.currentPage to pagerState.isScrollInProgress
-        }.collect { (page, isScrolling) ->
-            if (!isScrolling && page >= 0 && page < globalPages.size) {
-                val currentPage = globalPages[page]
-
-                // Update chapter if changed (only when not restoring)
-                if (!isRestoring && currentPage.chapterIndex != state.currentChapter) {
-                    Log.d("ReaderNav", "PageMode: Chapter changed to ${currentPage.chapterIndex} via swipe")
-                    viewModel.onEvent(ReaderEvent.ChapterChanged(currentPage.chapterIndex, resetPosition = false))
-                }
-
-                // Save position (always, even during restoration)
-                val totalInChapter = globalPages.count { it.chapterIndex == currentPage.chapterIndex }.coerceAtLeast(1)
-                viewModel.onEvent(ReaderEvent.PageInfo(
-                    currentPage.pageIndexInChapter,
-                    totalInChapter,
-                    currentPage.page.startOffset
-                ))
-            }
-        }
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize(),
-            beyondViewportPageCount = 2,
-            key = { index ->
-                val gp = globalPages.getOrNull(index)
-                if (gp != null) "ch${gp.chapterIndex}_p${gp.pageIndexInChapter}" else "empty_$index"
-            }
-        ) { index ->
-            val gp = globalPages.getOrNull(index)
-            if (gp != null) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = settings.margins.dp, vertical = 16.dp),
-                        verticalArrangement = Arrangement.Top
-                    ) {
-                    gp.page.blocks.forEach { block ->
-                        BlockComposable(
-                            block = block,
-                            fontSize = settings.fontSize,
-                            lineHeight = settings.lineHeight,
-                            colors = colors,
-                            isSelectionMode = state.isSelectingTtsStartPosition,
-                            isCurrentTtsBlock = state.currentTtsChapter == gp.chapterIndex && state.currentTtsBlockIndex == block.originalIndex,
-                            onTtsClick = {
-                                viewModel.onEvent(ReaderEvent.StartTts(gp.chapterIndex, block.originalIndex))
-                            },
-                            onToggleImmersive = onToggleImmersive
-                        )
-                    }
-                }
-                val chapterPageCount = globalPages.count { it.chapterIndex == gp.chapterIndex }
-                Text(
-                    text = "Гл.${gp.chapterIndex + 1} Стр.${gp.pageIndexInChapter + 1} / ${chapterPageCount}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = colors.textSecondary.copy(alpha = 0.4f),
-                    modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp)
-                )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun BlockComposable(
+fun BlockComposable(
     block: ContentBlock,
     fontSize: Int,
     lineHeight: Float,
@@ -1039,7 +676,7 @@ private fun BlockComposable(
                     )
                 }
                 is ContentBlock.Paragraph -> {
-                    SelectionContainer {
+                    androidx.compose.foundation.text.selection.SelectionContainer {
                         Text(
                             text = block.text,
                             fontSize = fontSize.sp,
@@ -1099,17 +736,38 @@ private fun BlockComposable(
                     }
                 }
                 is ContentBlock.EmptyLine -> Spacer(modifier = Modifier.height(block.height.dp))
-                is ContentBlock.Image -> Box(modifier = Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.Center) {
-                    Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = block.alt, modifier = Modifier.size(48.dp),
-                        tint = colors.text.copy(alpha = 0.2f))
-                }
+                is ContentBlock.Image -> {
+                    val imgModel: Any? = remember(block.src) {
+                        when {
+                            block.src.isBlank() -> null
+                            block.src.startsWith("file://") -> java.io.File(block.src.removePrefix("file://"))
+                            else -> block.src
+                        }
+                    }
+                    SubcomposeAsyncImage(
+                    model = imgModel,
+                    contentDescription = block.alt,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    loading = {
+                        Box(modifier = Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+                        }
+                    },
+                    error = {
+                        Box(modifier = Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) {
+                            Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = null, modifier = Modifier.size(48.dp),
+                                tint = colors.text.copy(alpha = 0.2f))
+                        }
+                    }
+                )
             }
         }
+    }
     }
 }
 
 @Composable
-private fun ReaderBottomBar(
+fun ReaderBottomBar(
     state: ReaderState,
     viewModel: ReaderViewModel,
     colors: ReaderColors,
@@ -1126,14 +784,16 @@ private fun ReaderBottomBar(
         }
         Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = chapter?.title ?: "", style = MaterialTheme.typography.labelSmall, maxLines = 1, overflow = TextOverflow.Ellipsis, color = colors.text)
-            Text(text = if (mode == ReaderMode.HORIZONTAL) {
+            Text(text = if (state.settings.showProgressAsPercentage) {
+                    "${state.readingPercentage}%"
+                } else if (mode == ReaderMode.HORIZONTAL) {
                     "Стр. ${state.pageCurrent + 1}/${state.pageTotal}"
                 } else {
                     val blocks = state.chapterBlocks[state.currentChapter]
-                    val progress = if (blocks != null && blocks.size > 1) {
-                        (state.scrollY * 100 / blocks.size).coerceIn(0, 100)
-                    } else 0
-                    "Стр. ${progress}%"
+                    val blockProgress = if (blocks != null && blocks.size > 1) {
+                        (state.scrollY + 1).coerceIn(1, blocks.size)
+                    } else 1
+                    "$blockProgress/${blocks?.size ?: 1}"
                 },
                 style = MaterialTheme.typography.labelSmall, color = colors.text.copy(alpha = 0.6f))
         }
@@ -1141,318 +801,5 @@ private fun ReaderBottomBar(
             Icon(Icons.Default.PlayArrow, "След.", modifier = Modifier.size(24.dp),
                 tint = if (state.currentChapter < book.chapters.size - 1) MaterialTheme.colorScheme.primary else colors.text.copy(alpha = 0.2f))
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SettingsSheet(settings: ReaderSettings, viewModel: ReaderViewModel) {
-    val state by viewModel.state.collectAsState()
-    val sheetState = rememberModalBottomSheetState()
-    ModalBottomSheet(
-        onDismissRequest = { viewModel.onEvent(ReaderEvent.ToggleSettings) },
-        sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.background
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.85f)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 8.dp)
-                    .padding(bottom = 16.dp)
-            ) {
-            if (!state.showTtsControls) {
-                Text("Настройки чтения", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text("Тема книги", fontWeight = FontWeight.Medium)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.LIGHT, onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.LIGHT)) }, label = { Text("Светлая") }, leadingIcon = { Icon(Icons.Default.LightMode, null, modifier = Modifier.size(18.dp)) })
-                    FilterChip(selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.DARK, onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.DARK)) }, label = { Text("Тёмная") }, leadingIcon = { Icon(Icons.Default.DarkMode, null, modifier = Modifier.size(18.dp)) })
-                    FilterChip(selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.SYSTEM, onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.SYSTEM)) }, label = { Text("Системная") }, leadingIcon = { Icon(Icons.Default.Smartphone, null, modifier = Modifier.size(18.dp)) })
-                }
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth().clickable { viewModel.onEvent(ReaderEvent.ToggleTtsControls) }.padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(Icons.Default.VolumeUp, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text("Озвучивание книги", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-                    Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Шрифт", modifier = Modifier.weight(1f))
-                    Text("${settings.fontSize}sp", color = MaterialTheme.colorScheme.primary)
-                    IconButton(onClick = { viewModel.onEvent(ReaderEvent.FontSizeChanged(18)) }, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.Refresh, "Сброс", modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-                Slider(value = settings.fontSize.toFloat(), onValueChange = { viewModel.onEvent(ReaderEvent.FontSizeChanged(it.toInt())) }, valueRange = 12f..32f, steps = 10)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Межстрочный", modifier = Modifier.weight(1f))
-                    Text("%.1f".format(settings.lineHeight), color = MaterialTheme.colorScheme.primary)
-                    IconButton(onClick = { viewModel.onEvent(ReaderEvent.LineHeightChanged(1.8f)) }, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.Refresh, "Сброс", modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-                Slider(value = settings.lineHeight, onValueChange = { viewModel.onEvent(ReaderEvent.LineHeightChanged(it)) }, valueRange = 1.0f..3.0f, steps = 8)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Поля", modifier = Modifier.weight(1f))
-                    Text("${settings.margins}dp", color = MaterialTheme.colorScheme.primary)
-                    IconButton(onClick = { viewModel.onEvent(ReaderEvent.MarginsChanged(16)) }, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.Refresh, "Сброс", modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-                Slider(value = settings.margins.toFloat(), onValueChange = { viewModel.onEvent(ReaderEvent.MarginsChanged(it.toInt())) }, valueRange = 0f..40f, steps = 8)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Режим", fontWeight = FontWeight.Medium)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(selected = ReaderMode.valueOf(settings.readerMode) == ReaderMode.VERTICAL, onClick = { viewModel.onEvent(ReaderEvent.ReaderModeChanged(ReaderMode.VERTICAL)) }, label = { Text("Прокрутка") }, leadingIcon = { Icon(Icons.Default.ViewAgenda, null, modifier = Modifier.size(18.dp)) })
-                    FilterChip(selected = ReaderMode.valueOf(settings.readerMode) == ReaderMode.HORIZONTAL, onClick = { viewModel.onEvent(ReaderEvent.ReaderModeChanged(ReaderMode.HORIZONTAL)) }, label = { Text("Страницы") }, leadingIcon = { Icon(Icons.Default.Swipe, null, modifier = Modifier.size(18.dp)) })
-                }
-                Spacer(modifier = Modifier.height(24.dp))
-            } else {
-                TtsControlsUI(state, viewModel)
-            }
-        }
-    }
-}
-}
-
-@Composable
-private fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
-    val context = LocalContext.current
-    var selectedLang by remember(state.settings.ttsLanguage, state.availableLanguages) {
-        mutableStateOf(state.settings.ttsLanguage ?: state.availableLanguages.firstOrNull { it == "Русский" } ?: state.availableLanguages.firstOrNull() ?: "") 
-    }
-    
-    val filteredVoices = remember(selectedLang, state.availableVoices) {
-        state.availableVoices.filter { it.language == selectedLang }
-    }
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = { viewModel.onEvent(ReaderEvent.ToggleTtsControls) }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
-            }
-            Text("Озвучивание книги", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = {
-                try {
-                    val intent = Intent().apply {
-                        action = "com.android.settings.TTS_SETTINGS"
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    }
-                    context.startActivity(intent)
-                } catch (e: Exception) {
-                    // Fallback
-                    val intent = Intent().apply {
-                        action = android.provider.Settings.ACTION_SETTINGS
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    }
-                    context.startActivity(intent)
-                }
-            }) {
-                Icon(Icons.Default.Settings, contentDescription = "Выбор движка TTS")
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (!state.isSpeaking && !state.isPaused) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    androidx.compose.material3.Button(
-                        onClick = { viewModel.onEvent(ReaderEvent.StartTts()) },
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp)
-                    ) {
-                        Icon(Icons.Default.PlayArrow, null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Читать с текущего места")
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    androidx.compose.material3.OutlinedButton(
-                        onClick = { viewModel.onEvent(ReaderEvent.StartTtsSelection) },
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp)
-                    ) {
-                        Icon(Icons.Default.TouchApp, null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Выбрать место начала чтения")
-                    }
-                }
-            } else {
-                if (state.isSpeaking) {
-                    IconButton(onClick = { viewModel.onEvent(ReaderEvent.PauseTts) }, modifier = Modifier.size(64.dp)) {
-                        Icon(Icons.Default.Pause, "Пауза", modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary)
-                    }
-                } else {
-                    IconButton(onClick = { viewModel.onEvent(ReaderEvent.ResumeTts) }, modifier = Modifier.size(64.dp)) {
-                        Icon(Icons.Default.PlayArrow, "Продолжить", modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary)
-                    }
-                }
-                
-                Spacer(modifier = Modifier.width(32.dp))
-                
-                IconButton(onClick = { viewModel.onEvent(ReaderEvent.StopTts) }, modifier = Modifier.size(64.dp)) {
-                    Icon(Icons.Default.Stop, "Остановить", modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.error)
-                }
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        Text("Язык", style = MaterialTheme.typography.labelLarge)
-        LazyRow(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(state.availableLanguages) { lang ->
-                FilterChip(
-                    selected = selectedLang == lang,
-                    onClick = { 
-                        selectedLang = lang
-                        viewModel.onEvent(ReaderEvent.SetTtsLanguage(lang))
-                    },
-                    label = { Text(lang) }
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        Text("Голос", style = MaterialTheme.typography.labelLarge)
-        LazyRow(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(filteredVoices) { voice ->
-                FilterChip(
-                    selected = state.settings.ttsVoice == voice.id,
-                    onClick = { viewModel.onEvent(ReaderEvent.SetTtsVoice(voice.id)) },
-                    label = { Text(voice.name) }
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Скорость: %.1fx".format(state.settings.ttsRate), style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(80.dp))
-            Slider(
-                value = state.settings.ttsRate,
-                onValueChange = { viewModel.onEvent(ReaderEvent.SetTtsRate(it)) },
-                valueRange = 0.5f..2.5f,
-                modifier = Modifier.weight(1f)
-            )
-        }
-        
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Высота: %.1f".format(state.settings.ttsPitch), style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(80.dp))
-            Slider(
-                value = state.settings.ttsPitch,
-                onValueChange = { viewModel.onEvent(ReaderEvent.SetTtsPitch(it)) },
-                valueRange = 0.5f..2.0f,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text("Таймер сна", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-        Spacer(modifier = Modifier.height(12.dp))
-
-        if (state.sleepTimerRemainingSeconds > 0) {
-            val minutes = state.sleepTimerRemainingSeconds / 60
-            val seconds = state.sleepTimerRemainingSeconds % 60
-            val progress = state.sleepTimerRemainingSeconds.toFloat() / (state.sleepTimerRemainingSeconds + 1f)
-
-            OutlinedCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                "Таймер активен",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                fontWeight = FontWeight.Medium
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                String.format("%d:%02d", minutes, seconds),
-                                style = MaterialTheme.typography.displaySmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                        IconButton(
-                            onClick = { viewModel.onEvent(ReaderEvent.CancelSleepTimer) },
-                            modifier = Modifier.size(48.dp)
-                        ) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = "Отменить",
-                                tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    LinearProgressIndicator(
-                        progress = { progress },
-                        modifier = Modifier.fillMaxWidth().height(8.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        "Чтение остановится автоматически",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        } else {
-            Text(
-                "Выберите время, через которое чтение остановится",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(listOf(5, 10, 15, 20, 30, 45, 60)) { minutes ->
-                val isSelected = state.sleepTimerRemainingSeconds > 0 &&
-                    state.sleepTimerRemainingSeconds / 60 == minutes.toLong() &&
-                    state.sleepTimerRemainingSeconds % 60 < 60
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { viewModel.onEvent(ReaderEvent.SetSleepTimer(minutes)) },
-                    label = { Text("$minutes мин") },
-                    leadingIcon = if (isSelected) {
-                        { Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp)) }
-                    } else null
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
     }
 }

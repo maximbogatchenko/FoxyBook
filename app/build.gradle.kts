@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -14,8 +15,8 @@ android {
         applicationId = "com.foxybook.app"
         minSdk = 28
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.4"
+        versionCode = 7
+        versionName = "1.5"
 
         // ABI splits: only ARM devices (covers 99%+ of Android)
         ndk {
@@ -142,9 +143,19 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
+    // Koin DI
+    implementation("io.insert-koin:koin-android:4.1.0")
+    implementation("io.insert-koin:koin-androidx-compose:4.1.0")
+    implementation("io.insert-koin:koin-compose:4.1.0")
+
     // Media3 for MediaSession/Notification
     implementation("androidx.media3:media3-session:1.5.1")
     implementation("androidx.media3:media3-common:1.5.1")
+
+    // Room
+    implementation("androidx.room:room-runtime:2.8.4")
+    implementation("androidx.room:room-ktx:2.8.4")
+    kapt("androidx.room:room-compiler:2.8.4")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

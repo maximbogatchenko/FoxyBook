@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import java.io.File
 
 private const val TAG = "COVER"
 
@@ -56,6 +58,14 @@ fun CoverWithAuthor(
     var isLoading by remember(coverUrl) { mutableStateOf(false) }
     val showFallback = coverUrl.isBlank() || imageLoadFailed
 
+    // Coil надёжнее работает с File для локальных файлов, чем с file:// строкой
+    val coverModel: Any = remember(coverUrl) {
+        when {
+            coverUrl.startsWith("file://") -> File(coverUrl.removePrefix("file://"))
+            else -> coverUrl
+        }
+    }
+
     if (coverUrl.isNotBlank()) {
         Log.d(TAG, "COVER_URL | url=$coverUrl author=$author")
     }
@@ -79,7 +89,7 @@ fun CoverWithAuthor(
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
                 AsyncImage(
-                    model = coverUrl,
+                    model = coverModel,
                     contentDescription = contentDescription,
                     modifier = Modifier
                         .fillMaxSize()

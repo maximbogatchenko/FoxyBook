@@ -28,6 +28,15 @@
     <init>(...);
 }
 
+# ─── Update Checker ───
+-keep,includedescriptorclasses class com.foxybook.app.core.updater.**$$serializer { *; }
+-keepclassmembers class com.foxybook.app.core.updater.** {
+    *** Companion;
+}
+-keepclasseswithmembers class com.foxybook.app.core.updater.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
 # ─── Jsoup ───
 -keep class org.jsoup.** { *; }
 -dontwarn org.jsoup.**

@@ -11,6 +11,7 @@ import com.foxybook.app.core.network.OkHttpClientProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 import org.jsoup.Jsoup
@@ -254,16 +255,15 @@ class FlibustaApiImpl(context: Context) : FlibustaApi {
                 val seenIds = mutableSetOf<Int>()
 
                 if (liItems.isNotEmpty()) {
-                    liItems.forEachIndexed { index, li ->
-                        if (results.size >= limit) return@forEachIndexed
-                        val bookLink = li.selectFirst("a[href^=/b/]") ?: return@forEachIndexed
-                        val id = Regex("/b/(\\d+)").find(bookLink.attr("href"))?.groupValues?.get(1)?.toIntOrNull() ?: return@forEachIndexed
-                        if (id in seenIds) return@forEachIndexed
+                    liItems.forEach { li ->
+                        if (results.size >= limit) return@forEach
+                        val bookLink = li.selectFirst("a[href^=/b/]") ?: return@forEach
+                        val id = Regex("/b/(\\d+)").find(bookLink.attr("href"))?.groupValues?.get(1)?.toIntOrNull() ?: return@forEach
+                        if (id in seenIds) return@forEach
                         seenIds.add(id)
 
                         // In li items, author is often listed after the title if it's different from the series author
                         val bookAuthor = extractAuthorFromSeriesPage(bookLink).takeIf { it != "Unknown Author" } ?: globalAuthor
-                        val seqNumber = extractSequenceNumber(li).let { if (it > 0) it else index + 1 }
 
                         results.add(Book(
                             id = id,
@@ -272,7 +272,7 @@ class FlibustaApiImpl(context: Context) : FlibustaApi {
                             link = "/b/$id",
                             sendLink = "/send/$id",
                             coverUrl = "$baseUrl/b/$id/cover",
-                            sequenceNumber = seqNumber
+                            sequenceNumber = results.size + 1
                         ))
                     }
                 }
@@ -280,10 +280,10 @@ class FlibustaApiImpl(context: Context) : FlibustaApi {
                 // ── Strategy 2: Direct <a> links (if liItems failed) ──
                 if (results.isEmpty()) {
                     val allBookLinks = main.select("a[href^=/b/]")
-                    allBookLinks.forEachIndexed { index, link ->
-                        if (results.size >= limit) return@forEachIndexed
-                        val id = Regex("/b/(\\d+)").find(link.attr("href"))?.groupValues?.get(1)?.toIntOrNull() ?: return@forEachIndexed
-                        if (id in seenIds) return@forEachIndexed
+                    allBookLinks.forEach { link ->
+                        if (results.size >= limit) return@forEach
+                        val id = Regex("/b/(\\d+)").find(link.attr("href"))?.groupValues?.get(1)?.toIntOrNull() ?: return@forEach
+                        if (id in seenIds) return@forEach
                         seenIds.add(id)
 
                         results.add(Book(
@@ -293,39 +293,17 @@ class FlibustaApiImpl(context: Context) : FlibustaApi {
                             link = "/b/$id",
                             sendLink = "/send/$id",
                             coverUrl = "$baseUrl/b/$id/cover",
-                            sequenceNumber = index + 1
+                            sequenceNumber = results.size + 1
                         ))
                     }
                 }
 
-                results.sortedBy { it.sequenceNumber }
+                results
             } catch (e: Exception) {
                 Log.e(TAG, "SERIES_OPEN | EXCEPTION", e)
                 emptyList()
             }
         }
-
-    /**
-     * Extract the sequence (volume) number from a <li> element on the series page.
-     *
-     * Flibusta markup patterns:
-     *   <li>...<a href="/b/123">Title</a>...<b>1</b></li>
-     *   <li>...<a href="/b/123">Title</a>...<b>3</b> ...</li>
-     *
-     * The <b> tag containing only digits is the volume number.
-     * If no such <b> tag exists, returns 0 (caller should use fallback order).
-     */
-    private fun extractSequenceNumber(li: org.jsoup.nodes.Element): Int {
-        val bTags = li.select("b")
-        for (b in bTags) {
-            val text = b.text().trim()
-            val num = text.toIntOrNull()
-            if (num != null && num > 0) {
-                return num
-            }
-        }
-        return 0
-    }
 
     // ═══════════════════════════════════════════════════════════
     // getBookInfo: GET /b/{id}
@@ -439,7 +417,7 @@ class FlibustaApiImpl(context: Context) : FlibustaApi {
             } catch (e: Exception) {
                 lastException = e
                 if (attempt < MAX_RETRIES) {
-                    Thread.sleep(1000L * attempt)
+                    delay(1000L * attempt)
                 }
             }
         }
@@ -649,20 +627,20 @@ class FlibustaApiImpl(context: Context) : FlibustaApi {
     // ═══════════════════════════════════════════════════════════
 
     private fun fetchHtml(url: String): String? {
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).execute()
         return try {
-            val request = Request.Builder().url(url).build()
-            val response = client.newCall(request).execute()
             if (!response.isSuccessful) {
                 Log.w(TAG, "fetchHtml | HTTP ${response.code} for $url")
-                response.close()
-                return null
+                null
+            } else {
+                response.body?.string()
             }
-            val html = response.body?.string()
-            response.close()
-            html
         } catch (e: Exception) {
             Log.e(TAG, "fetchHtml | failed for $url", e)
             null
+        } finally {
+            response.close()
         }
     }
 }

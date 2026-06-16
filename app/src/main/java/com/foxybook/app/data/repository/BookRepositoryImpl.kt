@@ -1,36 +1,26 @@
 package com.foxybook.app.data.repository
 
-import android.content.ContentValues
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
-import android.os.Build
-import android.provider.DocumentsContract
-import android.provider.MediaStore
-import androidx.documentfile.provider.DocumentFile
+import com.foxybook.app.core.database.BookDataRepository
 import com.foxybook.app.core.datastore.DataStoreManager
 import com.foxybook.app.core.models.Book
 import com.foxybook.app.core.models.BookFormat
 import com.foxybook.app.core.models.BookInfo
 import com.foxybook.app.core.models.LibraryBook
 import com.foxybook.app.core.models.Series
-import com.foxybook.app.core.utils.FileHelper
 import com.foxybook.app.data.api.FlibustaApi
+import com.foxybook.app.data.storage.FileDownloader
 import com.foxybook.app.domain.repository.BookRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-import okhttp3.ResponseBody
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 
 class BookRepositoryImpl(
     private val api: FlibustaApi,
-    private val context: Context,
-    private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: DataStoreManager,
+    private val bookDataRepository: BookDataRepository,
+    private val fileDownloader: FileDownloader
 ) : BookRepository {
 
     override suspend fun searchBooks(query: String, limit: Int): List<Book> {
@@ -68,14 +58,9 @@ class BookRepositoryImpl(
                 ?: return@withContext Result.failure(Exception("Failed to download"))
 
             val fileName = "$id.${format.extension}"
-
             val customDirUri = dataStoreManager.downloadDirectory.first()
-            val resultPath = if (customDirUri != null) {
-                saveToCustomDownload(customDirUri, format, fileName, responseBody, onProgress)
-            } else {
-                saveToDefaultDownload(format, fileName, responseBody, onProgress)
-            }
-            
+            val resultPath = fileDownloader.download(responseBody, fileName, format, customDirUri, onProgress)
+
             Log.d("BookRepository", "downloadBook: SUCCESS, path=$resultPath")
             Result.success(resultPath)
         } catch (e: Exception) {
@@ -84,189 +69,29 @@ class BookRepositoryImpl(
         }
     }
 
-    private fun saveToCustomDownload(
-        uriString: String,
-        format: BookFormat,
-        fileName: String,
-        body: ResponseBody,
-        onProgress: (Float) -> Unit
-    ): String {
-        val rootUri = Uri.parse(uriString)
-        val rootDir = DocumentFile.fromTreeUri(context, rootUri)
-            ?: throw Exception("Failed to access custom directory")
-
-        // Создаем папку FoxyBook
-        val foxyDir = rootDir.findFile("FoxyBook")?.takeIf { it.isDirectory } 
-            ?: rootDir.createDirectory("FoxyBook")
-        val finalDir = foxyDir ?: throw Exception("Failed to create FoxyBook directory")
-
-        // Создаем подпапку для формата (как в дефолтном поведении)
-        val formatDir = finalDir.findFile(format.extension)?.takeIf { it.isDirectory }
-            ?: finalDir.createDirectory(format.extension)
-        val targetDir = formatDir ?: finalDir
-
-        // Очищаем имя от расширения для createFile, так как SAF добавит его сам на основе MIME-типа
-        // или используем полное имя, но проверяем результат
-        val displayName = if (fileName.endsWith(".${format.extension}")) {
-            fileName.substringBeforeLast(".")
-        } else {
-            fileName
-        }
-
-        val existingFile = targetDir.findFile(fileName)
-        existingFile?.delete()
-
-        val file = targetDir.createFile(format.mimeType, displayName)
-            ?: throw Exception("Failed to create file in custom directory")
-
-        // Запрашиваем постоянные права на сам файл (дополнительно к правам на дерево)
-        try {
-            context.contentResolver.takePersistableUriPermission(
-                file.uri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION
-            )
-        } catch (e: Exception) {
-            Log.w("BookRepository", "Failed to take persistable permission for file: ${file.uri}", e)
-        }
-
-        context.contentResolver.openOutputStream(file.uri)?.use { output ->
-            writeBodyToStream(body, output, onProgress)
-        } ?: throw Exception("Failed to open output stream for custom directory")
-
-        return file.uri.toString()
-    }
-
-    private fun saveToDefaultDownload(
-        format: BookFormat,
-        fileName: String,
-        body: ResponseBody,
-        onProgress: (Float) -> Unit
-    ): String {
-        val formatDirName = format.extension
-        val relativePath = "Download/FoxyBook/$formatDirName"
-        
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                put(MediaStore.MediaColumns.MIME_TYPE, format.mimeType)
-                put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
-            }
-            
-            val contentUri = MediaStore.Downloads.EXTERNAL_CONTENT_URI
-            val uri = context.contentResolver.insert(contentUri, contentValues)
-                ?: throw Exception("Failed to create MediaStore entry")
-                
-            context.contentResolver.openOutputStream(uri)?.use { output ->
-                writeBodyToStream(body, output, onProgress)
-            } ?: throw Exception("Failed to open MediaStore output stream")
-            
-            uri.toString()
-        } else {
-            // Legacy way for Android 9 and below
-            val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
-            val foxyDir = File(downloadDir, "FoxyBook/$formatDirName")
-            if (!foxyDir.exists()) foxyDir.mkdirs()
-            
-            val destFile = File(foxyDir, fileName)
-            FileOutputStream(destFile).use { output ->
-                writeBodyToStream(body, output, onProgress)
-            }
-            destFile.absolutePath
-        }
-    }
-
-    private fun writeBodyToStream(body: ResponseBody, output: OutputStream, onProgress: (Float) -> Unit) {
-        val contentLength = body.contentLength().toFloat()
-        var bytesDownloaded = 0L
-        val buffer = ByteArray(16384) // Larger buffer
-        
-        body.byteStream().use { input ->
-            var bytesRead: Int
-            while (input.read(buffer).also { bytesRead = it } != -1) {
-                output.write(buffer, 0, bytesRead)
-                bytesDownloaded += bytesRead
-                if (contentLength > 0f) {
-                    onProgress(bytesDownloaded / contentLength)
-                } else {
-                    // If no content length, simulate progress or just signal it's alive
-                    // Every 64KB we can update a "fake" progress or just keep it moving
-                    if (bytesDownloaded % 65536 == 0L) {
-                        onProgress(-1f) // Signal indeterminate progress
-                    }
-                }
-            }
-            output.flush()
-        }
-        onProgress(1f)
-    }
-
     override fun getLibraryBooks(): Flow<List<LibraryBook>> {
-        return dataStoreManager.libraryBooks
+        return bookDataRepository.getAllBooks()
     }
 
     override suspend fun addLibraryBook(book: LibraryBook) {
-        dataStoreManager.addLibraryBook(book)
+        bookDataRepository.addLibraryBook(book)
     }
 
     override suspend fun removeLibraryBook(bookId: Int, format: String) {
-        val books = getLibraryBooks().first()
-        val book = books.find { it.id == bookId && it.format == format }
+        val book = getLibraryBooks().first().find { it.id == bookId && it.format == format }
         Log.d("BookRepository", "removeLibraryBook: id=$bookId, format=$format, found=${book != null}")
-        
-        dataStoreManager.removeLibraryBook(bookId, format)
-        
+
+        bookDataRepository.removeLibraryBook(bookId, format)
+
         if (book != null) {
-            val path = book.filePath
-            Log.d("BookRepository", "removeLibraryBook: deleting file at $path")
-            if (path.startsWith("content://")) {
-                try {
-                    val uri = Uri.parse(path)
-                    if (DocumentsContract.isDocumentUri(context, uri)) {
-                        DocumentsContract.deleteDocument(context.contentResolver, uri)
-                        Log.d("BookRepository", "removeLibraryBook: document deleted")
-                    } else {
-                        context.contentResolver.delete(uri, null, null)
-                        Log.d("BookRepository", "removeLibraryBook: uri deleted")
-                    }
-                } catch (e: Exception) {
-                    Log.e("BookRepository", "removeLibraryBook: failed to delete URI $path", e)
-                }
-            } else {
-                val file = File(path)
-                if (file.exists()) {
-                    val deleted = file.delete()
-                    Log.d("BookRepository", "removeLibraryBook: file deleted=$deleted")
-                }
-            }
+            Log.d("BookRepository", "removeLibraryBook: deleting file at ${book.filePath}")
+            fileDownloader.deleteFile(book.filePath)
         }
     }
 
     override suspend fun isBookDownloaded(id: String, format: BookFormat): Boolean {
-        val books = getLibraryBooks().first()
-        val book = books.find { it.id.toString() == id && it.format == format.extension } ?: return false
-        val path = book.filePath
-        
-        Log.d("BookRepository", "─── isBookDownloaded Diagnostic ───")
-        Log.d("BookRepository", "Book ID: $id")
-        Log.d("BookRepository", "Format: $format")
-        Log.d("BookRepository", "Saved Path: $path")
-        
-        return if (path.startsWith("content://")) {
-            try {
-                val uri = Uri.parse(path)
-                context.contentResolver.openInputStream(uri)?.use { 
-                    it.close()
-                    Log.d("BookRepository", "Result: URI exists and readable")
-                    true 
-                } ?: false
-            } catch (e: Exception) {
-                Log.e("BookRepository", "Result: Failed to open URI $path. Error: ${e.message}")
-                false
-            }
-        } else {
-            val exists = File(path).exists()
-            Log.d("BookRepository", "Result: File exists=$exists")
-            exists
-        }
+        val book = getLibraryBooks().first().find { it.id.toString() == id && it.format == format.extension }
+            ?: return false
+        return fileDownloader.fileExists(book.filePath)
     }
 }

@@ -20,14 +20,32 @@ class EpubParser(private val context: Context? = null) {
         private const val TAG = "EPUB_PARSER"
     }
 
+    // Cache the temp file copy so content:// URIs aren't re-copied for every chapter
+    private var cachedBookUri: Uri? = null
+    private var cachedBookFile: File? = null
+
     private fun getFileFromUri(context: Context, uri: Uri): File? {
         Log.d(TAG, "getFileFromUri: uri=$uri, scheme=${uri.scheme}")
         if (uri.scheme == "file") return uri.path?.let { File(it) }
+
+        // Return cached copy if still loading the same book
+        if (uri == cachedBookUri && cachedBookFile?.exists() == true) {
+            Log.d(TAG, "getFileFromUri: Using cached temp file")
+            return cachedBookFile
+        }
+
+        // New book — delete old temp file, cache the new one
+        cachedBookFile?.delete()
+        cachedBookUri = null
+        cachedBookFile = null
+
         val temp = UriUtils.copyUriToTempFile(context, uri, "temp_epub_${System.currentTimeMillis()}.epub")
         if (temp == null) {
             Log.e(TAG, "getFileFromUri: Failed to copy URI to temp file")
         } else {
             Log.d(TAG, "getFileFromUri: Successfully copied to ${temp.absolutePath}, size=${temp.length()}")
+            cachedBookUri = uri
+            cachedBookFile = temp
         }
         return temp
     }
@@ -56,7 +74,7 @@ class EpubParser(private val context: Context? = null) {
             }
 
             val spineIds = doc.select("spine > itemref").mapNotNull { it.attr("idref").ifBlank { null } }
-            
+
             val chapters = spineIds.mapIndexed { idx, idref ->
                 val href = manifest[idref] ?: ""
                 val entryPath = resolveHref(opfDir, href)
@@ -69,7 +87,7 @@ class EpubParser(private val context: Context? = null) {
             null
         } finally {
             try { zip?.close() } catch (_: Exception) {}
-            if (uri.scheme != "file") file.delete()
+            // Temp file kept in cache for chapter loading; cleaned up on next parse() or explicitly
         }
     }
 
@@ -82,21 +100,29 @@ class EpubParser(private val context: Context? = null) {
         return try {
             zip = ZipFile(file)
             val html = zip.readEntry(href) ?: return ""
-            
+
             val chapterDir = href.substringBeforeLast("/", "")
             val imageMap = preloadImagesForBook(zip, bookId)
-            
+
             val processedHtml = replaceImageSrc(html, imageMap, chapterDir)
             val cleanHtml = cleanChapterHtml(processedHtml)
-            
+
             cleanHtml
         } catch (e: Exception) {
             Log.e(TAG, "EPUB: Failed to load chapter $href", e)
             ""
         } finally {
             try { zip?.close() } catch (_: Exception) {}
-            if (uri.scheme != "file") file.delete()
         }
+    }
+
+    /**
+     * Clears the cached temp file. Call when done reading a book.
+     */
+    fun clearCache() {
+        cachedBookFile?.delete()
+        cachedBookFile = null
+        cachedBookUri = null
     }
 
     private fun preloadImagesForBook(zip: ZipFile, bookId: Int): Map<String, String> {
