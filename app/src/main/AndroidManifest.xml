@@ -23,6 +23,10 @@
         android:icon="@mipmap/ic_launcher"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
 
+        <property
+            android:name="android.app.PROPERTY_COMPAT_ALLOW_16KB_PAGES"
+            android:value="true" />
+
         <service
             android:name=".core.tts.TtsService"
             android:enabled="true"
@@ -44,6 +48,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:theme="@style/Theme.FoxyBook.Splash"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

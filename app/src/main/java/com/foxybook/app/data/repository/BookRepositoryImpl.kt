@@ -3,10 +3,13 @@ package com.foxybook.app.data.repository
 import android.util.Log
 import com.foxybook.app.core.database.BookDataRepository
 import com.foxybook.app.core.datastore.DataStoreManager
+import com.foxybook.app.core.models.Author
 import com.foxybook.app.core.models.Book
 import com.foxybook.app.core.models.BookFormat
 import com.foxybook.app.core.models.BookInfo
 import com.foxybook.app.core.models.LibraryBook
+import com.foxybook.app.core.models.NewBooksPage
+import com.foxybook.app.core.models.SearchPage
 import com.foxybook.app.core.models.Series
 import com.foxybook.app.data.api.FlibustaApi
 import com.foxybook.app.data.storage.FileDownloader
@@ -23,20 +26,56 @@ class BookRepositoryImpl(
     private val fileDownloader: FileDownloader
 ) : BookRepository {
 
-    override suspend fun searchBooks(query: String, limit: Int): List<Book> {
+    override suspend fun getNewBooks(limit: Int): List<Book> {
+        return api.getNewBooks(limit)
+    }
+
+    override suspend fun getNewBooksFirstPage(): NewBooksPage {
+        return api.getNewBooksFirstPage()
+    }
+
+    override suspend fun getNewBooksNextPage(url: String): NewBooksPage {
+        return api.getNewBooksNextPage(url)
+    }
+
+    override suspend fun searchBooks(query: String, limit: Int): SearchPage<Book> {
         return api.searchBooks(query, limit)
     }
 
-    override suspend fun searchByAuthor(author: String, limit: Int): List<Book> {
-        return api.searchByAuthor(author, limit)
+    override suspend fun searchBooksNextPage(url: String, limit: Int): SearchPage<Book> {
+        return api.searchBooksNextPage(url, limit)
     }
 
-    override suspend fun searchBySeries(series: String, limit: Int): List<Series> {
-        return api.searchBySeries(series, limit)
+    override suspend fun searchByAuthor(query: String, limit: Int): SearchPage<Author> {
+        return api.searchByAuthor(query, limit)
     }
 
-    override suspend fun getSeriesBooks(seriesId: String, limit: Int): List<Book> {
-        return api.getSeriesBooks(seriesId, limit)
+    override suspend fun searchByAuthorNextPage(url: String, limit: Int): SearchPage<Author> {
+        return api.searchByAuthorNextPage(url, limit)
+    }
+
+    override suspend fun getAuthorBooks(authorId: String, limit: Int): List<Book> {
+        return api.getAuthorBooks(authorId, limit)
+    }
+
+    override suspend fun searchBySeries(query: String, limit: Int): SearchPage<Series> {
+        return api.searchBySeries(query, limit)
+    }
+
+    override suspend fun searchBySeriesNextPage(url: String, limit: Int): SearchPage<Series> {
+        return api.searchBySeriesNextPage(url, limit)
+    }
+
+    override suspend fun searchByGenre(query: String, limit: Int): SearchPage<Book> {
+        return api.searchByGenre(query, limit)
+    }
+
+    override suspend fun searchByGenreNextPage(url: String, limit: Int): SearchPage<Book> {
+        return api.searchByGenreNextPage(url, limit)
+    }
+
+    override suspend fun getSeriesBooks(seriesId: String, authorId: String?, limit: Int): List<Book> {
+        return api.getSeriesBooks(seriesId, authorId, limit)
     }
 
     override suspend fun getBookInfo(id: Int): BookInfo? {

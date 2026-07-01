@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="80dp"
+    android:height="80dp"
+    android:viewportWidth="80"
+    android:viewportHeight="80">
+
+    <!-- Open book - left page -->
+    <path
+        android:fillColor="#FF8C42"
+        android:pathData="M10,20 Q10,15 15,15 L38,15 Q40,15 40,17 L40,60 Q40,62 38,62 L15,62 Q10,62 10,57 Z"/>
+
+    <!-- Open book - right page -->
+    <path
+        android:fillColor="#FF8C42"
+        android:pathData="M42,17 Q42,15 44,15 L67,15 Q72,15 72,20 L72,57 Q72,62 67,62 L44,62 Q42,62 42,60 Z"/>
+
+    <!-- Book spine/binding -->
+    <path
+        android:strokeColor="#FF6B35"
+        android:strokeWidth="2"
+        android:pathData="M40,15 L40,62"/>
+
+    <!-- Text lines - left page -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.2"
+        android:pathData="M15,25 L35,25 M15,30 L35,30 M15,35 L35,35 M15,40 L35,40 M15,45 L30,45"
+        android:strokeAlpha="0.7"/>
+
+    <!-- Text lines - right page -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.2"
+        android:pathData="M47,25 L67,25 M47,30 L67,30 M47,35 L67,35 M47,40 L67,40 M47,45 L62,45"
+        android:strokeAlpha="0.7"/>
+
+    <!-- Page curl effect - left page -->
+    <path
+        android:fillColor="#000000"
+        android:fillAlpha="0.1"
+        android:pathData="M38,15 L40,17 L40,60 L38,62 Z"/>
+
+    <!-- Page curl effect - right page -->
+    <path
+        android:fillColor="#000000"
+        android:fillAlpha="0.1"
+        android:pathData="M42,17 L44,15 L44,62 L42,60 Z"/>
+</vector>

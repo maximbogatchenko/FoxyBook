@@ -3,9 +3,8 @@ package com.foxybook.app.core.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "library_books")
+@Entity(tableName = "library_books", primaryKeys = ["id", "format"])
 data class LibraryBookEntity(
-    @PrimaryKey
     val id: Int,
     val title: String,
     val author: String,

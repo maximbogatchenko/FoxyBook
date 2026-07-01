@@ -2,6 +2,13 @@ package com.foxybook.app.core.models
 
 import kotlinx.serialization.Serializable
 
+// ─── Pagination ───
+
+data class NewBooksPage(
+    val books: List<Book>,
+    val nextPageUrl: String?
+)
+
 // ─── Network Models ───
 
 @Serializable
@@ -13,7 +20,9 @@ data class Book(
     val sendLink: String,
     val coverUrl: String = "",
     val genres: List<String> = emptyList(),
-    val sequenceNumber: Int = 0
+    val sequenceNumber: Int = 0,
+    val description: String = "",
+    val formats: List<String> = emptyList()
 )
 
 @Serializable
@@ -29,14 +38,18 @@ data class BookInfo(
     val author: String,
     val description: String,
     val genres: List<BookGenre>,
-    val coverUrl: String = ""
+    val coverUrl: String = "",
+    val availableFormats: List<String> = emptyList()
 )
 
 enum class BookFormat(val extension: String, val mimeType: String) {
     EPUB("epub", "application/epub+zip"),
     FB2("fb2", "application/x-fictionbook+xml"),
     MOBI("mobi", "application/x-mobipocket-ebook"),
-    TXT("txt", "text/plain");
+    TXT("txt", "text/plain"),
+    PDF("pdf", "application/pdf");
+
+    fun isNativelySupported(): Boolean = this in listOf(EPUB, FB2, TXT)
 
     companion object {
         fun fromExtension(ext: String?): BookFormat? {
@@ -54,7 +67,18 @@ data class Series(
     val seriesTitle: String,
     val seriesUrl: String,
     val bookCount: Int = 0,
-    val coverUrl: String = ""
+    val coverUrl: String = "",
+    val authorId: String = ""
+)
+
+// ─── Author Model ───
+
+@Serializable
+data class Author(
+    val authorId: String,
+    val name: String,
+    val bookCount: Int = 0,
+    val portraitUrl: String = ""
 )
 
 // ─── Library Models ───
@@ -111,7 +135,7 @@ data class Bookmark(
 
 enum class ReaderMode { HORIZONTAL, VERTICAL }
 
-enum class ReaderTheme { LIGHT, DARK, SYSTEM }
+enum class ReaderTheme { LIGHT, DARK, SYSTEM, AMOLED }
 
 @Serializable
 data class ReaderSettings(
@@ -128,7 +152,7 @@ data class ReaderSettings(
     val lastTtsBlockIndex: Int = -1,
     val brightness: Float = -1f, // -1 = system default, 0.0..1.0 = custom
     val ttsEngine: String? = null,
-    val showProgressAsPercentage: Boolean = true
+    val showProgressAsPercentage: Boolean = false
 )
 
 @Serializable
@@ -191,18 +215,33 @@ data class ParsedBook(
     val filePath: String = ""
 )
 
+// ─── Book Source ───
+
+enum class BookSource(val label: String) {
+    FLIBUSTA("Flibusta"),
+    COOLLIB("CoolLib"),
+    FANTASY_WORLDS("Fantasy-worlds")
+}
+
 // ─── Search ───
 
-enum class SearchMode(val label: String) {
-    TITLE("По названию"),
-    AUTHOR("По автору"),
-    SERIES("По серии")
+data class SearchPage<T>(
+    val items: List<T>,
+    val nextPageUrl: String? = null
+)
+
+enum class SearchTab(val label: String) {
+    ALL("Все"),
+    BOOKS("Книги"),
+    AUTHORS("Авторы"),
+    SERIES("Серии")
 }
 
 sealed interface SearchUiState {
     data object Idle : SearchUiState
     data object Loading : SearchUiState
     data class BookSuccess(val books: List<Book>) : SearchUiState
+    data class AuthorSuccess(val authors: List<Author>) : SearchUiState
     data class SeriesSuccess(val series: List<Series>) : SearchUiState
     data class Error(val message: String) : SearchUiState
     data object Empty : SearchUiState
@@ -234,16 +273,6 @@ enum class LibraryTab(val label: String) {
     HISTORY("История"),
     COLLECTIONS("Коллекции")
 }
-
-// ─── Search History ───
-
-@Serializable
-data class SearchHistoryEntry(
-    val query: String,
-    val searchMode: String,
-    val timestamp: Long,
-    val resultCount: Int
-)
 
 // ─── Series Details ───
 

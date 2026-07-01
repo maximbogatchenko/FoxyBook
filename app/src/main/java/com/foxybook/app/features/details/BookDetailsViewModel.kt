@@ -9,10 +9,12 @@ import com.foxybook.app.core.models.Book
 import com.foxybook.app.core.models.BookFormat
 import com.foxybook.app.core.models.BookInfo
 import com.foxybook.app.core.models.BookDetailsUiState
+import com.foxybook.app.core.models.BookSource
 import com.foxybook.app.core.models.ReadingPosition
 import com.foxybook.app.core.models.Bookmark
 import com.foxybook.app.core.models.DownloadProgress
 import com.foxybook.app.core.models.DownloadStatus
+import com.foxybook.app.core.network.OkHttpClientProvider
 import com.foxybook.app.domain.usecases.DownloadBookUseCase
 import com.foxybook.app.domain.usecases.GetBookInfoUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,9 +26,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.async
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.withTimeout
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.util.concurrent.TimeUnit
 
 data class BookDetailsState(
     val uiState: BookDetailsUiState = BookDetailsUiState.Loading,
@@ -49,6 +52,7 @@ sealed interface BookDetailsEvent {
     data object DownloadPrimary : BookDetailsEvent
     data class SelectFormat(val format: BookFormat) : BookDetailsEvent
     data object ToggleFormatSelector : BookDetailsEvent
+    data object CancelDownload : BookDetailsEvent
 }
 
 class BookDetailsViewModel(
@@ -56,16 +60,19 @@ class BookDetailsViewModel(
     private val downloadBookUseCase: DownloadBookUseCase,
     private val dataStoreManager: DataStoreManager,
     private val bookDataRepository: BookDataRepository,
-    private val baseUrl: String = "https://flibusta.is"
+    private val networkProvider: OkHttpClientProvider
 ) : ViewModel() {
+
+    private val TAG = "BOOK_DETAILS_VM"
 
     private val _state = MutableStateFlow(BookDetailsState())
     val state: StateFlow<BookDetailsState> = _state.asStateFlow()
 
-    private val checkClient = OkHttpClient.Builder()
-        .connectTimeout(5, TimeUnit.SECONDS)
-        .readTimeout(5, TimeUnit.SECONDS)
-        .build()
+    private val checkClient: OkHttpClient by lazy {
+        networkProvider.createClient(connectSeconds = 5, readSeconds = 5, writeSeconds = 5)
+    }
+
+    private var downloadJob: kotlinx.coroutines.Job? = null
 
     fun onEvent(event: BookDetailsEvent) {
         when (event) {
@@ -81,30 +88,16 @@ class BookDetailsViewModel(
             is BookDetailsEvent.ToggleFormatSelector -> {
                 _state.update { it.copy(showFormatSelector = !it.showFormatSelector) }
             }
+            is BookDetailsEvent.CancelDownload -> {
+                downloadJob?.cancel()
+                downloadJob = null
+            }
         }
     }
 
     private fun loadBookInfo(id: Int, initialData: Book? = null) {
-        // If we have initial data, show it immediately
-        if (initialData != null) {
-            _state.update {
-                it.copy(
-                    uiState = BookDetailsUiState.Success(
-                        BookInfo(
-                            id = initialData.id,
-                            title = initialData.title,
-                            author = initialData.author,
-                            description = "Загрузка описания...",
-                            genres = emptyList(),
-                            coverUrl = initialData.coverUrl
-                        )
-                    ),
-                    formatsLoading = true // hide download button until formats checked
-                )
-            }
-        } else {
-            _state.update { it.copy(uiState = BookDetailsUiState.Loading) }
-        }
+        // Всегда начинаем с Loading — показываем анимацию загрузки
+        _state.update { it.copy(uiState = BookDetailsUiState.Loading) }
 
         viewModelScope.launch {
             bookDataRepository.getBookmarksForBook(id).collect { list ->
@@ -132,24 +125,58 @@ class BookDetailsViewModel(
         }
 
         viewModelScope.launch {
-            // Only update to loading if we don't have success state from initial data
-            if (_state.value.uiState !is BookDetailsUiState.Success) {
-                _state.update { it.copy(uiState = BookDetailsUiState.Loading) }
-            }
-
             try {
-                val info = getBookInfoUseCase(id)
-                if (info != null) {
-                    _state.update { it.copy(uiState = BookDetailsUiState.Success(info)) }
-                    // Check available formats
-                    checkAvailableFormats(id)
-                } else if (_state.value.uiState !is BookDetailsUiState.Success) {
+                val info = withTimeout(12_000) { getBookInfoUseCase(id) }
+
+                // Даже если получили только частичную информацию — используем её с initialData
+                val finalInfo = if (info != null) {
+                    info.copy(
+                        title = initialData?.title ?: info.title,
+                        author = initialData?.author ?: info.author,
+                        coverUrl = initialData?.coverUrl ?: info.coverUrl
+                    )
+                } else {
+                    initialData?.let { d ->
+                        BookInfo(
+                            id = d.id, title = d.title, author = d.author,
+                            description = "", genres = emptyList(),
+                            coverUrl = d.coverUrl, availableFormats = d.formats
+                        )
+                    }
+                }
+
+                if (finalInfo != null) {
+                    // Проверяем форматы и показываем всю информацию сразу
+                    checkAvailableFormats(id, info, initialData)
+                    _state.update {
+                        it.copy(uiState = BookDetailsUiState.Success(finalInfo))
+                    }
+                } else {
                     _state.update { it.copy(uiState = BookDetailsUiState.Error("Книга не найдена")) }
                 }
+            } catch (e: TimeoutCancellationException) {
+                Log.w(TAG, "loadBookInfo | timeout for book $id")
+                // Показываем хотя бы то, что есть
+                initialData?.let { d ->
+                    val fallback = BookInfo(
+                        id = d.id, title = d.title, author = d.author,
+                        description = "", genres = emptyList(),
+                        coverUrl = d.coverUrl, availableFormats = d.formats
+                    )
+                    _state.update { it.copy(uiState = BookDetailsUiState.Success(fallback)) }
+                    checkAvailableFormats(id, null, initialData)
+                } ?: _state.update { it.copy(uiState = BookDetailsUiState.Error("Таймаут загрузки")) }
             } catch (e: Exception) {
-                if (_state.value.uiState !is BookDetailsUiState.Success) {
-                    _state.update { it.copy(uiState = BookDetailsUiState.Error(e.message ?: "Ошибка")) }
-                }
+                Log.e(TAG, "loadBookInfo | error", e)
+                initialData?.let { d ->
+                    val fallback = BookInfo(
+                        id = d.id, title = d.title, author = d.author,
+                        description = "", genres = emptyList(),
+                        coverUrl = d.coverUrl, availableFormats = d.formats
+                    )
+                    _state.update { it.copy(uiState = BookDetailsUiState.Success(fallback)) }
+                    checkAvailableFormats(id, null, initialData)
+                } ?: _state.update { it.copy(uiState = BookDetailsUiState.Error(e.message ?: "Ошибка загрузки")) }
             }
         }
     }
@@ -160,17 +187,20 @@ class BookDetailsViewModel(
         viewModelScope.launch {
             setProgress(format, DownloadProgress(status = DownloadStatus.DOWNLOADING, percent = 0))
             try {
-                val result = downloadBookUseCase(
-                    id = info.id,
-                    title = info.title,
-                    author = info.author,
-                    format = format,
-                    coverUrl = info.coverUrl
-                ) { progress ->
-                    setProgress(format, DownloadProgress(
-                        status = DownloadStatus.DOWNLOADING,
-                        percent = if (progress < 0f) -1 else (progress * 100).toInt().coerceIn(0, 100)
-                    ))
+                // Добавляем таймаут 2 минуты для скачивания
+                val result = withTimeout(120_000) {
+                    downloadBookUseCase(
+                        id = info.id,
+                        title = info.title,
+                        author = info.author,
+                        format = format,
+                        coverUrl = info.coverUrl
+                    ) { progress ->
+                        setProgress(format, DownloadProgress(
+                            status = DownloadStatus.DOWNLOADING,
+                            percent = if (progress < 0f) -1 else (progress * 100).toInt().coerceIn(0, 100)
+                        ))
+                    }
                 }
 
                 if (result.isSuccess) {
@@ -184,13 +214,18 @@ class BookDetailsViewModel(
                         _state.update { it.copy(showFolderErrorDialog = true) }
                     }
                     setProgress(format, DownloadProgress(
-                        status = DownloadStatus.ERROR,
-                        error = error
+                        status = DownloadStatus.ERROR, error = error
                     ))
                 }
-            } catch (e: Exception) {
+            } catch (e: TimeoutCancellationException) {
+                Log.e(TAG, "downloadBook: timeout for $format")
                 setProgress(format, DownloadProgress(
-                    status = DownloadStatus.ERROR, error = e.message ?: "Ошибка"
+                    status = DownloadStatus.ERROR, error = "Время ожидания истекло. Проверьте подключение к интернету"
+                ))
+            } catch (e: Exception) {
+                Log.e(TAG, "downloadBook: exception", e)
+                setProgress(format, DownloadProgress(
+                    status = DownloadStatus.ERROR, error = e.message ?: "Ошибка скачивания"
                 ))
             }
         }
@@ -223,85 +258,65 @@ class BookDetailsViewModel(
         }
     }
 
-    private fun checkAvailableFormats(bookId: Int) {
-        viewModelScope.launch {
-            _state.update { it.copy(formatsLoading = true) }
-
-            val defaultFormatExtension = dataStoreManager.defaultFormat.first()
-            val preferredFormat = BookFormat.entries.firstOrNull { it.extension == defaultFormatExtension } ?: BookFormat.FB2
-
-            // Проверяем только предпочтительный формат + FB2 как запасной
-            val formatsToCheck = listOf(preferredFormat, BookFormat.FB2, BookFormat.EPUB).distinct()
-
-            val availabilityChecks = formatsToCheck.map { format ->
-                async(Dispatchers.IO) {
-                    format to checkFormatAvailable(bookId, format)
-                }
-            }
-
-            val availabilityMap = mutableMapOf<BookFormat, Boolean>()
-            val available = availabilityChecks.map { deferred ->
-                val (format, isAvailable) = deferred.await()
-                availabilityMap[format] = isAvailable
-                isAvailable to format
-            }.filter { it.first }.map { it.second }
-
-            Log.d("BookDetailsVM", "Available formats for book $bookId: ${available.map { it.name }}")
-
-            if (available.isEmpty()) {
-                Log.w("BookDetailsVM", "No formats available, showing all")
-                val allFormats = formatsToCheck
-                val preferred = selectPreferredFormat(allFormats, defaultFormatExtension)
-                _state.update {
-                    it.copy(
-                        availableFormats = allFormats,
-                        formatAvailability = availabilityMap,
-                        selectedFormat = preferred,
-                        formatsLoading = false
-                    )
-                }
-            } else {
-                val preferred = selectPreferredFormat(available, defaultFormatExtension)
-                _state.update {
-                    it.copy(
-                        availableFormats = available,
-                        formatAvailability = availabilityMap,
-                        selectedFormat = preferred,
-                        formatsLoading = false
-                    )
-                }
-            }
-        }
+    private suspend fun preferredFormat(available: List<BookFormat>, defaultExt: String): BookFormat {
+        val default = BookFormat.entries.firstOrNull { it.extension == defaultExt }
+        if (default != null && default in available) return default
+        return available.firstOrNull { it == BookFormat.EPUB }
+            ?: available.firstOrNull()
+            ?: BookFormat.EPUB
     }
 
-    private fun selectPreferredFormat(available: List<BookFormat>, defaultFormatExtension: String): BookFormat {
-        return available.firstOrNull { it.extension == defaultFormatExtension }
-            ?: available.firstOrNull { it == BookFormat.FB2 }
-            ?: available.firstOrNull { it == BookFormat.EPUB }
-            ?: available.firstOrNull { it == BookFormat.MOBI }
-            ?: available.firstOrNull { it == BookFormat.TXT }
-            ?: BookFormat.FB2
-    }
+    private suspend fun checkAvailableFormats(bookId: Int, bookInfo: BookInfo? = null, initialData: Book? = null) {
+        val defaultExt = dataStoreManager.defaultFormat.first()
 
-    private suspend fun checkFormatAvailable(bookId: Int, format: BookFormat): Boolean {
-        return withContext(Dispatchers.IO) {
-            try {
-                val url = "$baseUrl/b/$bookId/${format.extension}"
-                val request = Request.Builder()
-                    .url(url)
-                    .head()
-                    .build()
+        // Приоритет 1: форматы из HTML страницы книги (самые точные)
+        val fromHtml = bookInfo?.availableFormats
+            ?.mapNotNull { ext -> BookFormat.entries.firstOrNull { it.extension == ext } }
 
-                val response = checkClient.newCall(request).execute()
-                val isAvailable = response.isSuccessful && response.code != 404
-                response.close()
-
-                Log.d("BookDetailsVM", "Format ${format.name} for book $bookId: ${if (isAvailable) "available" else "not available"} (${response.code})")
-                isAvailable
-            } catch (e: Exception) {
-                Log.e("BookDetailsVM", "Error checking format ${format.name} for book $bookId", e)
-                true // В случае ошибки считаем доступным
+        if (!fromHtml.isNullOrEmpty()) {
+            val preferred = preferredFormat(fromHtml, defaultExt)
+            _state.update {
+                it.copy(
+                    availableFormats = fromHtml,
+                    formatAvailability = fromHtml.associateWith { true },
+                    selectedFormat = preferred,
+                    formatsLoading = false
+                )
             }
+            Log.d(TAG, "checkAvailableFormats | from HTML: ${fromHtml.map { it.extension }}, preferred: ${preferred.extension}")
+            return
         }
+
+        // Приоритет 2: форматы из OPDS feed
+        val fromOpds = initialData?.formats
+            ?.mapNotNull { ext -> BookFormat.entries.firstOrNull { it.extension == ext } }
+
+        if (!fromOpds.isNullOrEmpty()) {
+            val preferred = preferredFormat(fromOpds, defaultExt)
+            _state.update {
+                it.copy(
+                    availableFormats = fromOpds,
+                    formatAvailability = fromOpds.associateWith { true },
+                    selectedFormat = preferred,
+                    formatsLoading = false
+                )
+            }
+            Log.d(TAG, "checkAvailableFormats | from OPDS: ${fromOpds.map { it.extension }}, preferred: ${preferred.extension}")
+            return
+        }
+
+        // Fallback: пробуем скачать форматы по очереди
+        // Показываем только основные форматы, которые поддерживает Flibusta
+        val probableFormats = listOf(BookFormat.FB2, BookFormat.EPUB, BookFormat.MOBI)
+        val preferred = preferredFormat(probableFormats, defaultExt)
+        _state.update {
+            it.copy(
+                availableFormats = probableFormats,
+                formatAvailability = probableFormats.associateWith { true },
+                selectedFormat = preferred,
+                formatsLoading = false
+            )
+        }
+        Log.d(TAG, "checkAvailableFormats | fallback: probable formats, preferred: ${preferred.extension}")
     }
 }

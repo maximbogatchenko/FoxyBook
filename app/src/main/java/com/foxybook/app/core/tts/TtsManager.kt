@@ -198,6 +198,10 @@ class TtsManager(private val application: Application) {
 
     fun destroy() {
         sleepTimerUpdateJob?.cancel()
+        sleepTimerUpdateJob = null
+        onBlockCompleted = null
+        onCommand = null
+        ttsService?.onInitComplete = null
         if (isBound) {
             application.unbindService(connection)
             isBound = false

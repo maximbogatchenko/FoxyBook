@@ -58,6 +58,7 @@ private const val TAG = "SERIES_DETAILS_UI"
 fun SeriesDetailsScreen(
     seriesId: String,
     seriesTitle: String,
+    authorId: String = "",
     viewModel: SeriesDetailsViewModel,
     onBackClick: () -> Unit,
     onBookClick: (Book) -> Unit
@@ -65,7 +66,7 @@ fun SeriesDetailsScreen(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(seriesId) {
-        viewModel.loadSeriesBooks(seriesId, seriesTitle)
+        viewModel.loadSeriesBooks(seriesId, seriesTitle, authorId)
     }
 
     Scaffold(

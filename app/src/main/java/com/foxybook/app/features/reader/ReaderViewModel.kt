@@ -17,8 +17,12 @@ import com.foxybook.app.core.reader.ContentBlock
 import com.foxybook.app.core.reader.HtmlBlockParser
 import com.foxybook.app.core.reader.TextPaginator
 import com.foxybook.app.core.tts.TtsManager
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +31,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 
 data class ReaderState(
     val book: com.foxybook.app.core.models.ParsedBook? = null,
@@ -67,6 +72,13 @@ data class ReaderState(
     // Used to detect stale page caches that need re-pagination.
     val paginationVersion: Int = 0,
     val pageVersions: Map<Int, Int> = emptyMap(), // chapterIndex → version when paginated
+
+    // Real chapter titles extracted from content (e.g. "Пролог", "Глава 1")
+    val chapterTitlesExtracted: Map<Int, String> = emptyMap(),
+
+    // Content lengths per chapter for progress calculation (char count of text, no HTML tags)
+    val chapterLengths: List<Int> = emptyList(),
+    val totalContentLength: Long = 0L,
 
     // TTS (synced from TtsManager)
     val isSpeaking: Boolean = false,
@@ -148,6 +160,9 @@ class ReaderViewModel(
     private var format: String = ""
     private var saveJob: Job? = null
 
+    // Собственный scope для сохранения позиции — переживает очистку ViewModel
+    private val saveScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     private val paginationJobMap = mutableMapOf<Int, Job>()
 
     init {
@@ -204,24 +219,30 @@ class ReaderViewModel(
 
     override fun onCleared() {
         // Сохраняем позицию перед выходом
+        // Отменяем debounce-save чтобы не было двойной записи
+        saveJob?.cancel()
+        saveJob = null
+
         val s = _state.value
         if (bookId >= 0 && s.positionRestored && !s.isLoading && s.book != null) {
-            kotlinx.coroutines.runBlocking(kotlinx.coroutines.Dispatchers.IO) {
-                val pos = ReadingPosition(
-                    bookId = bookId,
-                    format = format,
-                    chapterIndex = s.currentChapter,
-                    pageIndex = s.pageCurrent,
-                    scrollPosition = s.scrollY,
-                    scrollOffset = s.scrollOffset,
-                    textOffset = s.textOffset,
-                    lastUpdated = System.currentTimeMillis()
-                )
-                bookDataRepository.saveReadingPosition(pos)
-                bookDataRepository.updateLastReadDate(bookId, format)
-                val totalCh = s.book?.chapters?.size ?: 1
-                val progress = ((s.currentChapter + 1) * 100 / totalCh).coerceIn(0, 100)
-                bookDataRepository.updateReadingProgress(bookId, format, progress)
+            kotlinx.coroutines.runBlocking {
+                withTimeoutOrNull(3_000) {
+                    withContext(Dispatchers.IO) {
+                        val pos = ReadingPosition(
+                            bookId = bookId,
+                            format = format,
+                            chapterIndex = s.currentChapter,
+                            pageIndex = s.pageCurrent,
+                            scrollPosition = s.scrollY,
+                            scrollOffset = s.scrollOffset,
+                            textOffset = s.textOffset,
+                            lastUpdated = System.currentTimeMillis()
+                        )
+                        bookDataRepository.saveReadingPosition(pos)
+                        bookDataRepository.updateLastReadDate(bookId, format)
+                        bookDataRepository.updateReadingProgress(bookId, format, s.readingPercentage)
+                    }
+                }
             }
         }
 
@@ -229,9 +250,10 @@ class ReaderViewModel(
         paginationJobMap.values.forEach { it.cancel() }
         paginationJobMap.clear()
 
-        // Cancel save job
+        // Cancel save job and scope
         saveJob?.cancel()
         saveJob = null
+        saveScope.cancel()
 
         // Destroy TTS manager (unbinds service)
         ttsManager.destroy()
@@ -489,15 +511,27 @@ class ReaderViewModel(
             val blocks = HtmlBlockParser.parse(html)
             Log.d("ReaderNav", "LOAD CHAPTER SUCCESS: $chapterIndex, blocks count: ${blocks.size}")
 
+            // Extract real chapter title from content if available
+            val extractedTitle = HtmlBlockParser.extractFirstTitle(blocks)
+
             _state.update {
                 val currentChapter = it.currentChapter
                 val chaptersToKeep = (currentChapter - 3..currentChapter + 3)
                 val filteredBlocks = it.chapterBlocks.filterKeys { key -> key in chaptersToKeep }
                 val filteredPages = it.chapterPages.filterKeys { key -> key in chaptersToKeep }
 
+                val titles = it.chapterTitlesExtracted.toMutableMap()
+                if (extractedTitle != null) {
+                    titles[chapterIndex] = extractedTitle
+                } else if (blocks.isEmpty()) {
+                    // Empty chapter — mark title as empty so we can skip it
+                    titles[chapterIndex] = ""
+                }
+
                 it.copy(
                     chapterBlocks = filteredBlocks + (chapterIndex to blocks),
-                    chapterPages = filteredPages
+                    chapterPages = filteredPages,
+                    chapterTitlesExtracted = titles
                 )
             }
             blocks
@@ -519,16 +553,14 @@ class ReaderViewModel(
 
         Log.d("ReaderNav", "updateDimensions: width=$width, height=$height")
 
-        // Clear all page cache — pages are re-paginated lazily via
-        // ensurePaginated() when the user navigates to each chapter.
-        // The paginationVersion bump ensures stale pages from distant
-        // chapters are correctly detected and replaced on access.
+        // Не чистим chapterPages — старые страницы инвалидируются лениво
+        // через paginationVersion: ensurePaginated() перепагинирует их при
+        // доступе (cachedVersion != paginationVersion).
         _state.update { it.copy(
             pageWidth = width,
             pageHeight = height,
             textMeasurer = textMeasurer,
             density = density,
-            chapterPages = emptyMap(),
             paginationVersion = it.paginationVersion + 1
         ) }
 
@@ -604,13 +636,20 @@ class ReaderViewModel(
             Log.d("ReaderDiagnostic", "---")
 
             try {
-                val book = bookParser.parse(filePath, fmt)
+                val book = bookParser.parse(filePath, fmt, bId)
                 if (book == null) {
                     _state.update { it.copy(isLoading = false, error = "Ошибка при открытии книги") }
                     return@launch
                 }
 
                 _state.update { it.copy(book = book, isLoading = false) }
+
+                // Precompute text content lengths per chapter for accurate progress calculation
+                val chapterLengths = book.chapters.map { chapter ->
+                    chapter.htmlContent.replace(Regex("<[^>]*>"), "").replace(Regex("\\s+"), " ").trim().length
+                }
+                val totalContentLength = chapterLengths.sumOf { it.toLong() }
+                _state.update { it.copy(chapterLengths = chapterLengths, totalContentLength = totalContentLength) }
 
                 viewModelScope.launch {
                     bookDataRepository.getBookmarksForBook(bId).collect { list ->
@@ -638,7 +677,10 @@ class ReaderViewModel(
                 } else {
                     _state.update { it.copy(currentChapter = 0, positionRestored = true) }
                     getBlocksSync(0)
-                    preloadChapter(1)
+
+                    // Auto-skip empty first chapter (cover/title pages)
+                    val adjustedChapter = skipPastEmptyChapters(0)
+                    preloadChapter(adjustedChapter + 1)
                 }
                 updateReadingPercentage()
             } catch (e: Exception) {
@@ -826,6 +868,39 @@ class ReaderViewModel(
         }
     }
 
+    /**
+     * Находит первую непустую главу, начиная с [startChapter].
+     * Если startChapter пустая — переключается на следующую главу с контентом.
+     */
+    private fun skipPastEmptyChapters(startChapter: Int): Int {
+        val book = _state.value.book ?: return startChapter
+        var current = startChapter
+        while (current < book.chapters.size) {
+            val blocks = _state.value.chapterBlocks[current]
+            if (blocks != null && blocks.isNotEmpty()) {
+                // Эта глава не пустая — остаёмся
+                if (current != startChapter) {
+                    Log.d("ReaderNav", "Skipped empty chapter $startChapter, moving to chapter $current")
+                    _state.update {
+                        it.copy(
+                            currentChapter = current,
+                            textOffset = 0,
+                            scrollY = 0,
+                            pageCurrent = 0,
+                            scrollOffset = 0,
+                            positionRestored = true,
+                            lastPositionRestoreTrigger = System.currentTimeMillis()
+                        )
+                    }
+                }
+                return current
+            }
+            current++
+        }
+        // Все оставшиеся главы пустые — возвращаем startChapter
+        return startChapter
+    }
+
     private fun updateReadingPercentage() {
         val s = _state.value
         val book = s.book ?: return
@@ -836,14 +911,25 @@ class ReaderViewModel(
         } else {
             s.scrollPercentage.toFloat()
         }
-        val pct = ((s.currentChapter + chapterPct / 100f) / book.chapters.size * 100).toInt().coerceIn(0, 100)
+
+        val pct = if (s.totalContentLength > 0 && s.chapterLengths.size == book.chapters.size) {
+            // Content-based progress: sum of chars in completed chapters + progress in current chapter
+            val consumedBefore = s.chapterLengths.take(s.currentChapter).sumOf { it.toLong() }
+            val currentChapterLen = s.chapterLengths.getOrElse(s.currentChapter) { 0 }
+            val consumedInChapter = (currentChapterLen * chapterPct / 100f).toLong()
+            val totalConsumed = consumedBefore + consumedInChapter
+            ((totalConsumed * 100) / s.totalContentLength).toInt().coerceIn(0, 100)
+        } else {
+            // Fallback to chapter-based when lengths aren't available
+            ((s.currentChapter + chapterPct / 100f) / book.chapters.size * 100).toInt().coerceIn(0, 100)
+        }
         _state.update { it.copy(readingPercentage = pct) }
     }
 
     private fun debounceSave() {
         saveJob?.cancel()
         saveJob = viewModelScope.launch {
-            delay(1000)
+            delay(500)
             val s = _state.value
             // Не сохраняем пока позиция не восстановлена
             if (!s.positionRestored) return@launch
@@ -861,10 +947,30 @@ class ReaderViewModel(
                 bookDataRepository.saveReadingPosition(pos)
                 bookDataRepository.updateLastReadDate(bookId, format)
                 // Сохраняем прогресс чтения
-                val totalCh = s.book?.chapters?.size ?: 1
-                val progress = ((s.currentChapter + 1) * 100 / totalCh).coerceIn(0, 100)
-                bookDataRepository.updateReadingProgress(bookId, format, progress)
+                bookDataRepository.updateReadingProgress(bookId, format, s.readingPercentage)
             }
+        }
+    }
+
+    fun savePositionNow() {
+        val s = _state.value
+        if (bookId < 0 || !s.positionRestored || s.isLoading || s.book == null) return
+        // Отменяем debounce, чтобы не было двойной записи
+        saveJob?.cancel()
+        saveJob = saveScope.launch(NonCancellable) {
+            val pos = ReadingPosition(
+                bookId = bookId,
+                format = format,
+                chapterIndex = s.currentChapter,
+                pageIndex = s.pageCurrent,
+                scrollPosition = s.scrollY,
+                scrollOffset = s.scrollOffset,
+                textOffset = s.textOffset,
+                lastUpdated = System.currentTimeMillis()
+            )
+            bookDataRepository.saveReadingPosition(pos)
+            bookDataRepository.updateLastReadDate(bookId, format)
+            bookDataRepository.updateReadingProgress(bookId, format, s.readingPercentage)
         }
     }
 

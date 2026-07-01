@@ -1,21 +1,42 @@
 package com.foxybook.app.domain.repository
 
+import com.foxybook.app.core.models.Author
 import com.foxybook.app.core.models.Book
 import com.foxybook.app.core.models.BookFormat
 import com.foxybook.app.core.models.BookInfo
 import com.foxybook.app.core.models.LibraryBook
+import com.foxybook.app.core.models.NewBooksPage
+import com.foxybook.app.core.models.SearchPage
 import com.foxybook.app.core.models.Series
 import kotlinx.coroutines.flow.Flow
 
 interface BookRepository {
 
-    suspend fun searchBooks(query: String, limit: Int = 20): List<Book>
+    suspend fun getNewBooks(limit: Int = 50): List<Book>
 
-    suspend fun searchByAuthor(author: String, limit: Int = 20): List<Book>
+    suspend fun getNewBooksFirstPage(): NewBooksPage
 
-    suspend fun searchBySeries(series: String, limit: Int = 20): List<Series>
+    suspend fun getNewBooksNextPage(url: String): NewBooksPage
 
-    suspend fun getSeriesBooks(seriesId: String, limit: Int = 50): List<Book>
+    suspend fun searchBooks(query: String, limit: Int = 20): SearchPage<Book>
+
+    suspend fun searchBooksNextPage(url: String, limit: Int = 20): SearchPage<Book>
+
+    suspend fun searchByAuthor(query: String, limit: Int = 20): SearchPage<Author>
+
+    suspend fun searchByAuthorNextPage(url: String, limit: Int = 20): SearchPage<Author>
+
+    suspend fun getAuthorBooks(authorId: String, limit: Int = 50): List<Book>
+
+    suspend fun searchBySeries(query: String, limit: Int = 20): SearchPage<Series>
+
+    suspend fun searchBySeriesNextPage(url: String, limit: Int = 20): SearchPage<Series>
+
+    suspend fun searchByGenre(query: String, limit: Int = 20): SearchPage<Book>
+
+    suspend fun searchByGenreNextPage(url: String, limit: Int = 20): SearchPage<Book>
+
+    suspend fun getSeriesBooks(seriesId: String, authorId: String? = null, limit: Int = 50): List<Book>
 
     suspend fun getBookInfo(id: Int): BookInfo?
 

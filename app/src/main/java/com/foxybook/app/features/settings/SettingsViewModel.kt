@@ -7,6 +7,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxybook.app.core.datastore.DataStoreManager
+import com.foxybook.app.core.models.BookSource
+import com.foxybook.app.core.network.OkHttpClientProvider
 import com.foxybook.app.core.updater.UpdateChecker
 import com.foxybook.app.core.updater.UpdateInfo
 import kotlinx.coroutines.delay
@@ -32,12 +34,14 @@ data class SettingsState(
     val downloadDirectory: String? = null,
     val currentVersion: String = "",
     val updateState: UpdateState = UpdateState.Idle,
-    val downloadProgress: Float = 0f
+    val downloadProgress: Float = 0f,
+    val bookSource: BookSource = BookSource.FLIBUSTA
 )
 
 class SettingsViewModel(
     private val dataStoreManager: DataStoreManager,
-    private val updateChecker: UpdateChecker
+    private val updateChecker: UpdateChecker,
+    private val networkProvider: OkHttpClientProvider
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())
@@ -59,6 +63,19 @@ class SettingsViewModel(
             dataStoreManager.downloadDirectory.collect { dir ->
                 _state.update { it.copy(downloadDirectory = dir) }
             }
+        }
+        viewModelScope.launch {
+            dataStoreManager.bookSource.collect { source ->
+                _state.update { it.copy(bookSource = source) }
+            }
+        }
+    }
+
+    fun setBookSource(source: BookSource) {
+        viewModelScope.launch {
+            com.foxybook.app.core.models.BookCache.clear()
+            networkProvider.switchSource(source)
+            dataStoreManager.setBookSource(source)
         }
     }
 

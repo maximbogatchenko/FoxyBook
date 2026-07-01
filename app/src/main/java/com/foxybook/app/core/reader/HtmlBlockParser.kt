@@ -17,19 +17,74 @@ object HtmlBlockParser {
             val body = doc.body() ?: doc
             walkElement(body, blocks)
             blocks.forEachIndexed { index, block -> block.originalIndex = index }
+
+            // Если walkElement не нашёл ни одного блока, извлекаем весь текст через Jsoup
+            // (нужно для битого HTML из MOBI, где теги искажены кодировкой)
+            if (blocks.isEmpty()) {
+                val fullText = body.text().trim()
+                if (fullText.isNotBlank()) {
+                    // Сначала пробуем разбить по двойным переносам строк
+                    var paragraphs = fullText.split(Regex("\\n\\s*\\n"))
+                    // Если не получилось — по одиночным переносам
+                    if (paragraphs.size < 2) {
+                        paragraphs = fullText.split("\n")
+                    }
+                    // Если всё ещё 1 кусок — режем по границам слов (~2000 символов)
+                    if (paragraphs.size < 2 && fullText.length > 5000) {
+                        paragraphs = fullText.windowed(2000, 2000, partialWindows = true)
+                    }
+                    for (p in paragraphs) {
+                        val trimmed = p.trim()
+                        if (trimmed.isNotBlank()) {
+                            blocks.add(ContentBlock.Paragraph(trimmed))
+                        }
+                    }
+                }
+            }
         } catch (_: Exception) {
-            // Fallback: treat entire content as one paragraph
+            // Fallback: extract text and split into paragraphs
             val text = Jsoup.parse(htmlContent).text()
             if (text.isNotBlank()) {
-                blocks.add(ContentBlock.Paragraph(text))
+                val paragraphs = if (text.length > 5000) {
+                    text.windowed(2000, 2000, partialWindows = true)
+                } else {
+                    listOf(text)
+                }
+                for (p in paragraphs) {
+                    val trimmed = p.trim()
+                    if (trimmed.isNotBlank()) {
+                        blocks.add(ContentBlock.Paragraph(trimmed))
+                    }
+                }
             }
         }
-        return blocks.ifEmpty { listOf(ContentBlock.Paragraph("")) }
+        return blocks.ifEmpty {
+            // Если нет блоков — это пустая глава. Не создаём пустой Paragraph.
+            emptyList()
+        }
+    }
+
+    /**
+     * Извлекает первый заголовок из списка блоков (если есть).
+     */
+    fun extractFirstTitle(blocks: List<ContentBlock>): String? {
+        for (block in blocks) {
+            if (block is ContentBlock.Heading && block.text.isNotBlank()) {
+                return block.text
+            }
+        }
+        return null
+    }
+
+    private fun tagName(element: Element): String {
+        val raw = element.tagName()
+        val colon = raw.indexOf(':')
+        return if (colon >= 0) raw.substring(colon + 1) else raw
     }
 
     private fun walkElement(element: Element, blocks: MutableList<ContentBlock>) {
         for (child in element.children()) {
-            when (child.tagName().lowercase()) {
+            when (tagName(child).lowercase()) {
                 "h1" -> blocks.add(ContentBlock.Heading(child.text().trim(), 1))
                 "h2" -> blocks.add(ContentBlock.Heading(child.text().trim(), 2))
                 "h3" -> blocks.add(ContentBlock.Heading(child.text().trim(), 3))
@@ -121,10 +176,12 @@ object HtmlBlockParser {
             }
         }
 
-        // Catch text nodes directly inside the element (rare but possible)
-        for (node in element.textNodes()) {
-            val text = node.text().trim()
-            if (text.isNotBlank() && element.tagName() == "body") {
+        // Catch text nodes directly inside the element.
+        // If an element has only text (no child elements), capture it as a paragraph.
+        // This handles cases like <div>Text here</div> or namespaced <fb:div>Text</fb:div>.
+        if (element.childrenSize() == 0) {
+            val text = element.text().trim()
+            if (text.isNotBlank()) {
                 blocks.add(ContentBlock.Paragraph(text))
             }
         }

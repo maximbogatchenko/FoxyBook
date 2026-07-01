@@ -6,11 +6,17 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +43,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoStories
@@ -83,13 +91,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -117,11 +126,13 @@ fun LibraryScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val importLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri: Uri? ->
-        uri?.let {
-            Log.d("LibraryScreen", "Importing book: $it")
-            viewModel.importBook(it, context)
+        contract = ActivityResultContracts.OpenMultipleDocuments()
+    ) { uris: List<Uri> ->
+        if (uris.isNotEmpty()) {
+            Log.d("LibraryScreen", "Importing ${uris.size} books: $uris")
+            uris.forEach { uri ->
+                viewModel.importBook(uri, context)
+            }
         }
     }
 
@@ -155,65 +166,92 @@ fun LibraryScreen(
                 .fillMaxSize()
                 .statusBarsPadding()
         ) {
-            TopAppBar(
-                title = { Text("Библиотека", fontWeight = FontWeight.Bold) },
-                actions = {
-                    Box {
-                        IconButton(onClick = { showViewModeMenu = true }) {
-                            Icon(
-                                when (state.viewMode) {
-                                    LibraryViewMode.LIST -> Icons.Default.ViewHeadline
-                                    LibraryViewMode.COMPACT -> Icons.Default.ViewAgenda
-                                    LibraryViewMode.GRID -> Icons.Default.GridView
-                                },
-                                contentDescription = "Вид"
-                            )
+            if (state.isSelectionMode) {
+                TopAppBar(
+                    title = { Text("Выбрано: ${state.selectedBookIds.size}", fontWeight = FontWeight.Bold) },
+                    navigationIcon = {
+                        IconButton(onClick = { viewModel.onEvent(LibraryEvent.ClearSelection) }) {
+                            Icon(Icons.Default.Close, contentDescription = "Отменить")
                         }
-                        DropdownMenu(
-                            expanded = showViewModeMenu,
-                            onDismissRequest = { showViewModeMenu = false }
-                        ) {
-                            LibraryViewMode.entries.forEach { mode ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            mode.label,
-                                            fontWeight = if (state.viewMode == mode) FontWeight.Bold else FontWeight.Normal
-                                        )
+                    },
+                    actions = {
+                        IconButton(onClick = { viewModel.onEvent(LibraryEvent.SelectAll) }) {
+                            Icon(Icons.Default.CheckCircle, contentDescription = "Выбрать всё")
+                        }
+                        IconButton(onClick = { viewModel.onEvent(LibraryEvent.BatchToggleFavorite) }) {
+                            Icon(Icons.Default.Favorite, contentDescription = "В избранное", tint = MaterialTheme.colorScheme.error)
+                        }
+                        IconButton(onClick = { viewModel.onEvent(LibraryEvent.BatchShowCollectionDialog) }) {
+                            Icon(Icons.Default.Folder, contentDescription = "В коллекцию")
+                        }
+                        IconButton(onClick = { viewModel.onEvent(LibraryEvent.BatchDeleteSelected) }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Удалить", tint = MaterialTheme.colorScheme.error)
+                        }
+                    },
+                    windowInsets = WindowInsets(0),
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
+                )
+            } else {
+                TopAppBar(
+                    title = { Text("Библиотека", fontWeight = FontWeight.Bold) },
+                    actions = {
+                        Box {
+                            IconButton(onClick = { showViewModeMenu = true }) {
+                                Icon(
+                                    when (state.viewMode) {
+                                        LibraryViewMode.LIST -> Icons.Default.ViewHeadline
+                                        LibraryViewMode.COMPACT -> Icons.Default.ViewAgenda
+                                        LibraryViewMode.GRID -> Icons.Default.GridView
                                     },
-                                    onClick = {
-                                        showViewModeMenu = false
-                                        viewModel.onEvent(LibraryEvent.ChangeViewMode(mode))
-                                    },
-                                    leadingIcon = {
-                                        Icon(
-                                            when (mode) {
-                                                LibraryViewMode.LIST -> Icons.Default.ViewHeadline
-                                                LibraryViewMode.COMPACT -> Icons.Default.ViewAgenda
-                                                LibraryViewMode.GRID -> Icons.Default.GridView
-                                            },
-                                            contentDescription = null,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
+                                    contentDescription = "Вид"
                                 )
                             }
+                            DropdownMenu(
+                                expanded = showViewModeMenu,
+                                onDismissRequest = { showViewModeMenu = false }
+                            ) {
+                                LibraryViewMode.entries.forEach { mode ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                mode.label,
+                                                fontWeight = if (state.viewMode == mode) FontWeight.Bold else FontWeight.Normal
+                                            )
+                                        },
+                                        onClick = {
+                                            showViewModeMenu = false
+                                            viewModel.onEvent(LibraryEvent.ChangeViewMode(mode))
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                when (mode) {
+                                                    LibraryViewMode.LIST -> Icons.Default.ViewHeadline
+                                                    LibraryViewMode.COMPACT -> Icons.Default.ViewAgenda
+                                                    LibraryViewMode.GRID -> Icons.Default.GridView
+                                                },
+                                                contentDescription = null,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+                                    )
+                                }
+                            }
                         }
-                    }
-                    IconButton(onClick = {
-                        importLauncher.launch(arrayOf("application/epub+zip", "application/x-fictionbook+xml", "application/octet-stream", "text/plain"))
-                    }) {
-                        Icon(Icons.Default.Add, contentDescription = "Импорт книги")
-                    }
-                    if (state.currentTab == LibraryTab.COLLECTIONS) {
-                        IconButton(onClick = { viewModel.onEvent(LibraryEvent.CreateCollectionClicked) }) {
-                            Icon(Icons.Default.CreateNewFolder, contentDescription = "Новая коллекция")
+                        IconButton(onClick = {
+                            importLauncher.launch(arrayOf("application/epub+zip", "application/x-fictionbook+xml", "application/x-mobipocket-ebook", "application/octet-stream", "text/plain"))
+                        }) {
+                            Icon(Icons.Default.Add, contentDescription = "Импорт книги")
                         }
-                    }
-                },
-                windowInsets = WindowInsets(0),
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
-            )
+                        if (state.currentTab == LibraryTab.COLLECTIONS) {
+                            IconButton(onClick = { viewModel.onEvent(LibraryEvent.CreateCollectionClicked) }) {
+                                Icon(Icons.Default.CreateNewFolder, contentDescription = "Новая коллекция")
+                            }
+                        }
+                    },
+                    windowInsets = WindowInsets(0),
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
+                )
+            }
 
             // Tabs
             androidx.compose.material3.TabRow(
@@ -242,53 +280,99 @@ fun LibraryScreen(
                 }
             }
 
-            AnimatedContent(
-                targetState = state.currentTab to state.selectedCollectionId,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
-                label = "library_content"
-            ) { (tab, _) ->
-                when (tab) {
-                    LibraryTab.ALL -> BookListContent(
+            Spacer(modifier = Modifier.height(6.dp))
+
+            // Content with swipe gestures
+            var swipeOffset by remember { mutableStateOf(0f) }
+            val swipeThreshold = with(LocalDensity.current) { 80.dp.toPx() }
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures(
+                            onDragEnd = {
+                                if (swipeOffset < -swipeThreshold) {
+                                    val next = (state.currentTab.ordinal + 1).coerceAtMost(LibraryTab.entries.size - 1)
+                                    viewModel.onEvent(LibraryEvent.TabSelected(LibraryTab.entries[next]))
+                                } else if (swipeOffset > swipeThreshold) {
+                                    val prev = (state.currentTab.ordinal - 1).coerceAtLeast(0)
+                                    viewModel.onEvent(LibraryEvent.TabSelected(LibraryTab.entries[prev]))
+                                }
+                                swipeOffset = 0f
+                            },
+                            onHorizontalDrag = { _, dragAmount ->
+                                swipeOffset += dragAmount
+                            }
+                        )
+                    }
+            ) {
+                AnimatedContent(
+                    targetState = state.currentTab to state.selectedCollectionId,
+                    transitionSpec = {
+                        val dir = if (targetState.first.ordinal > initialState.first.ordinal) 1 else -1
+                        (slideInHorizontally(tween(250)) { it * dir } + fadeIn(tween(250)))
+                            .togetherWith(slideOutHorizontally(tween(250)) { -it * dir } + fadeOut(tween(200)))
+                    },
+                    label = "library_content"
+                ) { (tab, _) ->
+                    when (tab) {
+                        LibraryTab.ALL -> BookListContent(
+                            books = state.allBooks,
+                            viewMode = state.viewMode,
+                            emptyTitle = "Библиотека пуста",
+                            emptySubtitle = "Скачайте книги для чтения",
+                            selectedBookIds = state.selectedBookIds,
+                            isSelectionMode = state.isSelectionMode,
+                            onBookClick = onBookClick,
+                            onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
+                            onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
+                            onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
+                            onCoverClick = { url -> coverViewerUrl = url },
+                            onBookDetails = { book -> selectedBookForDetails = book },
+                            onLongPressBook = { id, fmt -> viewModel.onEvent(LibraryEvent.LongPressBook(id, fmt)) },
+                            onToggleSelection = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleBookSelection(id, fmt)) }
+                        )
+                        LibraryTab.FAVORITES -> BookListContent(
+                            books = state.favoriteBooks,
+                            viewMode = state.viewMode,
+                            emptyTitle = "Нет избранных",
+                            emptySubtitle = "Нажмите ♡ чтобы добавить",
+                            selectedBookIds = state.selectedBookIds,
+                            isSelectionMode = state.isSelectionMode,
+                            onBookClick = onBookClick,
+                            onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
+                            onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
+                            onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
+                            onCoverClick = { url -> coverViewerUrl = url },
+                            onBookDetails = { book -> selectedBookForDetails = book },
+                            onLongPressBook = { id, fmt -> viewModel.onEvent(LibraryEvent.LongPressBook(id, fmt)) },
+                            onToggleSelection = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleBookSelection(id, fmt)) }
+                        )
+                        LibraryTab.HISTORY -> BookListContent(
+                            books = state.historyBooks,
+                            viewMode = state.viewMode,
+                            emptyTitle = "История пуста",
+                            emptySubtitle = "Начните читать",
+                            selectedBookIds = state.selectedBookIds,
+                            isSelectionMode = state.isSelectionMode,
+                            onBookClick = onBookClick,
+                            onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
+                            onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
+                            onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
+                            onCoverClick = { url -> coverViewerUrl = url },
+                            onBookDetails = { book -> selectedBookForDetails = book },
+                            onLongPressBook = { id, fmt -> viewModel.onEvent(LibraryEvent.LongPressBook(id, fmt)) },
+                            onToggleSelection = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleBookSelection(id, fmt)) }
+                        )
+                        LibraryTab.COLLECTIONS -> CollectionsContent(
+                            collections = state.collections,
+                            selectedCollectionId = state.selectedCollectionId,
                         books = state.allBooks,
                         viewMode = state.viewMode,
-                        emptyTitle = "Библиотека пуста",
-                        emptySubtitle = "Скачайте книги для чтения",
-                        onBookClick = onBookClick,
-                        onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
-                        onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
-                        onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
-                        onCoverClick = { url -> coverViewerUrl = url },
-                        onBookDetails = { book -> selectedBookForDetails = book }
-                    )
-                    LibraryTab.FAVORITES -> BookListContent(
-                        books = state.favoriteBooks,
-                        viewMode = state.viewMode,
-                        emptyTitle = "Нет избранных",
-                        emptySubtitle = "Нажмите ♡ чтобы добавить",
-                        onBookClick = onBookClick,
-                        onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
-                        onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
-                        onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
-                        onCoverClick = { url -> coverViewerUrl = url },
-                        onBookDetails = { book -> selectedBookForDetails = book }
-                    )
-                    LibraryTab.HISTORY -> BookListContent(
-                        books = state.historyBooks,
-                        viewMode = state.viewMode,
-                        emptyTitle = "История пуста",
-                        emptySubtitle = "Начните читать",
-                        onBookClick = onBookClick,
-                        onToggleFavorite = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleFavorite(id, fmt)) },
-                        onMoveBook = { id, fmt -> viewModel.onEvent(LibraryEvent.MoveBookClicked(id, fmt)) },
-                        onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
-                        onCoverClick = { url -> coverViewerUrl = url },
-                        onBookDetails = { book -> selectedBookForDetails = book }
-                    )
-                    LibraryTab.COLLECTIONS -> CollectionsContent(
-                        collections = state.collections,
-                        selectedCollectionId = state.selectedCollectionId,
-                        books = state.allBooks,
-                        viewMode = state.viewMode,
+                        selectedBookIds = state.selectedBookIds,
+                        isSelectionMode = state.isSelectionMode,
                         onCollectionClick = { viewModel.onEvent(LibraryEvent.CollectionSelected(it)) },
                         onRenameCollection = { viewModel.onEvent(LibraryEvent.RenameCollectionClicked(it)) },
                         onDeleteCollection = { viewModel.onEvent(LibraryEvent.DeleteCollection(it)) },
@@ -298,11 +382,14 @@ fun LibraryScreen(
                         onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
                         onCoverClick = { url -> coverViewerUrl = url },
                         onBookDetails = { book -> selectedBookForDetails = book },
-                        onCreateCollection = { viewModel.onEvent(LibraryEvent.CreateCollectionClicked) }
+                        onCreateCollection = { viewModel.onEvent(LibraryEvent.CreateCollectionClicked) },
+                        onLongPressBook = { id, fmt -> viewModel.onEvent(LibraryEvent.LongPressBook(id, fmt)) },
+                        onToggleSelection = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleBookSelection(id, fmt)) }
                     )
                 }
             }
         }
+    }
 
         // Book details dialog (for grid mode)
         selectedBookForDetails?.let { book ->
@@ -416,6 +503,59 @@ fun LibraryScreen(
             )
         }
 
+        // Batch delete dialog
+        if (state.showBatchDeleteDialog && state.isSelectionMode) {
+            AlertDialog(
+                onDismissRequest = { viewModel.onEvent(LibraryEvent.DismissBatchDeleteDialog) },
+                title = { Text("Удалить ${state.selectedBookIds.size} ${pluralBook(state.selectedBookIds.size)}?") },
+                text = {
+                    Column {
+                        Text("Выбранные книги будут удалены из библиотеки.")
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { viewModel.setBatchDeleteFromDevice(!state.batchDeleteFromDevice) }
+                                .padding(vertical = 4.dp)
+                        ) {
+                            Checkbox(
+                                checked = state.batchDeleteFromDevice,
+                                onCheckedChange = { viewModel.setBatchDeleteFromDevice(it) }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Удалить файлы с устройства", style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { viewModel.onEvent(LibraryEvent.BatchDeleteConfirm) }) {
+                        Text("Удалить", color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { viewModel.onEvent(LibraryEvent.DismissBatchDeleteDialog) }) {
+                        Text("Отмена")
+                    }
+                }
+            )
+        }
+
+        // Batch collection dialog
+        if (state.showBatchCollectionDialog && state.isSelectionMode) {
+            BatchCollectionDialog(
+                collections = state.collections,
+                onDismiss = { viewModel.onEvent(LibraryEvent.DismissBatchCollectionDialog) },
+                onSelectCollection = { colId ->
+                    viewModel.onEvent(LibraryEvent.BatchAddToCollection(colId))
+                },
+                onCreateCollection = {
+                    viewModel.onEvent(LibraryEvent.DismissBatchCollectionDialog)
+                    viewModel.onEvent(LibraryEvent.CreateCollectionClicked)
+                }
+            )
+        }
+
         // Full-screen cover viewer overlay
         if (coverViewerUrl != null) {
             CoverViewer(
@@ -432,28 +572,33 @@ fun LibraryScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun BookListContent(
     books: List<LibraryBook>, viewMode: LibraryViewMode, emptyTitle: String, emptySubtitle: String,
+    selectedBookIds: Set<String> = emptySet(),
+    isSelectionMode: Boolean = false,
     onBookClick: (String, Int, String) -> Unit,
     onToggleFavorite: (Int, String) -> Unit,
     onMoveBook: (Int, String) -> Unit,
     onDeleteBook: (Int, String) -> Unit,
     onCoverClick: (String) -> Unit,
-    onBookDetails: (LibraryBook) -> Unit = {}
+    onBookDetails: (LibraryBook) -> Unit = {},
+    onLongPressBook: (Int, String) -> Unit = { _, _ -> },
+    onToggleSelection: (Int, String) -> Unit = { _, _ -> }
 ) {
     if (books.isEmpty()) {
         EmptyLibraryView(emptyTitle, emptySubtitle)
     } else {
         when (viewMode) {
             LibraryViewMode.LIST -> BookListView(
-                books, onBookClick, onToggleFavorite, onMoveBook, onDeleteBook, onCoverClick, onBookDetails
+                books, selectedBookIds, isSelectionMode, onBookClick, onToggleFavorite, onMoveBook, onDeleteBook, onCoverClick, onBookDetails, onLongPressBook, onToggleSelection
             )
             LibraryViewMode.COMPACT -> CompactBookListView(
-                books, onBookClick, onToggleFavorite, onMoveBook, onDeleteBook, onCoverClick, onBookDetails
+                books, selectedBookIds, isSelectionMode, onBookClick, onToggleFavorite, onMoveBook, onDeleteBook, onCoverClick, onBookDetails, onLongPressBook, onToggleSelection
             )
             LibraryViewMode.GRID -> GridBookListView(
-                books, onBookClick, onToggleFavorite, onMoveBook, onDeleteBook, onCoverClick, onBookDetails
+                books, selectedBookIds, isSelectionMode, onBookClick, onToggleFavorite, onMoveBook, onDeleteBook, onCoverClick, onBookDetails, onLongPressBook, onToggleSelection
             )
         }
     }
@@ -470,20 +615,32 @@ private fun EmptyLibraryView(emptyTitle: String, emptySubtitle: String) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun BookListView(
     books: List<LibraryBook>,
+    selectedBookIds: Set<String>,
+    isSelectionMode: Boolean,
     onBookClick: (String, Int, String) -> Unit,
     onToggleFavorite: (Int, String) -> Unit,
     onMoveBook: (Int, String) -> Unit,
     onDeleteBook: (Int, String) -> Unit,
     onCoverClick: (String) -> Unit,
-    onBookDetails: (LibraryBook) -> Unit = {}
+    onBookDetails: (LibraryBook) -> Unit = {},
+    onLongPressBook: (Int, String) -> Unit,
+    onToggleSelection: (Int, String) -> Unit
 ) {
-    LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(books, key = { "${it.id}-${it.format}" }) { book ->
+            val key = "${book.id}-${book.format}"
+            val isSelected = key in selectedBookIds
             LibraryBookCard(book = book,
-                onClick = { onBookClick(book.filePath, book.id, book.format) },
+                isSelected = isSelected,
+                onClick = {
+                    if (isSelectionMode) onToggleSelection(book.id, book.format)
+                    else onBookClick(book.filePath, book.id, book.format)
+                },
+                onLongClick = { onLongPressBook(book.id, book.format) },
                 onToggleFavorite = { onToggleFavorite(book.id, book.format) },
                 onMove = { onMoveBook(book.id, book.format) },
                 onDelete = { onDeleteBook(book.id, book.format) },
@@ -493,20 +650,32 @@ private fun BookListView(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CompactBookListView(
     books: List<LibraryBook>,
+    selectedBookIds: Set<String>,
+    isSelectionMode: Boolean,
     onBookClick: (String, Int, String) -> Unit,
     onToggleFavorite: (Int, String) -> Unit,
     onMoveBook: (Int, String) -> Unit,
     onDeleteBook: (Int, String) -> Unit,
     onCoverClick: (String) -> Unit,
-    onBookDetails: (LibraryBook) -> Unit = {}
+    onBookDetails: (LibraryBook) -> Unit = {},
+    onLongPressBook: (Int, String) -> Unit,
+    onToggleSelection: (Int, String) -> Unit
 ) {
-    LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         items(books, key = { "${it.id}-${it.format}" }) { book ->
+            val key = "${book.id}-${book.format}"
+            val isSelected = key in selectedBookIds
             CompactBookCard(book = book,
-                onClick = { onBookClick(book.filePath, book.id, book.format) },
+                isSelected = isSelected,
+                onClick = {
+                    if (isSelectionMode) onToggleSelection(book.id, book.format)
+                    else onBookClick(book.filePath, book.id, book.format)
+                },
+                onLongClick = { onLongPressBook(book.id, book.format) },
                 onToggleFavorite = { onToggleFavorite(book.id, book.format) },
                 onMoveToCollection = { onMoveBook(book.id, book.format) },
                 onDeleteBook = { onDeleteBook(book.id, book.format) },
@@ -516,26 +685,42 @@ private fun CompactBookListView(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun GridBookListView(
     books: List<LibraryBook>,
+    selectedBookIds: Set<String>,
+    isSelectionMode: Boolean,
     onBookClick: (String, Int, String) -> Unit,
     onToggleFavorite: (Int, String) -> Unit,
     onMoveBook: (Int, String) -> Unit,
     onDeleteBook: (Int, String) -> Unit,
     onCoverClick: (String) -> Unit,
-    onBookDetails: (LibraryBook) -> Unit = {}
+    onBookDetails: (LibraryBook) -> Unit = {},
+    onLongPressBook: (Int, String) -> Unit,
+    onToggleSelection: (Int, String) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         gridItems(books, key = { "${it.id}-${it.format}" }) { book ->
+            val key = "${book.id}-${book.format}"
+            val isSelected = key in selectedBookIds
             GridBookCard(book = book,
-                onCoverClick = { onBookDetails(book) },
-                onReadClick = { onBookClick(book.filePath, book.id, book.format) },
+                isSelected = isSelected,
+                isSelectionMode = isSelectionMode,
+                onCoverClick = {
+                    if (isSelectionMode) onToggleSelection(book.id, book.format)
+                    else onBookDetails(book)
+                },
+                onReadClick = {
+                    if (isSelectionMode) onToggleSelection(book.id, book.format)
+                    else onBookClick(book.filePath, book.id, book.format)
+                },
+                onLongClick = { onLongPressBook(book.id, book.format) },
                 onToggleFavorite = { onToggleFavorite(book.id, book.format) },
                 onMoveToCollection = { onMoveBook(book.id, book.format) },
                 onDeleteBook = { onDeleteBook(book.id, book.format) }
@@ -544,20 +729,37 @@ private fun GridBookListView(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun LibraryBookCard(
-    book: LibraryBook, onClick: () -> Unit, onToggleFavorite: () -> Unit, onMove: () -> Unit, onDelete: () -> Unit, onCoverClick: () -> Unit
+    book: LibraryBook, isSelected: Boolean = false, onClick: () -> Unit, onLongClick: () -> Unit = {}, onToggleFavorite: () -> Unit, onMove: () -> Unit, onDelete: () -> Unit, onCoverClick: () -> Unit
 ) {
-    val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    val dateFormat = remember { SimpleDateFormat("dd MMM yyyy", Locale.getDefault()) }
+    val shape = remember { RoundedCornerShape(16.dp) }
     var showMenu by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        modifier = Modifier.fillMaxWidth()
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+            else MaterialTheme.colorScheme.surface
+        ),
+        shape = shape,
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 2.dp else 1.dp),
+        border = if (isSelected) androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
     ) {
         Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            // Selection checkmark
+            if (isSelected) {
+                Icon(
+                    Icons.Default.CheckCircle,
+                    contentDescription = "Выбрано",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
             CoverWithAuthor(
                 coverUrl = book.coverUrl,
                 author = book.author,
@@ -600,21 +802,38 @@ private fun LibraryBookCard(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CompactBookCard(
-    book: LibraryBook, onClick: () -> Unit,
+    book: LibraryBook, isSelected: Boolean = false, onClick: () -> Unit, onLongClick: () -> Unit = {},
     onToggleFavorite: () -> Unit, onMoveToCollection: () -> Unit, onDeleteBook: () -> Unit,
     onCoverClick: () -> Unit
 ) {
+    val shape = remember { RoundedCornerShape(12.dp) }
     var showMenu by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        modifier = Modifier.fillMaxWidth()
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+            else MaterialTheme.colorScheme.surface
+        ),
+        shape = shape,
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 2.dp else 1.dp),
+        border = if (isSelected) androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
     ) {
         Row(modifier = Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            // Selection checkmark
+            if (isSelected) {
+                Icon(
+                    Icons.Default.CheckCircle,
+                    contentDescription = "Выбрано",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+            }
             CoverWithAuthor(
                 coverUrl = book.coverUrl,
                 author = book.author,
@@ -650,29 +869,35 @@ private fun CompactBookCard(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun GridBookCard(
-    book: LibraryBook, onCoverClick: () -> Unit, onReadClick: () -> Unit,
+    book: LibraryBook, isSelected: Boolean = false, isSelectionMode: Boolean = false,
+    onCoverClick: () -> Unit, onReadClick: () -> Unit, onLongClick: () -> Unit = {},
     onToggleFavorite: () -> Unit, onMoveToCollection: () -> Unit, onDeleteBook: () -> Unit
 ) {
+    val shape = remember { RoundedCornerShape(12.dp) }
     var showMenu by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier.fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp)),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .combinedClickable(onClick = onReadClick, onLongClick = onLongClick),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+            else MaterialTheme.colorScheme.surface
+        ),
+        shape = shape,
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 3.dp else 2.dp),
+        border = if (isSelected) androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            // Cover — click opens full-screen viewer
+            // Cover area with overlays
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onCoverClick),
                 contentAlignment = Alignment.Center
             ) {
-                // Inner box wraps only the cover area so overlays align to its edges
                 Box {
                     CoverWithAuthor(
                         coverUrl = book.coverUrl,
@@ -682,6 +907,22 @@ private fun GridBookCard(
                         height = 200.dp,
                         showFullName = false
                     )
+
+                    // Selection overlay
+                    if (isSelected) {
+                        Box(
+                            modifier = Modifier.matchParentSize()
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                        )
+                        Icon(
+                            Icons.Default.CheckCircle,
+                            contentDescription = "Выбрано",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(48.dp)
+                        )
+                    }
 
                     // Favorite overlay — top-left of cover
                     Box(
@@ -748,13 +989,16 @@ private fun GridBookCard(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 4.dp)
             )
-            // Read button
+            // Read / Select button
             OutlinedButton(
                 onClick = onReadClick,
                 modifier = Modifier.padding(bottom = 10.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Читать", style = MaterialTheme.typography.labelMedium)
+                Text(
+                    if (isSelectionMode) "Выбрать" else "Читать",
+                    style = MaterialTheme.typography.labelMedium
+                )
             }
         }
     }
@@ -764,12 +1008,16 @@ private fun GridBookCard(
 private fun CollectionsContent(
     collections: List<BookCollection>, selectedCollectionId: String?, books: List<LibraryBook>,
     viewMode: LibraryViewMode,
+    selectedBookIds: Set<String> = emptySet(),
+    isSelectionMode: Boolean = false,
     onCollectionClick: (String?) -> Unit, onRenameCollection: (String) -> Unit, onDeleteCollection: (String) -> Unit,
     onBookClick: (String, Int, String) -> Unit,
     onToggleFavorite: (Int, String) -> Unit, onMoveBook: (Int, String) -> Unit, onDeleteBook: (Int, String) -> Unit,
     onCoverClick: (String) -> Unit,
     onBookDetails: (LibraryBook) -> Unit = {},
-    onCreateCollection: () -> Unit = {}
+    onCreateCollection: () -> Unit = {},
+    onLongPressBook: (Int, String) -> Unit = { _, _ -> },
+    onToggleSelection: (Int, String) -> Unit = { _, _ -> }
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         // Collection chips row
@@ -784,7 +1032,7 @@ private fun CollectionsContent(
             FilterChip(
                 selected = selectedCollectionId == null,
                 onClick = { onCollectionClick(null) },
-                label = { Text("Все книги") },
+                label = { Text("Все папки") },
                 leadingIcon = {
                     Icon(Icons.Default.MenuBook, null, modifier = Modifier.size(18.dp))
                 }
@@ -827,12 +1075,16 @@ private fun CollectionsContent(
                 viewMode = viewMode,
                 emptyTitle = "Коллекция пуста",
                 emptySubtitle = "Добавьте книги через меню",
+                selectedBookIds = selectedBookIds,
+                isSelectionMode = isSelectionMode,
                 onBookClick = onBookClick,
                 onToggleFavorite = onToggleFavorite,
                 onMoveBook = onMoveBook,
                 onDeleteBook = onDeleteBook,
                 onCoverClick = onCoverClick,
-                onBookDetails = onBookDetails
+                onBookDetails = onBookDetails,
+                onLongPressBook = onLongPressBook,
+                onToggleSelection = onToggleSelection
             )
         } else {
             if (collections.isEmpty()) {
@@ -949,7 +1201,7 @@ private fun BookDetailsDialog(
     onOpenCover: (String) -> Unit,
     onRead: () -> Unit
 ) {
-    val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    val dateFormat = remember { SimpleDateFormat("dd MMM yyyy", Locale.getDefault()) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -1100,6 +1352,72 @@ private fun MoveBookDialog(
                             if (isIn) {
                                 Icon(Icons.Default.Check, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
                             }
+                        }
+                        if (collection != collections.last()) {
+                            HorizontalDivider(modifier = Modifier.padding(start = 32.dp))
+                        }
+                    }
+                }
+                HorizontalDivider(modifier = Modifier.padding(top = 4.dp, bottom = 4.dp))
+                TextButton(
+                    onClick = onCreateCollection,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Создать коллекцию")
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text("Готово") }
+        }
+    )
+}
+
+private fun pluralBook(count: Int): String = when {
+    count % 10 == 1 && count % 100 != 11 -> "книгу"
+    count % 10 in 2..4 && (count % 100 !in 12..14) -> "книги"
+    else -> "книг"
+}
+
+@Composable
+private fun BatchCollectionDialog(
+    collections: List<BookCollection>,
+    onDismiss: () -> Unit,
+    onSelectCollection: (String) -> Unit,
+    onCreateCollection: () -> Unit = {}
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Добавить в коллекцию", fontWeight = FontWeight.SemiBold) },
+        text = {
+            Column {
+                if (collections.isEmpty()) {
+                    Text("Нет коллекций", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(modifier = Modifier.height(8.dp))
+                } else {
+                    collections.forEach { collection ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable { onSelectCollection(collection.id) }
+                                .padding(horizontal = 4.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.Folder,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                collection.name,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.weight(1f)
+                            )
                         }
                         if (collection != collections.last()) {
                             HorizontalDivider(modifier = Modifier.padding(start = 32.dp))

@@ -88,6 +88,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import coil3.compose.SubcomposeAsyncImage
+import androidx.compose.foundation.layout.heightIn
 import com.foxybook.app.core.models.ReaderMode
 import com.foxybook.app.core.models.ReaderTheme
 import com.foxybook.app.core.reader.ContentBlock
@@ -127,6 +128,15 @@ fun readerColors(darkTheme: Boolean): ReaderColors = if (darkTheme) {
     )
 }
 
+fun amoledReaderColors(): ReaderColors = ReaderColors(
+    background = Color(0xFF000000),
+    text = Color(0xFFEEEEEE),
+    textSecondary = Color(0xFFAAAAAA),
+    quoteBackground = Color(0xFF111111),
+    quoteBorder = Color(0xFF333333),
+    selectionHighlight = Color(0x40FF8A65)
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReaderScreen(
@@ -139,27 +149,34 @@ fun ReaderScreen(
     val state by viewModel.state.collectAsState()
     val settings = state.settings
 
-    val darkTheme = when (ReaderTheme.valueOf(settings.readerTheme)) {
+    val resolvedReaderTheme = ReaderTheme.valueOf(settings.readerTheme)
+    val isAmoledTheme = resolvedReaderTheme == ReaderTheme.AMOLED
+    val darkTheme = when (resolvedReaderTheme) {
         ReaderTheme.LIGHT -> false
+        ReaderTheme.AMOLED -> true
         ReaderTheme.DARK -> true
         ReaderTheme.SYSTEM -> isSystemInDarkTheme()
     }
 
     // Animated reader colors for smooth theme transitions
-    val themeAnimProgress by animateFloatAsState(
-        targetValue = if (darkTheme) 1f else 0f,
-        animationSpec = tween(500), label = "readerTheme"
-    )
-    val lightCols = readerColors(false)
-    val darkCols = readerColors(true)
-    val colors = ReaderColors(
-        background = lerp(lightCols.background, darkCols.background, themeAnimProgress),
-        text = lerp(lightCols.text, darkCols.text, themeAnimProgress),
-        textSecondary = lerp(lightCols.textSecondary, darkCols.textSecondary, themeAnimProgress),
-        quoteBackground = lerp(lightCols.quoteBackground, darkCols.quoteBackground, themeAnimProgress),
-        quoteBorder = lerp(lightCols.quoteBorder, darkCols.quoteBorder, themeAnimProgress),
-        selectionHighlight = lerp(lightCols.selectionHighlight, darkCols.selectionHighlight, themeAnimProgress)
-    )
+    val colors = if (isAmoledTheme) {
+        amoledReaderColors()
+    } else {
+        val themeAnimProgress by animateFloatAsState(
+            targetValue = if (darkTheme) 1f else 0f,
+            animationSpec = tween(500), label = "readerTheme"
+        )
+        val lightCols = readerColors(false)
+        val darkCols = readerColors(true)
+        ReaderColors(
+            background = lerp(lightCols.background, darkCols.background, themeAnimProgress),
+            text = lerp(lightCols.text, darkCols.text, themeAnimProgress),
+            textSecondary = lerp(lightCols.textSecondary, darkCols.textSecondary, themeAnimProgress),
+            quoteBackground = lerp(lightCols.quoteBackground, darkCols.quoteBackground, themeAnimProgress),
+            quoteBorder = lerp(lightCols.quoteBorder, darkCols.quoteBorder, themeAnimProgress),
+            selectionHighlight = lerp(lightCols.selectionHighlight, darkCols.selectionHighlight, themeAnimProgress)
+        )
+    }
 
     LaunchedEffect(filePath) {
         Log.d("ReaderScreen", "LaunchedEffect: filePath=$filePath, bookId=$bookId")
@@ -222,13 +239,20 @@ fun ReaderScreen(
         window.attributes = lp
     }
 
+    // Save reading position when leaving the screen
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.savePositionNow()
+        }
+    }
+
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenHeightPx = constraints.maxHeight
         val screenWidthPx = constraints.maxWidth
 
         // Fixed bottom reserve prevents text from being hidden behind the bottom toolbar.
         // Not dependent on isImmersive — no re-pagination on immersive toggle.
-        val pageBottomReservePx = with(density) { 20.dp.roundToPx() }
+        val pageBottomReservePx = with(density) { 32.dp.roundToPx() }
         val availableHeightPx = remember { screenHeightPx - topPadPx - rawNavBarHeight - pageBottomReservePx }
         val availableWidthPx = screenWidthPx - with(density) { settings.margins.dp.roundToPx() * 2 }
 
@@ -474,6 +498,7 @@ fun ReaderScreen(
             bookmarks = state.bookmarks,
             currentChapter = state.currentChapter,
             initialTab = if (state.showBookmarks) 1 else 0,
+            chapterTitlesExtracted = state.chapterTitlesExtracted,
             viewModel = viewModel,
             snackbarHostState = snackbarHostState
         )
@@ -487,6 +512,7 @@ private fun BookSheet(
     bookmarks: List<com.foxybook.app.core.models.Bookmark>,
     currentChapter: Int,
     initialTab: Int = 0,
+    chapterTitlesExtracted: Map<Int, String> = emptyMap(),
     viewModel: ReaderViewModel,
     snackbarHostState: SnackbarHostState
 ) {
@@ -522,12 +548,16 @@ private fun BookSheet(
 
             Box(modifier = Modifier.weight(1f)) {
                 if (selectedTab == 0) {
-                    ChaptersList(book.chapters.map { it.title }, currentChapter) { index ->
+                    ChaptersList(
+                        originalTitles = book.chapters.map { it.title },
+                        extractedTitles = chapterTitlesExtracted,
+                        currentChapter = currentChapter
+                    ) { index ->
                         viewModel.onEvent(ReaderEvent.ChapterChanged(index, resetPosition = true))
                         viewModel.onEvent(ReaderEvent.ToggleChapters)
                     }
                 } else {
-                    BookmarksList(bookmarks, book.chapters.map { it.title }, viewModel, snackbarHostState)
+                    BookmarksList(bookmarks, book.chapters.map { it.title }, chapterTitlesExtracted, viewModel, snackbarHostState)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -537,12 +567,18 @@ private fun BookSheet(
 
 @Composable
 private fun ChaptersList(
-    chapterTitles: List<String>,
-    current: Int,
+    originalTitles: List<String>,
+    extractedTitles: Map<Int, String> = emptyMap(),
+    currentChapter: Int,
     onSelect: (Int) -> Unit
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize().padding(vertical = 8.dp)) {
-        items(count = chapterTitles.size, key = { it }) { index ->
+        items(count = originalTitles.size, key = { it }) { index ->
+            val displayTitle = extractedTitles[index]
+                ?.ifBlank { null }
+                ?: originalTitles.getOrNull(index)
+                ?: "Глава ${index + 1}"
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -551,10 +587,10 @@ private fun ChaptersList(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = chapterTitles[index],
+                    text = displayTitle,
                     style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = if (index == current) FontWeight.Bold else FontWeight.Normal,
-                    color = if (index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                    fontWeight = if (index == currentChapter) FontWeight.Bold else FontWeight.Normal,
+                    color = if (index == currentChapter) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -567,6 +603,7 @@ private fun ChaptersList(
 private fun BookmarksList(
     bookmarks: List<com.foxybook.app.core.models.Bookmark>,
     chapterTitles: List<String>,
+    extractedTitles: Map<Int, String> = emptyMap(),
     viewModel: ReaderViewModel,
     snackbarHostState: SnackbarHostState
 ) {
@@ -581,6 +618,11 @@ private fun BookmarksList(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(count = bookmarks.size, key = { bookmarks[it].id }) { index ->
                 val bookmark = bookmarks[index]
+                val displayChapterTitle = bookmark.chapterTitle.ifBlank {
+                    extractedTitles[bookmark.chapterIndex]?.ifBlank { null }
+                        ?: chapterTitles.getOrNull(bookmark.chapterIndex)
+                        ?: "Глава ${bookmark.chapterIndex + 1}"
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -593,7 +635,7 @@ private fun BookmarksList(
                             Icon(Icons.Default.Star, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = bookmark.chapterTitle.ifBlank { chapterTitles.getOrNull(bookmark.chapterIndex) ?: "Глава ${bookmark.chapterIndex + 1}" },
+                                text = displayChapterTitle,
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,
@@ -747,7 +789,7 @@ fun BlockComposable(
                     SubcomposeAsyncImage(
                     model = imgModel,
                     contentDescription = block.alt,
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp),
                     loading = {
                         Box(modifier = Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)

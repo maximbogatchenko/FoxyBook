@@ -143,7 +143,7 @@ fun ScrollModeContent(
             if (block != null) {
                 val chBlocks = globalBlocks.filter { it.chapterIndex == block.chapterIndex }
                 val totalChars = chBlocks.sumOf { it.block.getTextContent().length }
-                val charPct = if (totalChars > 0) (block.offsetInChapter * 100 / totalChars).coerceIn(0, 99) else 0
+                val charPct = if (totalChars > 0) (block.offsetInChapter * 100 / totalChars).coerceIn(0, 100) else 0
                 viewModel.onEvent(ReaderEvent.ScrollProgress(
                     charPct,
                     block.blockIndexInChapter,
@@ -171,7 +171,7 @@ fun ScrollModeContent(
 
                 val chBlocks = globalBlocks.filter { it.chapterIndex == block.chapterIndex }
                 val totalChars = chBlocks.sumOf { it.block.getTextContent().length }
-                val charPct = if (totalChars > 0) (block.offsetInChapter * 100 / totalChars).coerceIn(0, 99) else 0
+                val charPct = if (totalChars > 0) (block.offsetInChapter * 100 / totalChars).coerceIn(0, 100) else 0
                 viewModel.onEvent(ReaderEvent.ScrollProgress(
                     charPct,
                     block.blockIndexInChapter,

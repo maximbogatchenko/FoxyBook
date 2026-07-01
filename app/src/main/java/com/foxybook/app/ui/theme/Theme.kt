@@ -68,6 +68,29 @@ private val DarkColorScheme = darkColorScheme(
     outlineVariant = FoxOutlineVariantDark,
 )
 
+private val AmoledColorScheme = darkColorScheme(
+    primary = FoxPrimaryDark,
+    onPrimary = FoxOnPrimaryDark,
+    primaryContainer = FoxPrimaryContainerDark,
+    onPrimaryContainer = FoxOnPrimaryContainerDark,
+    secondary = FoxSecondaryDark,
+    onSecondary = FoxOnSecondaryDark,
+    secondaryContainer = FoxSecondaryContainerDark,
+    onSecondaryContainer = FoxOnSecondaryContainerDark,
+    tertiary = FoxTertiaryDark,
+    onTertiary = FoxOnTertiaryDark,
+    tertiaryContainer = FoxTertiaryContainerDark,
+    onTertiaryContainer = FoxOnTertiaryContainerDark,
+    background = FoxBackgroundAmoled,
+    onBackground = FoxOnBackgroundAmoled,
+    surface = FoxSurfaceAmoled,
+    onSurface = FoxOnSurfaceAmoled,
+    surfaceVariant = FoxSurfaceVariantAmoled,
+    onSurfaceVariant = FoxOnSurfaceVariantAmoled,
+    outline = FoxOutlineDark,
+    outlineVariant = FoxOutlineVariantDark,
+)
+
 private val AppTypography = Typography(
     displayLarge = TextStyle(fontWeight = FontWeight.Bold, fontSize = 32.sp, lineHeight = 40.sp, letterSpacing = (-0.25).sp),
     headlineLarge = TextStyle(fontWeight = FontWeight.Bold, fontSize = 28.sp, lineHeight = 36.sp),
@@ -92,10 +115,16 @@ fun FoxyBookAppTheme(
     val useDarkTheme = when (themeMode) {
         "light" -> false
         "dark" -> true
+        "amoled" -> true
         else -> isSystemInDarkTheme() // "system"
     }
 
-    val colorScheme = if (useDarkTheme) DarkColorScheme else LightColorScheme
+    val colorScheme = when (themeMode) {
+        "amoled" -> AmoledColorScheme
+        "dark" -> DarkColorScheme
+        "light" -> LightColorScheme
+        else -> if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme
+    }
 
     val view = LocalView.current
     // Sync status bar icon appearance with the app theme

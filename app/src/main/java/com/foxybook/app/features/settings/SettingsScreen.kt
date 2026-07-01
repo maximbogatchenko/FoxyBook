@@ -4,7 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -30,6 +32,7 @@ import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.ExpandLess
@@ -48,8 +51,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -76,6 +77,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.foxybook.app.core.models.BookSource
 import com.foxybook.app.core.utils.StorageHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,31 +131,104 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     listOf("epub" to "EPUB", "fb2" to "FB2", "mobi" to "MOBI").forEach { (value, label) ->
-                        FilterChip(
-                            selected = state.defaultFormat == value,
-                            onClick = { viewModel.setDefaultFormat(value) },
-                            label = {
-                                Text(
-                                    label,
-                                    textAlign = TextAlign.Center,
-                                    fontWeight = if (state.defaultFormat == value) FontWeight.SemiBold else FontWeight.Normal,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            },
-                            modifier = Modifier.weight(1f),
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        val selected = state.defaultFormat == value
+                        Card(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { viewModel.setDefaultFormat(value) },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (selected)
+                                    MaterialTheme.colorScheme.primaryContainer
+                                else
+                                    MaterialTheme.colorScheme.surfaceVariant
                             ),
-                            border = FilterChipDefaults.filterChipBorder(
-                                borderColor = MaterialTheme.colorScheme.outlineVariant,
-                                selectedBorderColor = MaterialTheme.colorScheme.primary,
-                                enabled = true,
-                                selected = state.defaultFormat == value
+                            shape = RoundedCornerShape(10.dp),
+                            border = if (selected)
+                                BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
+                            else
+                                null,
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = if (selected) 2.dp else 0.dp
                             )
-                        )
+                        ) {
+                            Text(
+                                label,
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                                color = if (selected)
+                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                            )
+                        }
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // ─── Источник книг ───
+            SettingsSection(
+                icon = Icons.Default.AutoStories,
+                title = "Источник книг"
+            ) {
+                Spacer(Modifier.height(4.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    listOf(
+                        BookSource.FLIBUSTA to "Flibusta",
+                        BookSource.COOLLIB to "CoolLib",
+                        BookSource.FANTASY_WORLDS to "Fantasy-Worlds"
+                    ).forEach { (value, label) ->
+                        val selected = state.bookSource == value
+                        val fontSize = if (label.length > 10) 10.sp else 12.sp
+                        Card(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { viewModel.setBookSource(value) },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (selected)
+                                    MaterialTheme.colorScheme.primaryContainer
+                                else
+                                    MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            shape = RoundedCornerShape(10.dp),
+                            border = if (selected)
+                                BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
+                            else
+                                null,
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = if (selected) 2.dp else 0.dp
+                            )
+                        ) {
+                            Text(
+                                label,
+                                textAlign = TextAlign.Center,
+                                fontSize = fontSize,
+                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                                color = if (selected)
+                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    "Применяется к Новинкам и Поиску",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -237,6 +313,50 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                         "Будет создана подпапка FoxyBook",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // ─── Кэш ───
+            SettingsSection(
+                icon = Icons.Default.Delete,
+                title = "Кэш"
+            ) {
+                Spacer(Modifier.height(4.dp))
+
+                var cacheMessage by remember { mutableStateOf<String?>(null) }
+
+                Text(
+                    "Обложки, изображения книг и импортированные файлы",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                Button(
+                    onClick = {
+                        val msg = com.foxybook.app.core.utils.StorageHelper.clearTempCaches(context)
+                        cacheMessage = msg
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("Очистить кэш")
+                }
+
+                if (cacheMessage != null) {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        cacheMessage!!,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -572,7 +692,8 @@ private fun ThemeSelector(
     val options = listOf(
         Triple("system", "Системная", Icons.Default.Smartphone),
         Triple("light", "Светлая", Icons.Default.LightMode),
-        Triple("dark", "Тёмная", Icons.Default.DarkMode)
+        Triple("dark", "Тёмная", Icons.Default.DarkMode),
+        Triple("amoled", "AMOLED", Icons.Default.DarkMode)
     )
 
     Row(
@@ -581,23 +702,29 @@ private fun ThemeSelector(
     ) {
         options.forEach { (value, label, icon) ->
             val selected = currentTheme == value
+            val bgColor by animateColorAsState(
+                targetValue = if (selected)
+                    MaterialTheme.colorScheme.primaryContainer
+                else
+                    MaterialTheme.colorScheme.surfaceVariant,
+                animationSpec = tween(400), label = "themeBg"
+            )
+            val elevation by animateFloatAsState(
+                targetValue = if (selected) 2.dp.value else 0.dp.value,
+                animationSpec = tween(400), label = "themeElev"
+            )
             Card(
                 modifier = Modifier
                     .weight(1f)
                     .clickable { onThemeChange(value) },
-                colors = CardDefaults.cardColors(
-                    containerColor = if (selected)
-                        MaterialTheme.colorScheme.primaryContainer
-                    else
-                        MaterialTheme.colorScheme.surfaceVariant
-                ),
+                colors = CardDefaults.cardColors(containerColor = bgColor),
                 shape = RoundedCornerShape(12.dp),
                 border = if (selected)
                     BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
                 else
                     null,
                 elevation = CardDefaults.cardElevation(
-                    defaultElevation = if (selected) 2.dp else 0.dp
+                    defaultElevation = elevation.dp
                 )
             ) {
                 Column(

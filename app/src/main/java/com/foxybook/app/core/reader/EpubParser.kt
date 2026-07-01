@@ -117,6 +117,14 @@ class EpubParser(private val context: Context? = null) {
     }
 
     /**
+     * Returns the cached temp file for this URI if one exists (from a prior parse() call).
+     * Avoids re-copying the file for cover extraction.
+     */
+    fun getCachedFileForUri(uri: Uri): File? {
+        return if (uri == cachedBookUri && cachedBookFile?.exists() == true) cachedBookFile else null
+    }
+
+    /**
      * Clears the cached temp file. Call when done reading a book.
      */
     fun clearCache() {

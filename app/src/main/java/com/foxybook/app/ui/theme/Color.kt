@@ -47,3 +47,11 @@ val FoxSurfaceVariantDark = Color(0xFF52443B)
 val FoxOnSurfaceVariantDark = Color(0xFFD6C3B7)
 val FoxOutlineDark = Color(0xFF9E8D83)
 val FoxOutlineVariantDark = Color(0xFF52443B)
+
+// AMOLED — pure black
+val FoxBackgroundAmoled = Color(0xFF000000)
+val FoxOnBackgroundAmoled = Color(0xFFE8E0D8)
+val FoxSurfaceAmoled = Color(0xFF000000)
+val FoxOnSurfaceAmoled = Color(0xFFE8E0D8)
+val FoxSurfaceVariantAmoled = Color(0xFF1E1E1E)
+val FoxOnSurfaceVariantAmoled = Color(0xFFD6C3B7)

@@ -6,6 +6,23 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
 }
 
+val localProps = run {
+    val props = HashMap<String, String>()
+    val f = file("${rootProject.projectDir}/local.properties")
+    if (f.exists()) {
+        f.readLines().forEach { line ->
+            val trimmed = line.trim()
+            if (trimmed.isNotEmpty() && !trimmed.startsWith("#")) {
+                val eq = trimmed.indexOf('=')
+                if (eq > 0) {
+                    props[trimmed.substring(0, eq).trim()] = trimmed.substring(eq + 1).trim()
+                }
+            }
+        }
+    }
+    props
+}
+
 android {
     namespace = "com.foxybook.app"
     compileSdk = 36
@@ -15,12 +32,19 @@ android {
         applicationId = "com.foxybook.app"
         minSdk = 28
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.5"
+        versionCode = 8
+        versionName = "1.6"
 
         // ABI splits: only ARM devices (covers 99%+ of Android)
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+        }
+
+        // Support for 16KB page size
+        externalNativeBuild {
+            cmake {
+                arguments += "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+            }
         }
     }
 
@@ -32,10 +56,10 @@ android {
             keyPassword = "android"
         }
         create("release") {
-            storeFile = file("${rootProject.projectDir}/release.keystore")
-            storePassword = "foxybook"
-            keyAlias = "foxybook"
-            keyPassword = "foxybook"
+            storeFile = file("${rootProject.projectDir}/${localProps["RELEASE_STORE_FILE"] ?: "release.keystore"}")
+            storePassword = localProps["RELEASE_STORE_PASSWORD"] ?: ""
+            keyAlias = localProps["RELEASE_KEY_ALIAS"] ?: ""
+            keyPassword = localProps["RELEASE_KEY_PASSWORD"] ?: ""
         }
     }
 
@@ -120,6 +144,7 @@ dependencies {
 
     // Core
     implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     // Coil (image loading)
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
@@ -129,12 +154,12 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 
     // DataStore
-    implementation("androidx.datastore:datastore-preferences:1.2.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     // DocumentFile for Storage Access Framework
     implementation("androidx.documentfile:documentfile:1.0.1")
 
-    // Jsoup (HTML parsing for Flibusta + FB2)
+    // Jsoup (FB2/EPUB parsing)
     implementation("org.jsoup:jsoup:1.21.1")
 
     // OkHttp (network)
@@ -158,4 +183,11 @@ dependencies {
     kapt("androidx.room:room-compiler:2.8.4")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // ─── Tests ───
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+    testImplementation("org.jsoup:jsoup:1.21.1")
+    testImplementation("org.json:json:20250107")
+    testImplementation("io.mockk:mockk:1.13.14")
 }

@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.foxybook.app.core.models.BookSource
 import com.foxybook.app.core.models.ReaderSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -27,6 +28,19 @@ class DataStoreManager(private val context: Context) {
         private val DEFAULT_FORMAT_KEY = stringPreferencesKey("default_format")
         private val DOWNLOAD_DIR_KEY = stringPreferencesKey("download_directory")
         private val VIEW_MODE_KEY = stringPreferencesKey("library_view_mode")
+        private val NEW_BOOKS_VIEW_MODE_KEY = stringPreferencesKey("new_books_view_mode")
+        private val BOOK_SOURCE_KEY = stringPreferencesKey("book_source")
+    }
+
+    // ─── Book Source ───
+
+    val bookSource: Flow<BookSource> = context.dataStore.data.map { prefs ->
+        val name = prefs[BOOK_SOURCE_KEY] ?: BookSource.FLIBUSTA.name
+        try { BookSource.valueOf(name) } catch (_: Exception) { BookSource.FLIBUSTA }
+    }
+
+    suspend fun setBookSource(source: BookSource) {
+        context.dataStore.edit { prefs -> prefs[BOOK_SOURCE_KEY] = source.name }
     }
 
     // ─── Reader Settings ───
@@ -54,7 +68,7 @@ class DataStoreManager(private val context: Context) {
     }
 
     val defaultFormat: Flow<String> = context.dataStore.data.map { prefs ->
-        prefs[DEFAULT_FORMAT_KEY] ?: "fb2"
+        prefs[DEFAULT_FORMAT_KEY] ?: "epub"
     }
 
     suspend fun setDefaultFormat(format: String) {
@@ -73,6 +87,16 @@ class DataStoreManager(private val context: Context) {
 
     suspend fun setLibraryViewMode(mode: String) {
         context.dataStore.edit { prefs -> prefs[VIEW_MODE_KEY] = mode }
+    }
+
+    // ─── New Books View Mode ───
+
+    val newBooksViewMode: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[NEW_BOOKS_VIEW_MODE_KEY] ?: "LIST"
+    }
+
+    suspend fun setNewBooksViewMode(mode: String) {
+        context.dataStore.edit { prefs -> prefs[NEW_BOOKS_VIEW_MODE_KEY] = mode }
     }
 
     suspend fun setDownloadDirectory(uri: String?) {

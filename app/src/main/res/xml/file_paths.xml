@@ -3,4 +3,10 @@
     <cache-path
         name="cache"
         path="." />
+    <external-path
+        name="downloads"
+        path="Download/FoxyBook/" />
+    <files-path
+        name="imported_books"
+        path="imported_books/" />
 </paths>

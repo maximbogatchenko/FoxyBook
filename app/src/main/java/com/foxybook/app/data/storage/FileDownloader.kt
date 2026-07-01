@@ -138,20 +138,37 @@ class FileDownloader(private val context: Context) {
     }
 
     fun deleteFile(path: String) {
+        if (path.isBlank()) return
+        Log.d(TAG, "deleteFile: path=$path")
         if (path.startsWith("content://")) {
             try {
                 val uri = Uri.parse(path)
                 if (DocumentsContract.isDocumentUri(context, uri)) {
-                    DocumentsContract.deleteDocument(context.contentResolver, uri)
+                    val deleted = DocumentsContract.deleteDocument(context.contentResolver, uri)
+                    Log.d(TAG, "deleteFile: DocumentsContract deleted=$deleted")
                 } else {
-                    context.contentResolver.delete(uri, null, null)
+                    val deleted = context.contentResolver.delete(uri, null, null)
+                    Log.d(TAG, "deleteFile: ContentResolver deleted=$deleted")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to delete URI $path", e)
             }
         } else {
-            val file = File(path)
-            if (file.exists()) file.delete()
+            try {
+                val file = File(path)
+                if (file.exists()) {
+                    val deleted = file.delete()
+                    Log.d(TAG, "deleteFile: File deleted=$deleted (path=$path)")
+                    if (!deleted) {
+                        // Fallback: попробовать deleteOnExit
+                        file.deleteOnExit()
+                    }
+                } else {
+                    Log.w(TAG, "deleteFile: File does not exist: $path")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "deleteFile: Error deleting file $path", e)
+            }
         }
     }
 

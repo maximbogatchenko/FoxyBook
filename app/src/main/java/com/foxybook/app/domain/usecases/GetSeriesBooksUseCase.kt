@@ -6,7 +6,7 @@ import com.foxybook.app.domain.repository.BookRepository
 class GetSeriesBooksUseCase(
     private val repository: BookRepository
 ) {
-    suspend operator fun invoke(seriesId: String, limit: Int = 50): List<Book> {
-        return repository.getSeriesBooks(seriesId, limit)
+    suspend operator fun invoke(seriesId: String, authorId: String? = null, limit: Int = 50): List<Book> {
+        return repository.getSeriesBooks(seriesId, authorId, limit)
     }
 }

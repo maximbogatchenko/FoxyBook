@@ -7,6 +7,7 @@ build/
 
 *.apk
 *.aab
+/app/build/outputs/
 
 captures/
 .externalNativeBuild/

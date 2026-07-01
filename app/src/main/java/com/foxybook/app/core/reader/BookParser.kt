@@ -29,16 +29,15 @@ class BookParser(
     /**
      * Quickly parses book structure and metadata.
      */
-    fun parse(path: String, knownFormat: String? = null): ParsedBook? {
-        Log.d("BookParser", "parse: path=$path, knownFormat=$knownFormat")
-        epubParser.clearCache()
+    fun parse(path: String, knownFormat: String? = null, bookId: Int = 0): ParsedBook? {
+        Log.d("BookParser", "parse: path=$path, knownFormat=$knownFormat, bookId=$bookId")
 
         val uri = if (path.startsWith("content://") || path.startsWith("file://")) {
             Uri.parse(path)
         } else {
             Uri.fromFile(File(path))
         }
-        
+
         Log.d("BookParser", "parse: resolved uri=$uri, scheme=${uri.scheme}")
 
         val extension = if (uri.scheme == "content") {
@@ -73,8 +72,9 @@ class BookParser(
         val parsed = when (format) {
             BookFormat.EPUB -> epubParser.parse(context, uri)?.toParsed(format.extension)
             BookFormat.FB2 -> fb2Parser.parse(context, uri)?.toParsed(format.extension)
-            BookFormat.MOBI -> mobiParser.parse(context, uri)?.toParsed(format.extension)
+            BookFormat.MOBI -> mobiParser.parse(context, uri, bookId)?.toParsed(format.extension)
             BookFormat.TXT -> txtParser.parse(uri)
+            else -> null
         }
         
         if (parsed == null) {
@@ -110,6 +110,7 @@ class BookParser(
         return when (format?.extension) {
             "epub" -> epubParser.loadChapterContent(context, uri, chapter.contentId, bookId)
             "fb2" -> fb2Parser.loadChapterContent(context, uri, chapter.contentId.toIntOrNull() ?: -1, bookId)
+            "mobi" -> chapter.htmlContent // MOBI контент уже загружен при парсинге
             "txt" -> chapter.htmlContent
             else -> ""
         }
@@ -129,7 +130,7 @@ class BookParser(
 
     private fun com.foxybook.app.core.models.MobiBook.toParsed(format: String) = ParsedBook(
         title = title, author = author,
-        chapters = chapters.map { ParsedChapter(it.title, contentId = "") },
+        chapters = chapters.map { ParsedChapter(it.title, htmlContent = it.htmlContent, contentId = "") },
         format = format
     )
 
@@ -165,14 +166,19 @@ class BookParser(
             val file = if (uri.scheme == "file") {
                 File(uri.path!!)
             } else {
-                UriUtils.copyUriToTempFile(context, uri, "temp_cover_${System.currentTimeMillis()}.epub") ?: return null
+                // Переиспользуем кэш EpubParser (если книгу уже парсили)
+                epubParser.getCachedFileForUri(uri)
+                    ?: UriUtils.copyUriToTempFile(context, uri, "temp_cover_${System.currentTimeMillis()}.epub") ?: return null
             }
 
             val result: String?
             ZipFile(file).use { zip ->
                 result = extractEpubCoverFromZip(zip)
             }
-            if (uri.scheme != "file") file.delete()
+            // Удаляем temp-файл только если его не переиспользует EpubParser
+            if (uri.scheme != "file" && epubParser.getCachedFileForUri(uri) == null) {
+                file.delete()
+            }
             result
         } catch (e: Exception) {
             Log.e(TAG, "extractEpubCover failed", e)
@@ -261,25 +267,17 @@ class BookParser(
 
     private fun readFb2Xml(uri: Uri): String? {
         return try {
-            val inputStream = if (uri.scheme == "file") {
-                File(uri.path!!).inputStream()
+            val bytes = if (uri.scheme == "file") {
+                File(uri.path!!).readBytes()
             } else {
-                context.contentResolver.openInputStream(uri) ?: return null
+                context.contentResolver.openInputStream(uri)?.use { it.readBytes() } ?: return null
             }
 
-            val buf = ByteArray(4)
-            inputStream.read(buf)
-            inputStream.close()
-
-            val isZip = buf[0] == 0x50.toByte() && buf[1] == 0x4B.toByte()
+            val isZip = bytes.size >= 4 &&
+                bytes[0] == 0x50.toByte() && bytes[1] == 0x4B.toByte()
 
             if (isZip) {
-                val zis = if (uri.scheme == "file") {
-                    java.util.zip.ZipInputStream(File(uri.path!!).inputStream())
-                } else {
-                    java.util.zip.ZipInputStream(context.contentResolver.openInputStream(uri) ?: return null)
-                }
-                zis.use { z ->
+                java.util.zip.ZipInputStream(bytes.inputStream()).use { z ->
                     var entry = z.nextEntry
                     while (entry != null) {
                         if (entry.name.endsWith(".fb2")) {
@@ -291,12 +289,7 @@ class BookParser(
                 return null
             }
 
-            val stream = if (uri.scheme == "file") {
-                File(uri.path!!).inputStream()
-            } else {
-                context.contentResolver.openInputStream(uri) ?: return null
-            }
-            stream.bufferedReader().use { it.readText() }
+            String(bytes, Charsets.UTF_8)
         } catch (e: Exception) {
             Log.e(TAG, "readFb2Xml failed", e)
             null

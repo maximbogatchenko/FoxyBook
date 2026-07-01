@@ -15,7 +15,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         BookCollectionEntity::class,
         BookCollectionEntryEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -38,6 +38,29 @@ abstract class AppDatabase : RoomDatabase() {
         private val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE library_books ADD COLUMN readingProgress INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS library_books_new (
+                        id INTEGER NOT NULL,
+                        title TEXT NOT NULL,
+                        author TEXT NOT NULL,
+                        format TEXT NOT NULL,
+                        filePath TEXT NOT NULL,
+                        coverUrl TEXT NOT NULL DEFAULT '',
+                        downloadDate INTEGER NOT NULL,
+                        isFavorite INTEGER NOT NULL DEFAULT 0,
+                        lastReadDate INTEGER NOT NULL DEFAULT 0,
+                        readingProgress INTEGER NOT NULL DEFAULT 0,
+                        PRIMARY KEY(id, format)
+                    )
+                """)
+                db.execSQL("INSERT OR IGNORE INTO library_books_new SELECT * FROM library_books")
+                db.execSQL("DROP TABLE library_books")
+                db.execSQL("ALTER TABLE library_books_new RENAME TO library_books")
             }
         }
 
@@ -70,7 +93,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "foxybook.db"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .build()
                     .also { INSTANCE = it }
             }

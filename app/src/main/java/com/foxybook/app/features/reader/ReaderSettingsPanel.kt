@@ -1,6 +1,9 @@
 package com.foxybook.app.features.reader
 
 import android.content.Intent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -56,7 +60,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -90,10 +98,37 @@ fun SettingsSheet(settings: com.foxybook.app.core.models.ReaderSettings, viewMod
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text("Тема книги", fontWeight = FontWeight.Medium)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilterChip(selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.LIGHT, onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.LIGHT)) }, label = { Text("Светлая") }, leadingIcon = { Icon(Icons.Default.LightMode, null, modifier = Modifier.size(18.dp)) })
-                        FilterChip(selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.DARK, onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.DARK)) }, label = { Text("Тёмная") }, leadingIcon = { Icon(Icons.Default.DarkMode, null, modifier = Modifier.size(18.dp)) })
-                        FilterChip(selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.SYSTEM, onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.SYSTEM)) }, label = { Text("Системная") }, leadingIcon = { Icon(Icons.Default.Smartphone, null, modifier = Modifier.size(18.dp)) })
+                    Spacer(modifier = Modifier.height(8.dp))
+                    // 2 ряда по 2 кнопки для компактного размещения 4 тем
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                            ThemeChip(
+                                selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.LIGHT,
+                                onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.LIGHT)) },
+                                label = "Светлая", icon = Icons.Default.LightMode,
+                                modifier = Modifier.weight(1f)
+                            )
+                            ThemeChip(
+                                selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.DARK,
+                                onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.DARK)) },
+                                label = "Тёмная", icon = Icons.Default.DarkMode,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                            ThemeChip(
+                                selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.SYSTEM,
+                                onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.SYSTEM)) },
+                                label = "Системная", icon = Icons.Default.Smartphone,
+                                modifier = Modifier.weight(1f)
+                            )
+                            ThemeChip(
+                                selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.AMOLED,
+                                onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.AMOLED)) },
+                                label = "AMOLED", icon = Icons.Default.DarkMode,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -197,6 +232,44 @@ fun SettingsSheet(settings: com.foxybook.app.core.models.ReaderSettings, viewMod
                     TtsControlsUI(state, viewModel)
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ThemeChip(
+    selected: Boolean,
+    onClick: () -> Unit,
+    label: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier
+) {
+    val bgColor: androidx.compose.ui.graphics.Color by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.primaryContainer
+        else MaterialTheme.colorScheme.surfaceVariant,
+        animationSpec = tween(300), label = "themeChipBg"
+    )
+    val contentColor = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+    else MaterialTheme.colorScheme.onSurfaceVariant
+
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(bgColor)
+            .clickable { onClick() }
+            .padding(vertical = 12.dp, horizontal = 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp), tint = contentColor)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                label,
+                fontSize = 12.sp,
+                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+                color = contentColor,
+                maxLines = 1
+            )
         }
     }
 }

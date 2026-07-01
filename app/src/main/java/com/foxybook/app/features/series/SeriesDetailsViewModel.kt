@@ -28,14 +28,14 @@ class SeriesDetailsViewModel(
     private val _state = MutableStateFlow<SeriesDetailsUiState>(SeriesDetailsUiState.Loading)
     val state: StateFlow<SeriesDetailsUiState> = _state.asStateFlow()
 
-    fun loadSeriesBooks(seriesId: String, seriesTitle: String) {
+    fun loadSeriesBooks(seriesId: String, seriesTitle: String, authorId: String = "") {
         viewModelScope.launch {
             _state.value = SeriesDetailsUiState.Loading
 
-            Log.d(TAG, "SERIES_OPEN | seriesId='$seriesId' | seriesTitle='$seriesTitle'")
+            Log.d(TAG, "SERIES_OPEN | seriesId='$seriesId' | seriesTitle='$seriesTitle' | authorId='$authorId'")
 
             try {
-                val books = getSeriesBooksUseCase(seriesId)
+                val books = getSeriesBooksUseCase(seriesId, authorId.ifBlank { null })
 
                 Log.d(TAG, "SERIES_BOOKS_PARSED | count=${books.size} | seriesTitle='$seriesTitle'")
 
