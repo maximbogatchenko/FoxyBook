@@ -12,17 +12,26 @@ object LocaleHelper {
     const val LOCALE_ENGLISH = "en"
 
     /**
-     * Применяет указанную локаль к контексту.
-     * На API 33+ использует LocaleManager.setApplicationLocales(),
-     * на более старых — переопределяет конфигурацию ресурсов.
+     * Храним текущий язык для attachBaseContext (API < 33),
+     * где DataStore ещё недоступен. Устанавливается в MainActivity.onCreate()
+     * после инициализации Koin.
+     */
+    var currentLanguage: String = "ru"
+
+    /**
+     * Применяет локаль на уровне приложения.
+     * На API 33+ использует LocaleManager.setApplicationLocales() —
+     * это персистентно и работает после recreate().
+     * На API < 33 возвращает изменённый контекст для attachBaseContext().
      */
     fun applyLocale(context: Context, languageCode: String): Context {
         val locale = Locale(languageCode)
         Locale.setDefault(locale)
+        currentLanguage = languageCode
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val localeList = LocaleList(locale)
-            context.resources.configuration.setLocales(localeList)
+            val localeManager = context.getSystemService(Context.LOCALE_SERVICE) as android.app.LocaleManager
+            localeManager.setApplicationLocales(LocaleList(locale))
         } else {
             @Suppress("DEPRECATION")
             val config = Configuration(context.resources.configuration)
@@ -36,17 +45,19 @@ object LocaleHelper {
     }
 
     /**
-     * Обёртка для Activity: обновляет конфигурацию базового контекста.
+     * Для API < 33: возвращает контекст с изменённой локалью.
+     * Вызывается из Activity.attachBaseContext().
      */
-    fun getLocaleConfig(languageCode: String): Configuration {
-        val locale = Locale(languageCode)
-        val config = Configuration()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            config.setLocales(LocaleList(locale))
-        } else {
-            @Suppress("DEPRECATION")
-            config.locale = locale
-        }
-        return config
+    fun wrapContext(base: Context): Context {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) return base
+
+        val locale = Locale(currentLanguage)
+        Locale.setDefault(locale)
+        @Suppress("DEPRECATION")
+        val config = Configuration(base.resources.configuration)
+        @Suppress("DEPRECATION")
+        config.locale = locale
+        @Suppress("DEPRECATION")
+        return base.createConfigurationContext(config)
     }
 }
