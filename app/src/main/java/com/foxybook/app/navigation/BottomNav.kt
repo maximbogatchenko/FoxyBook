@@ -18,8 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.foxybook.app.R
 import com.foxybook.app.navigation.Routes
 
 @Composable
@@ -51,7 +53,7 @@ fun BottomNav(navController: androidx.navigation.NavHostController) {
                     Icon(Icons.Default.Whatshot, contentDescription = null)
                 }
             },
-            label = { Text("Новинки") },
+            label = { Text(stringResource(R.string.nav_new_books)) },
             selected = currentRoute == Routes.NEW_BOOKS,
             onClick = {
                 if (currentRoute != Routes.NEW_BOOKS) {
@@ -67,7 +69,7 @@ fun BottomNav(navController: androidx.navigation.NavHostController) {
                     Icon(Icons.Default.Search, contentDescription = null)
                 }
             },
-            label = { Text("Поиск") },
+            label = { Text(stringResource(R.string.nav_search)) },
             selected = currentRoute == Routes.SEARCH,
             onClick = {
                 if (currentRoute != Routes.SEARCH) {
@@ -83,7 +85,7 @@ fun BottomNav(navController: androidx.navigation.NavHostController) {
                     Icon(Icons.Default.AutoStories, contentDescription = null)
                 }
             },
-            label = { Text("Библиотека") },
+            label = { Text(stringResource(R.string.nav_library)) },
             selected = currentRoute == Routes.LIBRARY,
             onClick = {
                 if (currentRoute != Routes.LIBRARY) {
@@ -99,7 +101,7 @@ fun BottomNav(navController: androidx.navigation.NavHostController) {
                     Icon(Icons.Default.Settings, contentDescription = null)
                 }
             },
-            label = { Text("Настройки") },
+            label = { Text(stringResource(R.string.nav_settings)) },
             selected = currentRoute == Routes.SETTINGS,
             onClick = {
                 if (currentRoute != Routes.SETTINGS) {

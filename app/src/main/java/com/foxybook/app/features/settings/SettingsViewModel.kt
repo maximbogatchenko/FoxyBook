@@ -35,7 +35,8 @@ data class SettingsState(
     val currentVersion: String = "",
     val updateState: UpdateState = UpdateState.Idle,
     val downloadProgress: Float = 0f,
-    val bookSource: BookSource = BookSource.FLIBUSTA
+    val bookSource: BookSource = BookSource.FLIBUSTA,
+    val language: String = "ru"
 )
 
 class SettingsViewModel(
@@ -67,6 +68,11 @@ class SettingsViewModel(
         viewModelScope.launch {
             dataStoreManager.bookSource.collect { source ->
                 _state.update { it.copy(bookSource = source) }
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.appLanguage.collect { lang ->
+                _state.update { it.copy(language = lang) }
             }
         }
     }
@@ -147,6 +153,12 @@ class SettingsViewModel(
     fun setDownloadDirectory(uri: String?) {
         viewModelScope.launch {
             dataStoreManager.setDownloadDirectory(uri)
+        }
+    }
+
+    fun setLanguage(lang: String) {
+        viewModelScope.launch {
+            dataStoreManager.setAppLanguage(lang)
         }
     }
 }

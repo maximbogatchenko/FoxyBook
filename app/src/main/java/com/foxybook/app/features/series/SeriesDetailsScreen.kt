@@ -46,10 +46,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import com.foxybook.app.core.models.Book
 import com.foxybook.app.core.models.Series
 import com.foxybook.app.core.models.SeriesDetailsUiState
 import com.foxybook.app.ui.components.CoverWithAuthor
+import com.foxybook.app.R
 
 private const val TAG = "SERIES_DETAILS_UI"
 
@@ -81,7 +83,7 @@ fun SeriesDetailsScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -125,7 +127,7 @@ fun SeriesDetailsScreen(
                         OutlinedButton(onClick = {
                             viewModel.loadSeriesBooks(seriesId, seriesTitle)
                         }) {
-                            Text("Повторить")
+                            Text(stringResource(R.string.retry))
                         }
                     }
                 }
@@ -190,7 +192,7 @@ fun SeriesDetailsScreen(
                                     )
                                     Spacer(modifier = Modifier.height(4.dp))
                                     Text(
-                                        "${books.size} ${pluralBooks(books.size)} в серии",
+                                        "${books.size} ${pluralBooks(books.size)} " + stringResource(R.string.series_details_books_in_series),
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )

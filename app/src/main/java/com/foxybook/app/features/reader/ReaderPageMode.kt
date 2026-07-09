@@ -21,8 +21,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
+import com.foxybook.app.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.TextMeasurer
 import com.foxybook.app.core.models.ReaderSettings
@@ -212,7 +214,7 @@ fun PageModeContent(
                     }
                     val chapterPageCount = globalPages.count { it.chapterIndex == gp.chapterIndex }
                     Text(
-                        text = "Гл.${gp.chapterIndex + 1} Стр.${gp.pageIndexInChapter + 1} / ${chapterPageCount}",
+                        text = stringResource(R.string.reader_page_label, gp.chapterIndex + 1, gp.pageIndexInChapter + 1, chapterPageCount),
                         style = MaterialTheme.typography.labelSmall,
                         color = colors.textSecondary.copy(alpha = 0.4f),
                         modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp)

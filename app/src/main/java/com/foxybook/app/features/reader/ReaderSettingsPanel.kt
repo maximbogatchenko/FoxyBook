@@ -64,10 +64,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.foxybook.app.R
 import com.foxybook.app.core.models.ReaderMode
 import com.foxybook.app.core.models.ReaderTheme
 
@@ -94,24 +96,23 @@ fun SettingsSheet(settings: com.foxybook.app.core.models.ReaderSettings, viewMod
                     .padding(bottom = 16.dp)
             ) {
                 if (!state.showTtsControls) {
-                    Text("Настройки чтения", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.reader_settings_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Text("Тема книги", fontWeight = FontWeight.Medium)
+                    Text(stringResource(R.string.reader_settings_theme_book), fontWeight = FontWeight.Medium)
                     Spacer(modifier = Modifier.height(8.dp))
-                    // 2 ряда по 2 кнопки для компактного размещения 4 тем
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                             ThemeChip(
                                 selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.LIGHT,
                                 onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.LIGHT)) },
-                                label = "Светлая", icon = Icons.Default.LightMode,
+                                label = stringResource(R.string.reader_settings_theme_light), icon = Icons.Default.LightMode,
                                 modifier = Modifier.weight(1f)
                             )
                             ThemeChip(
                                 selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.DARK,
                                 onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.DARK)) },
-                                label = "Тёмная", icon = Icons.Default.DarkMode,
+                                label = stringResource(R.string.reader_settings_theme_dark), icon = Icons.Default.DarkMode,
                                 modifier = Modifier.weight(1f)
                             )
                         }
@@ -119,7 +120,7 @@ fun SettingsSheet(settings: com.foxybook.app.core.models.ReaderSettings, viewMod
                             ThemeChip(
                                 selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.SYSTEM,
                                 onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.SYSTEM)) },
-                                label = "Системная", icon = Icons.Default.Smartphone,
+                                label = stringResource(R.string.reader_settings_theme_system), icon = Icons.Default.Smartphone,
                                 modifier = Modifier.weight(1f)
                             )
                             ThemeChip(
@@ -138,11 +139,10 @@ fun SettingsSheet(settings: com.foxybook.app.core.models.ReaderSettings, viewMod
                     ) {
                         Icon(Icons.Default.VolumeUp, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text("Озвучивание книги", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                        Text(stringResource(R.string.reader_settings_tts), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                         Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
 
-                    // Компактные кнопки управления TTS (видны когда озвучка активна)
                     if (state.isSpeaking || state.isPaused) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
@@ -152,25 +152,25 @@ fun SettingsSheet(settings: com.foxybook.app.core.models.ReaderSettings, viewMod
                         ) {
                             if (state.isSpeaking) {
                                 IconButton(onClick = { viewModel.onEvent(ReaderEvent.PauseTts) }, modifier = Modifier.size(48.dp)) {
-                                    Icon(Icons.Default.Pause, "Пауза", modifier = Modifier.size(32.dp), tint = MaterialTheme.colorScheme.primary)
+                                    Icon(Icons.Default.Pause, stringResource(R.string.cd_pause), modifier = Modifier.size(32.dp), tint = MaterialTheme.colorScheme.primary)
                                 }
                             } else {
                                 IconButton(onClick = { viewModel.onEvent(ReaderEvent.ResumeTts) }, modifier = Modifier.size(48.dp)) {
-                                    Icon(Icons.Default.PlayArrow, "Продолжить", modifier = Modifier.size(32.dp), tint = MaterialTheme.colorScheme.primary)
+                                    Icon(Icons.Default.PlayArrow, stringResource(R.string.cd_play), modifier = Modifier.size(32.dp), tint = MaterialTheme.colorScheme.primary)
                                 }
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             IconButton(onClick = { viewModel.onEvent(ReaderEvent.StopTts) }, modifier = Modifier.size(48.dp)) {
-                                Icon(Icons.Default.Stop, "Остановить", modifier = Modifier.size(32.dp), tint = MaterialTheme.colorScheme.error)
+                                Icon(Icons.Default.Stop, stringResource(R.string.cd_stop), modifier = Modifier.size(32.dp), tint = MaterialTheme.colorScheme.error)
                             }
                         }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Яркость", modifier = Modifier.weight(1f))
+                        Text(stringResource(R.string.reader_settings_brightness), modifier = Modifier.weight(1f))
                         IconButton(onClick = { viewModel.onEvent(ReaderEvent.ResetBrightness) }, modifier = Modifier.size(32.dp)) {
-                            Icon(Icons.Default.Refresh, "Сброс", modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Icon(Icons.Default.Refresh, stringResource(R.string.cd_reset), modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                     val brightnessSliderValue = if (settings.brightness < 0f) 0.5f else settings.brightness
@@ -184,47 +184,47 @@ fun SettingsSheet(settings: com.foxybook.app.core.models.ReaderSettings, viewMod
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Шрифт", modifier = Modifier.weight(1f))
+                        Text(stringResource(R.string.reader_settings_font), modifier = Modifier.weight(1f))
                         Text("${settings.fontSize}sp", color = MaterialTheme.colorScheme.primary)
                         IconButton(onClick = { viewModel.onEvent(ReaderEvent.FontSizeChanged(18)) }, modifier = Modifier.size(32.dp)) {
-                            Icon(Icons.Default.Refresh, "Сброс", modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Icon(Icons.Default.Refresh, stringResource(R.string.cd_reset), modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                     Slider(value = settings.fontSize.toFloat(), onValueChange = { viewModel.onEvent(ReaderEvent.FontSizeChanged(it.toInt())) }, valueRange = 12f..32f, steps = 10)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Межстрочный", modifier = Modifier.weight(1f))
+                        Text(stringResource(R.string.reader_settings_line_height), modifier = Modifier.weight(1f))
                         Text("%.1f".format(settings.lineHeight), color = MaterialTheme.colorScheme.primary)
                         IconButton(onClick = { viewModel.onEvent(ReaderEvent.LineHeightChanged(1.8f)) }, modifier = Modifier.size(32.dp)) {
-                            Icon(Icons.Default.Refresh, "Сброс", modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Icon(Icons.Default.Refresh, stringResource(R.string.cd_reset), modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                     Slider(value = settings.lineHeight, onValueChange = { viewModel.onEvent(ReaderEvent.LineHeightChanged(it)) }, valueRange = 1.0f..3.0f, steps = 8)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Поля", modifier = Modifier.weight(1f))
+                        Text(stringResource(R.string.reader_settings_margins), modifier = Modifier.weight(1f))
                         Text("${settings.margins}dp", color = MaterialTheme.colorScheme.primary)
                         IconButton(onClick = { viewModel.onEvent(ReaderEvent.MarginsChanged(16)) }, modifier = Modifier.size(32.dp)) {
-                            Icon(Icons.Default.Refresh, "Сброс", modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Icon(Icons.Default.Refresh, stringResource(R.string.cd_reset), modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                     Slider(value = settings.margins.toFloat(), onValueChange = { viewModel.onEvent(ReaderEvent.MarginsChanged(it.toInt())) }, valueRange = 0f..40f, steps = 8)
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("Режим", fontWeight = FontWeight.Medium)
+                    Text(stringResource(R.string.reader_settings_mode), fontWeight = FontWeight.Medium)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilterChip(selected = ReaderMode.valueOf(settings.readerMode) == ReaderMode.VERTICAL, onClick = { viewModel.onEvent(ReaderEvent.ReaderModeChanged(ReaderMode.VERTICAL)) }, label = { Text("Прокрутка") }, leadingIcon = { Icon(Icons.Default.ViewAgenda, null, modifier = Modifier.size(18.dp)) })
-                        FilterChip(selected = ReaderMode.valueOf(settings.readerMode) == ReaderMode.HORIZONTAL, onClick = { viewModel.onEvent(ReaderEvent.ReaderModeChanged(ReaderMode.HORIZONTAL)) }, label = { Text("Страницы") }, leadingIcon = { Icon(Icons.Default.Swipe, null, modifier = Modifier.size(18.dp)) })
+                        FilterChip(selected = ReaderMode.valueOf(settings.readerMode) == ReaderMode.VERTICAL, onClick = { viewModel.onEvent(ReaderEvent.ReaderModeChanged(ReaderMode.VERTICAL)) }, label = { Text(stringResource(R.string.reader_settings_mode_scroll)) }, leadingIcon = { Icon(Icons.Default.ViewAgenda, null, modifier = Modifier.size(18.dp)) })
+                        FilterChip(selected = ReaderMode.valueOf(settings.readerMode) == ReaderMode.HORIZONTAL, onClick = { viewModel.onEvent(ReaderEvent.ReaderModeChanged(ReaderMode.HORIZONTAL)) }, label = { Text(stringResource(R.string.reader_settings_mode_pages)) }, leadingIcon = { Icon(Icons.Default.Swipe, null, modifier = Modifier.size(18.dp)) })
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("Отображение прогресса", fontWeight = FontWeight.Medium)
+                    Text(stringResource(R.string.reader_settings_progress), fontWeight = FontWeight.Medium)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         FilterChip(
                             selected = settings.showProgressAsPercentage,
                             onClick = { if (!settings.showProgressAsPercentage) viewModel.onEvent(ReaderEvent.ToggleProgressDisplay) },
-                            label = { Text("Проценты") }
+                            label = { Text(stringResource(R.string.reader_settings_progress_percent)) }
                         )
                         FilterChip(
                             selected = !settings.showProgressAsPercentage,
                             onClick = { if (settings.showProgressAsPercentage) viewModel.onEvent(ReaderEvent.ToggleProgressDisplay) },
-                            label = { Text("Счётчик") }
+                            label = { Text(stringResource(R.string.reader_settings_progress_counter)) }
                         )
                     }
                     Spacer(modifier = Modifier.height(24.dp))

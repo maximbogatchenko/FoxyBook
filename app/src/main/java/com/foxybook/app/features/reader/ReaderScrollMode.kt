@@ -25,7 +25,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import com.foxybook.app.R
 import androidx.compose.ui.unit.dp
 import com.foxybook.app.core.models.ReaderSettings
 import kotlinx.coroutines.delay
@@ -211,7 +213,7 @@ fun ScrollModeContent(
                 item {
                     Spacer(modifier = Modifier.height(100.dp))
                     Text(
-                        "Конец книги",
+                        stringResource(R.string.reader_end),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         color = colors.textSecondary

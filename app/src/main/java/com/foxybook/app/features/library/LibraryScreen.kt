@@ -111,6 +111,8 @@ import com.foxybook.app.ui.components.CoverWithAuthor
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.ui.res.stringResource
+import com.foxybook.app.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,7 +159,7 @@ fun LibraryScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text("Импорт книги…", style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.loading), style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }
@@ -171,7 +173,7 @@ fun LibraryScreen(
                     title = { Text("Выбрано: ${state.selectedBookIds.size}", fontWeight = FontWeight.Bold) },
                     navigationIcon = {
                         IconButton(onClick = { viewModel.onEvent(LibraryEvent.ClearSelection) }) {
-                            Icon(Icons.Default.Close, contentDescription = "Отменить")
+                            Icon(Icons.Default.Close, contentDescription = stringResource(R.string.cd_cancel))
                         }
                     },
                     actions = {
@@ -185,7 +187,7 @@ fun LibraryScreen(
                             Icon(Icons.Default.Folder, contentDescription = "В коллекцию")
                         }
                         IconButton(onClick = { viewModel.onEvent(LibraryEvent.BatchDeleteSelected) }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Удалить", tint = MaterialTheme.colorScheme.error)
+                            Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.cd_delete), tint = MaterialTheme.colorScheme.error)
                         }
                     },
                     windowInsets = WindowInsets(0),
@@ -193,7 +195,7 @@ fun LibraryScreen(
                 )
             } else {
                 TopAppBar(
-                    title = { Text("Библиотека", fontWeight = FontWeight.Bold) },
+                    title = { Text(stringResource(R.string.library_title), fontWeight = FontWeight.Bold) },
                     actions = {
                         Box {
                             IconButton(onClick = { showViewModeMenu = true }) {
@@ -321,7 +323,7 @@ fun LibraryScreen(
                         LibraryTab.ALL -> BookListContent(
                             books = state.allBooks,
                             viewMode = state.viewMode,
-                            emptyTitle = "Библиотека пуста",
+                            emptyTitle = stringResource(R.string.library_empty),
                             emptySubtitle = "Скачайте книги для чтения",
                             selectedBookIds = state.selectedBookIds,
                             isSelectionMode = state.isSelectionMode,
@@ -337,7 +339,7 @@ fun LibraryScreen(
                         LibraryTab.FAVORITES -> BookListContent(
                             books = state.favoriteBooks,
                             viewMode = state.viewMode,
-                            emptyTitle = "Нет избранных",
+                            emptyTitle = stringResource(R.string.library_empty_favorites),
                             emptySubtitle = "Нажмите ♡ чтобы добавить",
                             selectedBookIds = state.selectedBookIds,
                             isSelectionMode = state.isSelectionMode,
@@ -353,7 +355,7 @@ fun LibraryScreen(
                         LibraryTab.HISTORY -> BookListContent(
                             books = state.historyBooks,
                             viewMode = state.viewMode,
-                            emptyTitle = "История пуста",
+                            emptyTitle = stringResource(R.string.library_empty_history),
                             emptySubtitle = "Начните читать",
                             selectedBookIds = state.selectedBookIds,
                             isSelectionMode = state.isSelectionMode,
@@ -456,7 +458,7 @@ fun LibraryScreen(
                 confirmButton = {
                     TextButton(onClick = { viewModel.confirmDeleteBook() }) {
                         Text(
-                            "Удалить",
+                            stringResource(R.string.delete),
                             color = MaterialTheme.colorScheme.error
                         )
                     }
@@ -464,7 +466,7 @@ fun LibraryScreen(
                 dismissButton = {
                     TextButton(onClick = { viewModel.onEvent(LibraryEvent.DismissDialogs) }) {
                         Text(
-                            "Отмена"
+                            stringResource(R.string.cancel)
                         )
                     }
                 }
@@ -530,12 +532,12 @@ fun LibraryScreen(
                 },
                 confirmButton = {
                     TextButton(onClick = { viewModel.onEvent(LibraryEvent.BatchDeleteConfirm) }) {
-                        Text("Удалить", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { viewModel.onEvent(LibraryEvent.DismissBatchDeleteDialog) }) {
-                        Text("Отмена")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             )
@@ -794,7 +796,7 @@ private fun LibraryBookCard(
                 DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                     DropdownMenuItem(text = { Text("В коллекцию") }, onClick = { showMenu = false; onMove() },
                         leadingIcon = { Icon(Icons.Default.PlaylistAdd, contentDescription = null, modifier = Modifier.size(18.dp)) })
-                    DropdownMenuItem(text = { Text("Удалить", color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDelete() },
+                    DropdownMenuItem(text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDelete() },
                         leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error) })
                 }
             }
@@ -861,7 +863,7 @@ private fun CompactBookCard(
                 DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                     DropdownMenuItem(text = { Text("В коллекцию") }, onClick = { showMenu = false; onMoveToCollection() },
                         leadingIcon = { Icon(Icons.Default.PlaylistAdd, contentDescription = null, modifier = Modifier.size(18.dp)) })
-                    DropdownMenuItem(text = { Text("Удалить", color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDeleteBook() },
+                    DropdownMenuItem(text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDeleteBook() },
                         leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error) })
                 }
             }
@@ -962,7 +964,7 @@ private fun GridBookCard(
                         DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                             DropdownMenuItem(text = { Text("В коллекцию") }, onClick = { showMenu = false; onMoveToCollection() },
                                 leadingIcon = { Icon(Icons.Default.PlaylistAdd, contentDescription = null, modifier = Modifier.size(18.dp)) })
-                            DropdownMenuItem(text = { Text("Удалить", color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDeleteBook() },
+                            DropdownMenuItem(text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDeleteBook() },
                                 leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error) })
                         }
                     }
@@ -996,7 +998,7 @@ private fun GridBookCard(
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
-                    if (isSelectionMode) "Выбрать" else "Читать",
+                    if (isSelectionMode) "Выбрать" else stringResource(R.string.book_details_read_btn),
                     style = MaterialTheme.typography.labelMedium
                 )
             }
@@ -1060,7 +1062,7 @@ private fun CollectionsContent(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = "Создать коллекцию",
+                    contentDescription = stringResource(R.string.collection_create),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
@@ -1175,12 +1177,12 @@ private fun CollectionsContent(
                                 }
                                 DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                                     DropdownMenuItem(
-                                        text = { Text("Переименовать") },
+                                        text = { Text(stringResource(R.string.collection_rename)) },
                                         onClick = { showMenu = false; onRenameCollection(collection.id) },
                                         leadingIcon = { Icon(Icons.Default.Edit, null, modifier = Modifier.size(18.dp)) }
                                     )
                                     DropdownMenuItem(
-                                        text = { Text("Удалить", color = MaterialTheme.colorScheme.error) },
+                                        text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) },
                                         onClick = { showMenu = false; onDeleteCollection(collection.id) },
                                         leadingIcon = { Icon(Icons.Default.Delete, null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error) }
                                     )
@@ -1209,11 +1211,11 @@ private fun BookDetailsDialog(
             OutlinedButton(onClick = onRead) {
                 Icon(Icons.Default.MenuBook, null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Читать")
+                Text(stringResource(R.string.book_details_read_btn))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Закрыть") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.close)) }
         },
         title = {
             Text(book.title, maxLines = 2, overflow = TextOverflow.Ellipsis)
@@ -1238,7 +1240,7 @@ private fun BookDetailsDialog(
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(4.dp))
                 // Формат
-                Text("Формат: ${book.format.uppercase()}", style = MaterialTheme.typography.bodySmall,
+                Text(stringResource(R.string.book_details_format) + ": ${book.format.uppercase()}", style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(4.dp))
                 // Дата добавления
@@ -1295,19 +1297,19 @@ private fun BookDetailsDialog(
 private fun CreateCollectionDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
     var name by remember { mutableStateOf("") }
     AlertDialog(onDismissRequest = onDismiss, title = { Text("Новая коллекция") },
-        text = { OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Название") }, singleLine = true, modifier = Modifier.fillMaxWidth()) },
-        confirmButton = { TextButton(onClick = { if (name.isNotBlank()) onConfirm(name.trim()) }, enabled = name.isNotBlank()) { Text("Создать") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Отмена") } }
+        text = { OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.collection_name)) }, singleLine = true, modifier = Modifier.fillMaxWidth()) },
+        confirmButton = { TextButton(onClick = { if (name.isNotBlank()) onConfirm(name.trim()) }, enabled = name.isNotBlank()) { Text(stringResource(R.string.collection_create_btn)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
     )
 }
 
 @Composable
 private fun RenameCollectionDialog(currentName: String, onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
     var name by remember { mutableStateOf(currentName) }
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("Переименовать") },
-        text = { OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Название") }, singleLine = true, modifier = Modifier.fillMaxWidth()) },
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(stringResource(R.string.collection_rename)) },
+        text = { OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.collection_name)) }, singleLine = true, modifier = Modifier.fillMaxWidth()) },
         confirmButton = { TextButton(onClick = { if (name.isNotBlank()) onConfirm(name.trim()) }, enabled = name.isNotBlank()) { Text("Сохранить") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Отмена") } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
     )
 }
 
@@ -1365,7 +1367,7 @@ private fun MoveBookDialog(
                 ) {
                     Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Создать коллекцию")
+                    Text(stringResource(R.string.collection_create))
                 }
             }
         },
@@ -1431,7 +1433,7 @@ private fun BatchCollectionDialog(
                 ) {
                     Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Создать коллекцию")
+                    Text(stringResource(R.string.collection_create))
                 }
             }
         },

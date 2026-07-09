@@ -66,10 +66,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.foxybook.app.ui.components.BookCover
 import com.foxybook.app.ui.components.PulsingBookLoader
 import com.foxybook.app.core.models.Book
 import com.foxybook.app.core.models.BookSource
+import com.foxybook.app.R
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
@@ -92,7 +94,7 @@ fun NewBooksScreen(
         ) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("Новинки", style = MaterialTheme.typography.headlineMedium,
+                    Text(stringResource(R.string.new_books_title), style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     Text("Свежие поступления", style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -100,7 +102,7 @@ fun NewBooksScreen(
                 IconButton(onClick = { viewModel.toggleViewMode() }) {
                     Icon(
                         if (isGridMode) Icons.Default.ViewList else Icons.Default.GridView,
-                        contentDescription = if (isGridMode) "Список" else "Сетка"
+                        contentDescription = if (isGridMode) stringResource(R.string.new_books_list) else stringResource(R.string.new_books_grid)
                     )
                 }
             }
@@ -115,9 +117,9 @@ fun NewBooksScreen(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             listOf(
-                BookSource.FLIBUSTA to "Flibusta",
-                BookSource.COOLLIB to "CoolLib",
-                BookSource.FANTASY_WORLDS to "Fantasy"
+                BookSource.FLIBUSTA to stringResource(R.string.flibusta),
+                BookSource.COOLLIB to stringResource(R.string.coollib),
+                BookSource.FANTASY_WORLDS to stringResource(R.string.fantasy_worlds)
             ).forEach { (source, label) ->
                 val selected = bookSource == source
                 FilterChip(
@@ -180,7 +182,7 @@ fun NewBooksScreen(
                             )
                             Spacer(Modifier.height(24.dp))
                             Text(
-                                text = "Загружаем новинки" + ".".repeat(dots.toInt().coerceIn(0, 4)),
+                                text = stringResource(R.string.new_books_loading) + ".".repeat(dots.toInt().coerceIn(0, 4)),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
@@ -195,7 +197,7 @@ fun NewBooksScreen(
                             Icon(Icons.Default.NewReleases, null, modifier = Modifier.size(64.dp),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
                             Spacer(modifier = Modifier.height(16.dp))
-                            Text("Нет новинок", style = MaterialTheme.typography.titleMedium,
+                            Text(stringResource(R.string.new_books_empty), style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
@@ -207,13 +209,13 @@ fun NewBooksScreen(
                             Icon(Icons.Default.Error, null, modifier = Modifier.size(64.dp),
                                 tint = MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
                             Spacer(modifier = Modifier.height(12.dp))
-                            Text("Ошибка", style = MaterialTheme.typography.titleMedium,
+                            Text(stringResource(R.string.new_books_error), style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.error)
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(s.message, style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Spacer(modifier = Modifier.height(16.dp))
-                            OutlinedButton(onClick = { viewModel.refresh() }) { Text("Повторить") }
+                            OutlinedButton(onClick = { viewModel.refresh() }) { Text(stringResource(R.string.retry)) }
                         }
                     }
                 }
@@ -295,7 +297,7 @@ private fun LoadingFooter(isLoadingMore: Boolean) {
                 Spacer(Modifier.height(12.dp))
 
                 Text(
-                    text = "Загрузка книг...",
+                    text = stringResource(R.string.new_books_loading_more),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Medium

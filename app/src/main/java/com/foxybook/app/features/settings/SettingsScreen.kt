@@ -77,7 +77,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
+import com.foxybook.app.R
 import com.foxybook.app.core.models.BookSource
 import com.foxybook.app.core.utils.StorageHelper
 
@@ -90,7 +92,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Настройки", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.settings_title), fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
@@ -109,7 +111,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             // ─── Оформление ───
             SettingsSection(
                 icon = Icons.Default.Smartphone,
-                title = "Оформление"
+                title = stringResource(R.string.settings_appearance)
             ) {
                 Spacer(Modifier.height(4.dp))
                 ThemeSelector(
@@ -123,7 +125,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             // ─── Формат по умолчанию ───
             SettingsSection(
                 icon = Icons.Default.AutoStories,
-                title = "Формат по умолчанию"
+                title = stringResource(R.string.settings_default_format)
             ) {
                 Spacer(Modifier.height(4.dp))
                 Row(
@@ -174,7 +176,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             // ─── Источник книг ───
             SettingsSection(
                 icon = Icons.Default.AutoStories,
-                title = "Источник книг"
+                title = stringResource(R.string.source_book_source)
             ) {
                 Spacer(Modifier.height(4.dp))
                 Row(
@@ -225,7 +227,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Применяется к Новинкам и Поиску",
+                    stringResource(R.string.search_source_label),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -248,7 +250,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
 
             SettingsSection(
                 icon = Icons.Default.Folder,
-                title = "Папка для скачивания"
+                title = stringResource(R.string.settings_download_folder)
             ) {
                 Spacer(Modifier.height(4.dp))
 
@@ -291,7 +293,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                     ) {
                         Icon(Icons.Default.Folder, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp))
-                        Text("Выбрать папку")
+                        Text(stringResource(R.string.settings_download_folder_choose))
                     }
 
                     if (state.downloadDirectory != null) {
@@ -300,7 +302,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                         ) {
                             Icon(
                                 Icons.Default.RestartAlt,
-                                contentDescription = "Сбросить",
+                                contentDescription = stringResource(R.string.cd_reset),
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }
@@ -310,7 +312,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 if (state.downloadDirectory != null) {
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "Будет создана подпапка FoxyBook",
+                        stringResource(R.string.settings_download_folder_info),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.secondary
                     )
@@ -322,14 +324,14 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             // ─── Кэш ───
             SettingsSection(
                 icon = Icons.Default.Delete,
-                title = "Кэш"
+                title = stringResource(R.string.settings_cache)
             ) {
                 Spacer(Modifier.height(4.dp))
 
                 var cacheMessage by remember { mutableStateOf<String?>(null) }
 
                 Text(
-                    "Обложки, изображения книг и импортированные файлы",
+                    stringResource(R.string.settings_cache_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -348,7 +350,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 ) {
                     Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Очистить кэш")
+                    Text(stringResource(R.string.settings_cache_clear))
                 }
 
                 if (cacheMessage != null) {
@@ -366,12 +368,12 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             // ─── Обновления ───
             SettingsSection(
                 icon = Icons.Default.SystemUpdate,
-                title = "Обновления"
+                title = stringResource(R.string.settings_updates)
             ) {
                 Spacer(Modifier.height(4.dp))
 
                 Text(
-                    "Текущая версия: ${state.currentVersion}",
+                    stringResource(R.string.settings_current_version, state.currentVersion),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -386,7 +388,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                         ) {
                             Icon(Icons.Default.Update, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(8.dp))
-                            Text("Проверить обновления")
+                            Text(stringResource(R.string.settings_check_updates))
                         }
                     }
 
@@ -398,13 +400,13 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                         ) {
                             CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                             Spacer(Modifier.width(12.dp))
-                            Text("Проверка...", style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(R.string.settings_checking), style = MaterialTheme.typography.bodyMedium)
                         }
                     }
 
                     is UpdateState.Available -> {
                         Text(
-                            "Доступна версия ${updateState.info.version}",
+                            stringResource(R.string.settings_update_available, updateState.info.version),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary
@@ -424,7 +426,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                         ) {
                             Icon(Icons.Default.CloudDownload, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(8.dp))
-                            Text("Скачать обновление")
+                            Text(stringResource(R.string.settings_download_update))
                         }
                     }
 
@@ -460,7 +462,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                "Загружено",
+                                stringResource(R.string.settings_update_downloaded),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.SemiBold
@@ -473,14 +475,14 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                         ) {
                             Icon(Icons.Default.InstallMobile, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(8.dp))
-                            Text("Установить")
+                            Text(stringResource(R.string.settings_update_install))
                         }
                         Spacer(Modifier.height(8.dp))
                         TextButton(
                             onClick = { viewModel.dismissUpdateResult() },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Отложить")
+                            Text(stringResource(R.string.settings_update_later))
                         }
                     }
 
@@ -497,7 +499,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                "У вас актуальная версия",
+                                stringResource(R.string.settings_up_to_date),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -527,7 +529,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                             onClick = { viewModel.checkForUpdate() },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Повторить")
+                            Text(stringResource(R.string.retry))
                         }
                     }
                 }
@@ -561,7 +563,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                     }
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        "FoxyBook",
+                        stringResource(R.string.app_name),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
@@ -578,7 +580,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "Created by ßoлк",
+                        stringResource(R.string.settings_author),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
@@ -616,7 +618,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                     ) {
                         Icon(Icons.Default.Email, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp))
-                        Text("Написать автору")
+                        Text(stringResource(R.string.settings_author_contact))
                     }
                     Spacer(Modifier.height(10.dp))
                     Button(
@@ -631,7 +633,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                     ) {
                         Icon(Icons.Default.Favorite, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp))
-                        Text("Поддержать автора")
+                        Text(stringResource(R.string.settings_author_support))
                     }
                 }
             }
@@ -690,9 +692,9 @@ private fun ThemeSelector(
     onThemeChange: (String) -> Unit
 ) {
     val options = listOf(
-        Triple("system", "Системная", Icons.Default.Smartphone),
-        Triple("light", "Светлая", Icons.Default.LightMode),
-        Triple("dark", "Тёмная", Icons.Default.DarkMode),
+        Triple("system", stringResource(R.string.settings_theme_system), Icons.Default.Smartphone),
+        Triple("light", stringResource(R.string.settings_theme_light), Icons.Default.LightMode),
+        Triple("dark", stringResource(R.string.settings_theme_dark), Icons.Default.DarkMode),
         Triple("amoled", "AMOLED", Icons.Default.DarkMode)
     )
 
@@ -781,7 +783,7 @@ private fun ChangeLogSpoiler(releaseNotes: String) {
             )
             Spacer(Modifier.width(4.dp))
             Text(
-                "Что нового",
+                stringResource(R.string.settings_whats_new),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary
@@ -794,7 +796,7 @@ private fun ChangeLogSpoiler(releaseNotes: String) {
             Spacer(Modifier.height(6.dp))
             if (releaseNotes.isBlank()) {
                 Text(
-                    "Автор не указал список изменений",
+                    stringResource(R.string.settings_no_changelog),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 8.dp)

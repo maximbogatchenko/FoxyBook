@@ -30,6 +30,7 @@ class DataStoreManager(private val context: Context) {
         private val VIEW_MODE_KEY = stringPreferencesKey("library_view_mode")
         private val NEW_BOOKS_VIEW_MODE_KEY = stringPreferencesKey("new_books_view_mode")
         private val BOOK_SOURCE_KEY = stringPreferencesKey("book_source")
+        private val LANGUAGE_KEY = stringPreferencesKey("app_language")
     }
 
     // ─── Book Source ───
@@ -107,5 +108,15 @@ class DataStoreManager(private val context: Context) {
                 prefs[DOWNLOAD_DIR_KEY] = uri
             }
         }
+    }
+
+    // ─── Language ───
+
+    val appLanguage: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[LANGUAGE_KEY] ?: "ru"
+    }
+
+    suspend fun setAppLanguage(lang: String) {
+        context.dataStore.edit { prefs -> prefs[LANGUAGE_KEY] = lang }
     }
 }
