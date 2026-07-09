@@ -1030,7 +1030,7 @@ fun BookLoadingAnimation() {
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Загружаем книгу",
+                    text = stringResource(R.string.book_details_loading),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
@@ -1046,7 +1046,7 @@ fun BookLoadingAnimation() {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Получаем информацию о книге…",
+                text = stringResource(R.string.book_details_loading_info),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
             )
