@@ -14,4 +14,4 @@ captures/
 .cxx/
 *.jks
 *.keystore
-.DS_Store
+.DS_Store.claude/worktrees/
