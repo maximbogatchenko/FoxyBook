@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.InstallMobile
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Smartphone
+import androidx.compose.material.icons.filled.Style
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.Button
@@ -118,6 +119,66 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                     currentTheme = state.themeMode,
                     onThemeChange = { viewModel.setThemeMode(it) }
                 )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // ─── Язык ───
+            SettingsSection(
+                icon = Icons.Default.Style,
+                title = stringResource(R.string.settings_language)
+            ) {
+                Spacer(Modifier.height(4.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    listOf(
+                        "ru" to stringResource(R.string.settings_language_ru),
+                        "en" to stringResource(R.string.settings_language_en)
+                    ).forEach { (value, label) ->
+                        val selected = state.language == value
+                        Card(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable {
+                                    if (value != state.language) {
+                                        viewModel.setLanguage(value)
+                                        val activity = context as? android.app.Activity
+                                        activity?.recreate()
+                                    }
+                                },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (selected)
+                                    MaterialTheme.colorScheme.primaryContainer
+                                else
+                                    MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            shape = RoundedCornerShape(10.dp),
+                            border = if (selected)
+                                BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
+                            else
+                                null,
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = if (selected) 2.dp else 0.dp
+                            )
+                        ) {
+                            Text(
+                                label,
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                                color = if (selected)
+                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                            )
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
