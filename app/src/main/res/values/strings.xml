@@ -221,7 +221,7 @@
 
     <!-- Book Details -->
     <string name="book_details_title">Книга</string>
-    <string name="book_details_loading">Загружаем книгу…</string>
+    <string name="book_details_loading">Загружаем книгу</string>
     <string name="book_details_loading_info">Получаем информацию о книге…</string>
     <string name="book_details_loading_error">Ошибка загрузки</string>
     <string name="book_details_description">Описание</string>
