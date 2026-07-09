@@ -46,6 +46,7 @@ import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.Style
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.Update
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -89,6 +90,8 @@ import com.foxybook.app.core.utils.StorageHelper
 fun SettingsScreen(viewModel: SettingsViewModel) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+    var showRestartDialog by remember { mutableStateOf(false) }
+    var pendingLanguage by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -144,8 +147,8 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                                 .clickable {
                                     if (value != state.language) {
                                         viewModel.setLanguage(value)
-                                        val activity = context as? android.app.Activity
-                                        activity?.recreate()
+                                        pendingLanguage = value
+                                        showRestartDialog = true
                                     }
                                 },
                             colors = CardDefaults.cardColors(
@@ -701,6 +704,28 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
 
             Spacer(modifier = Modifier.height(24.dp))
         }
+    }
+
+    // Диалог перезапуска при смене языка
+    if (showRestartDialog) {
+        AlertDialog(
+            onDismissRequest = { showRestartDialog = false },
+            title = { Text(stringResource(R.string.settings_language_restart_title), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(R.string.settings_language_restart_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showRestartDialog = false
+                    (context as? android.app.Activity)?.recreate()
+                }) {
+                    Text(stringResource(R.string.settings_language_restart_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRestartDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 }
 
