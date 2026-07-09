@@ -24,3 +24,12 @@ object BookCache {
         cache.clear()
     }
 }
+
+/**
+ * Временный мост для передачи поискового запроса (например, из жанра на странице книги)
+ * в SearchScreen при навигации.
+ */
+object PendingSearchQuery {
+    @Volatile
+    var query: String? = null
+}

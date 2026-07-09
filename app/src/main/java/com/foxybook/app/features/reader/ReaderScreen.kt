@@ -87,6 +87,9 @@ import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil3.compose.SubcomposeAsyncImage
 import androidx.compose.foundation.layout.heightIn
 import com.foxybook.app.core.models.ReaderMode
@@ -239,10 +242,18 @@ fun ReaderScreen(
         window.attributes = lp
     }
 
-    // Save reading position when leaving the screen
-    DisposableEffect(Unit) {
+    // Save reading position when leaving the screen OR when app goes to background
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_PAUSE) {
+                viewModel.savePositionNow()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
             viewModel.savePositionNow()
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 

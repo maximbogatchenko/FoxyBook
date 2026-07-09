@@ -77,7 +77,7 @@ val appModule = module {
     factory { RemoveBookUseCase(get()) }
 
     // ─── ViewModels ───
-    viewModel { SearchViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { SearchViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { NewBooksViewModel(get(), get(), get(), get(), get()) }
     viewModel { LibraryViewModel(get(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get(), get()) }

@@ -171,7 +171,8 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
         val filtered = allBooks.filter { book ->
             book.genres.any { it.lowercase().contains(cleanQuery) }
         }
-        val nextUrl = if (filtered.isNotEmpty()) parseNextLink(xml).let { if (it.isNotBlank()) it else null } else null
+        // Формируем URL следующей страницы вручную
+        val nextUrl = if (filtered.isNotEmpty()) "$baseUrl/opdssearch?searchType=books&q=$encoded&page=1" else null
         Log.d(TAG, "searchByGenre | found=${filtered.size}, next=$nextUrl")
         SearchPage(filtered.distinctBy { it.id }, nextUrl)
     }
@@ -179,9 +180,21 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
     override suspend fun searchByGenreNextPage(url: String, limit: Int): SearchPage<Book> = withContext(Dispatchers.IO) {
         val xml = fetchXml(url)
         val allBooks = parseOpdsBooks(xml, limit)
-        val books = allBooks
-        val nextUrl = if (books.isNotEmpty()) parseNextLink(xml).let { if (it.isNotBlank()) it else null } else null
-        SearchPage(books.distinctBy { it.id }, nextUrl)
+        // Фильтруем по жанру, используя q из URL
+        val searchTerm = Regex("""[?&]q=([^&]+)""").find(url)?.groupValues?.get(1) ?: ""
+        val cleanQuery = java.net.URLDecoder.decode(searchTerm, "UTF-8").lowercase()
+        val filtered = allBooks.filter { book ->
+            book.genres.any { it.lowercase().contains(cleanQuery) }
+        }
+        // Вычисляем следующую страницу
+        val nextPage = Regex("""[?&]page=(\d+)""").find(url)?.groupValues?.get(1)?.toIntOrNull()
+        val nextUrl = if (nextPage != null) {
+            url.replace(Regex("""page=\d+"""), "page=${nextPage + 1}")
+        } else {
+            null
+        }
+        Log.d(TAG, "searchByGenreNextPage | found=${filtered.size} from ${allBooks.size}, nextPage=$nextPage")
+        SearchPage(filtered.distinctBy { it.id }, nextUrl)
     }
 
     override suspend fun getSeriesBooks(seriesId: String, authorId: String?, limit: Int): List<Book> = withContext(Dispatchers.IO) {

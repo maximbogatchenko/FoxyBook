@@ -22,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -218,8 +217,7 @@ class ReaderViewModel(
     }
 
     override fun onCleared() {
-        // Сохраняем позицию перед выходом
-        // Отменяем debounce-save чтобы не было двойной записи
+        // Сохраняем позицию перед выходом — синхронно, чтобы гарантировать запись
         saveJob?.cancel()
         saveJob = null
 
@@ -228,19 +226,7 @@ class ReaderViewModel(
             kotlinx.coroutines.runBlocking {
                 withTimeoutOrNull(3_000) {
                     withContext(Dispatchers.IO) {
-                        val pos = ReadingPosition(
-                            bookId = bookId,
-                            format = format,
-                            chapterIndex = s.currentChapter,
-                            pageIndex = s.pageCurrent,
-                            scrollPosition = s.scrollY,
-                            scrollOffset = s.scrollOffset,
-                            textOffset = s.textOffset,
-                            lastUpdated = System.currentTimeMillis()
-                        )
-                        bookDataRepository.saveReadingPosition(pos)
-                        bookDataRepository.updateLastReadDate(bookId, format)
-                        bookDataRepository.updateReadingProgress(bookId, format, s.readingPercentage)
+                        savePositionInternal(s)
                     }
                 }
             }
@@ -249,11 +235,6 @@ class ReaderViewModel(
         // Cancel all pagination jobs
         paginationJobMap.values.forEach { it.cancel() }
         paginationJobMap.clear()
-
-        // Cancel save job and scope
-        saveJob?.cancel()
-        saveJob = null
-        saveScope.cancel()
 
         // Destroy TTS manager (unbinds service)
         ttsManager.destroy()
@@ -642,7 +623,9 @@ class ReaderViewModel(
                     return@launch
                 }
 
-                _state.update { it.copy(book = book, isLoading = false) }
+                // Устанавливаем книгу, но НЕ убираем isLoading — он снимется только
+                // после восстановления позиции чтения, чтобы UI не показал главу 0.
+                _state.update { it.copy(book = book) }
 
                 // Precompute text content lengths per chapter for accurate progress calculation
                 val chapterLengths = book.chapters.map { chapter ->
@@ -668,14 +651,19 @@ class ReaderViewModel(
                             scrollOffset = pos.scrollOffset,
                             pageCurrent = pos.pageIndex,
                             positionRestored = true,
-                            lastPositionRestoreTrigger = System.currentTimeMillis()
+                            lastPositionRestoreTrigger = System.currentTimeMillis(),
+                            isLoading = false
                         )
                     }
                     getBlocksSync(pos.chapterIndex)
                     preloadChapter(pos.chapterIndex + 1)
                     preloadChapter(pos.chapterIndex - 1)
                 } else {
-                    _state.update { it.copy(currentChapter = 0, positionRestored = true) }
+                    _state.update { it.copy(
+                        currentChapter = 0,
+                        positionRestored = true,
+                        isLoading = false
+                    ) }
                     getBlocksSync(0)
 
                     // Auto-skip empty first chapter (cover/title pages)
@@ -934,20 +922,7 @@ class ReaderViewModel(
             // Не сохраняем пока позиция не восстановлена
             if (!s.positionRestored) return@launch
             if (bookId >= 0 && !s.isLoading && s.book != null) {
-                val pos = ReadingPosition(
-                    bookId = bookId,
-                    format = format,
-                    chapterIndex = s.currentChapter,
-                    pageIndex = s.pageCurrent,
-                    scrollPosition = s.scrollY,
-                    scrollOffset = s.scrollOffset,
-                    textOffset = s.textOffset,
-                    lastUpdated = System.currentTimeMillis()
-                )
-                bookDataRepository.saveReadingPosition(pos)
-                bookDataRepository.updateLastReadDate(bookId, format)
-                // Сохраняем прогресс чтения
-                bookDataRepository.updateReadingProgress(bookId, format, s.readingPercentage)
+                savePositionInternal(s)
             }
         }
     }
@@ -955,23 +930,30 @@ class ReaderViewModel(
     fun savePositionNow() {
         val s = _state.value
         if (bookId < 0 || !s.positionRestored || s.isLoading || s.book == null) return
-        // Отменяем debounce, чтобы не было двойной записи
         saveJob?.cancel()
         saveJob = saveScope.launch(NonCancellable) {
-            val pos = ReadingPosition(
-                bookId = bookId,
-                format = format,
-                chapterIndex = s.currentChapter,
-                pageIndex = s.pageCurrent,
-                scrollPosition = s.scrollY,
-                scrollOffset = s.scrollOffset,
-                textOffset = s.textOffset,
-                lastUpdated = System.currentTimeMillis()
-            )
-            bookDataRepository.saveReadingPosition(pos)
-            bookDataRepository.updateLastReadDate(bookId, format)
-            bookDataRepository.updateReadingProgress(bookId, format, s.readingPercentage)
+            savePositionInternal(s)
         }
+    }
+
+    /**
+     * Сохраняет текущую позицию чтения в БД.
+     * Можно вызывать из любого потока.
+     */
+    private suspend fun savePositionInternal(s: ReaderState) {
+        val pos = ReadingPosition(
+            bookId = bookId,
+            format = format,
+            chapterIndex = s.currentChapter,
+            pageIndex = s.pageCurrent,
+            scrollPosition = s.scrollY,
+            scrollOffset = s.scrollOffset,
+            textOffset = s.textOffset,
+            lastUpdated = System.currentTimeMillis()
+        )
+        bookDataRepository.saveReadingPosition(pos)
+        bookDataRepository.updateLastReadDate(bookId, format)
+        bookDataRepository.updateReadingProgress(bookId, format, s.readingPercentage)
     }
 
     private fun updateSettings(transform: (ReaderSettings) -> ReaderSettings) {

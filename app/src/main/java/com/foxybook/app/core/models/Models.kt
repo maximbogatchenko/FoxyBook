@@ -234,7 +234,8 @@ enum class SearchTab(val label: String) {
     ALL("Все"),
     BOOKS("Книги"),
     AUTHORS("Авторы"),
-    SERIES("Серии")
+    SERIES("Серии"),
+    GENRES("Жанры")
 }
 
 sealed interface SearchUiState {

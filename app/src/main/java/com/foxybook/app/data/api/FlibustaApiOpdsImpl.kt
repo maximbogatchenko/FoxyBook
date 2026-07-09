@@ -173,7 +173,9 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
         val filtered = allBooks.filter { book ->
             book.genres.any { it.lowercase().contains(cleanQuery) }
         }
-        val nextUrl = if (filtered.isNotEmpty()) parseNextLink(xml).let { if (it.isNotBlank()) it else null } else null
+        // Формируем URL следующей страницы вручную, т.к. серверный next может
+        // содержать обрезанный searchTerm или вести на неправильное зеркало
+        val nextUrl = if (filtered.isNotEmpty()) "$baseUrl/opds/search?searchType=books&searchTerm=$encoded&pageNumber=1" else null
         Log.d(TAG, "searchByGenre | found=${filtered.size}, next=$nextUrl")
         SearchPage(filtered.distinctBy { it.id }, nextUrl)
     }
@@ -181,9 +183,21 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
     override suspend fun searchByGenreNextPage(url: String, limit: Int): SearchPage<Book> = withContext(Dispatchers.IO) {
         val xml = fetchXml(url)
         val allBooks = parseOpdsBooks(xml, limit)
-        val books = allBooks
-        val nextUrl = if (books.isNotEmpty()) parseNextLink(xml).let { if (it.isNotBlank()) it else null } else null
-        SearchPage(books.distinctBy { it.id }, nextUrl)
+        // Фильтруем по жанру, используя searchTerm из URL
+        val searchTerm = Regex("""searchTerm=([^&]+)""").find(url)?.groupValues?.get(1) ?: ""
+        val cleanQuery = java.net.URLDecoder.decode(searchTerm, "UTF-8").lowercase()
+        val filtered = allBooks.filter { book ->
+            book.genres.any { it.lowercase().contains(cleanQuery) }
+        }
+        // Вычисляем следующую страницу: pageNumber=N → pageNumber=N+1
+        val nextPageNumber = Regex("""pageNumber=(\d+)""").find(url)?.groupValues?.get(1)?.toIntOrNull()
+        val nextUrl = if (nextPageNumber != null) {
+            url.replace(Regex("""pageNumber=\d+"""), "pageNumber=${nextPageNumber + 1}")
+        } else {
+            null
+        }
+        Log.d(TAG, "searchByGenreNextPage | found=${filtered.size} from ${allBooks.size}, nextPage=$nextPageNumber")
+        SearchPage(filtered.distinctBy { it.id }, nextUrl)
     }
 
     override suspend fun getSeriesBooks(seriesId: String, authorId: String?, limit: Int): List<Book> = withContext(Dispatchers.IO) {

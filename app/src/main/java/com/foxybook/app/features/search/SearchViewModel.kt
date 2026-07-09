@@ -14,6 +14,7 @@ import com.foxybook.app.core.network.OkHttpClientProvider
 import com.foxybook.app.domain.usecases.GetBookInfoUseCase
 import com.foxybook.app.domain.usecases.SearchBooksUseCase
 import com.foxybook.app.domain.usecases.SearchByAuthorUseCase
+import com.foxybook.app.domain.usecases.SearchByGenreUseCase
 import com.foxybook.app.domain.usecases.SearchBySeriesUseCase
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -39,17 +40,19 @@ data class SearchState(
     val books: List<Book> = emptyList(),
     val authors: List<Author> = emptyList(),
     val series: List<Series> = emptyList(),
+    val genreBooks: List<Book> = emptyList(),
     val isSearching: Boolean = false,
     val isSearchingAuthors: Boolean = false,
     val isSearchingSeries: Boolean = false,
+    val isSearchingGenres: Boolean = false,
     val isLoadingMore: Boolean = false,
     val error: String? = null,
     val bookSource: BookSource = BookSource.FLIBUSTA
 ) {
     val hasQuery: Boolean get() = query.isNotBlank()
     val isEmpty: Boolean get() = isSearching.not() && hasQuery &&
-        books.isEmpty() && authors.isEmpty() && series.isEmpty() &&
-        !isSearchingAuthors && !isSearchingSeries
+        books.isEmpty() && authors.isEmpty() && series.isEmpty() && genreBooks.isEmpty() &&
+        !isSearchingAuthors && !isSearchingSeries && !isSearchingGenres
 }
 
 sealed interface SearchEvent {
@@ -64,6 +67,7 @@ class SearchViewModel(
     private val searchBooksUseCase: SearchBooksUseCase,
     private val searchByAuthorUseCase: SearchByAuthorUseCase,
     private val searchBySeriesUseCase: SearchBySeriesUseCase,
+    private val searchByGenreUseCase: SearchByGenreUseCase,
     private val getBookInfoUseCase: GetBookInfoUseCase,
     private val dataStoreManager: DataStoreManager,
     private val networkProvider: OkHttpClientProvider,
@@ -80,6 +84,7 @@ class SearchViewModel(
         val books: List<Book> = emptyList(),
         val authors: List<Author> = emptyList(),
         val series: List<Series> = emptyList(),
+        val genreBooks: List<Book> = emptyList(),
         val cachedAt: Long = System.currentTimeMillis()
     )
 
@@ -131,9 +136,12 @@ class SearchViewModel(
     private var booksNextUrl: String? = null
     private var authorsNextUrl: String? = null
     private var seriesNextUrl: String? = null
+    private var genreNextUrl: String? = null
     private var isLoadingBooks = false
     private var isLoadingAuthors = false
     private var isLoadingSeries = false
+    private var isLoadingGenres = false
+    private var genreExhausted = false  // true, когда все загрузили и отфильтровали
 
     fun onEvent(event: SearchEvent) {
         when (event) {
@@ -153,9 +161,13 @@ class SearchViewModel(
                 books = emptyList(),
                 authors = emptyList(),
                 series = emptyList(),
+                genreBooks = emptyList(),
                 isSearchingAuthors = false,
-                isSearchingSeries = false
+                isSearchingSeries = false,
+                isSearchingGenres = false
             ) }
+            genreNextUrl = null  // при смене источника сбрасываем явно
+            genreExhausted = false
             networkProvider.switchSource(source)
             dataStoreManager.setBookSource(source)
             resetPagination()
@@ -195,10 +207,12 @@ class SearchViewModel(
                 isSearching = !hasCache,
                 isSearchingAuthors = !hasCache,
                 isSearchingSeries = !hasCache,
+                isSearchingGenres = !hasCache,
                 error = null,
                 books = cached?.books ?: emptyList(),
                 authors = cached?.authors ?: emptyList(),
-                series = cached?.series ?: emptyList()
+                series = cached?.series ?: emptyList(),
+                genreBooks = cached?.genreBooks ?: emptyList()
             ) }
 
             // Books — fast
@@ -227,7 +241,7 @@ class SearchViewModel(
             }
 
             // Series — slow, background
-            async {
+            val seriesDeferred = async {
                 try {
                     val seriesPage = searchBySeriesUseCase(query)
                     seriesNextUrl = seriesPage.nextPageUrl
@@ -238,19 +252,47 @@ class SearchViewModel(
                 }
             }
 
-            // Wait for books + authors
+            // Genres — background
+            val genreDeferred = async {
+                try {
+                    val genrePage = searchByGenreUseCase(query)
+                    genreNextUrl = genrePage.nextPageUrl
+                    // Клиентская фильтрация — сервер может возвращать неточные результаты
+                    // на первой странице при пагинации по жанрам
+                    val filtered = genrePage.items.filter { book ->
+                        book.genres.any { it.lowercase().contains(query.lowercase()) }
+                    }
+                    android.util.Log.d("SearchGenre", "first page: ${filtered.size} items from ${genrePage.items.size}, nextUrl=${genrePage.nextPageUrl}")
+                    _state.update { it.copy(genreBooks = filtered, isSearchingGenres = false) }
+                    if (filtered.isNotEmpty()) {
+                        fetchCovers(filtered)
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.e("SearchGenre", "first page error", e)
+                    if (e is kotlinx.coroutines.CancellationException) throw e
+                    _state.update { it.copy(isSearchingGenres = false) }
+                }
+            }
+
+            // Wait for books + authors (показываем результаты сразу)
             booksDeferred.await()
             authorsDeferred.await()
 
+            // Дожидаемся серии и жанры перед сохранением кеша,
+            // чтобы кеш содержал полные результаты всех типов
+            seriesDeferred.await()
+            genreDeferred.await()
+
             // Save to cache on success
             val s = _state.value
-            if (!s.isSearching && !s.isSearchingAuthors && !s.isSearchingSeries && s.error == null) {
-                val anyResults = s.books.isNotEmpty() || s.authors.isNotEmpty() || s.series.isNotEmpty()
+            if (s.error == null) {
+                val anyResults = s.books.isNotEmpty() || s.authors.isNotEmpty() || s.series.isNotEmpty() || s.genreBooks.isNotEmpty()
                 if (anyResults) {
                     saveSearchCache(query, source, SearchCacheEntry(
                         books = s.books,
                         authors = s.authors,
-                        series = s.series
+                        series = s.series,
+                        genreBooks = s.genreBooks
                     ))
                 }
             }
@@ -263,6 +305,7 @@ class SearchViewModel(
             SearchTab.BOOKS -> booksNextUrl
             SearchTab.AUTHORS -> authorsNextUrl
             SearchTab.SERIES -> seriesNextUrl
+            SearchTab.GENRES -> genreNextUrl
             SearchTab.ALL -> return
         } ?: return
 
@@ -270,12 +313,14 @@ class SearchViewModel(
         if (tab == SearchTab.BOOKS && isLoadingBooks) return
         if (tab == SearchTab.AUTHORS && isLoadingAuthors) return
         if (tab == SearchTab.SERIES && isLoadingSeries) return
+        if (tab == SearchTab.GENRES && isLoadingGenres) return
 
         _state.update { it.copy(isLoadingMore = true) }
         when (tab) {
             SearchTab.BOOKS -> isLoadingBooks = true
             SearchTab.AUTHORS -> isLoadingAuthors = true
             SearchTab.SERIES -> isLoadingSeries = true
+            SearchTab.GENRES -> isLoadingGenres = true
             else -> {}
         }
 
@@ -299,6 +344,30 @@ class SearchViewModel(
                         seriesNextUrl = page.nextPageUrl
                         _state.update { it.copy(series = it.series + page.items) }
                     }
+                    SearchTab.GENRES -> {
+                        var currentUrl: String? = url
+                        var skipCount = 0
+                        while (currentUrl != null && skipCount < 5) {
+                            val page = searchByGenreUseCase.nextPage(currentUrl)
+                            currentUrl = page.nextPageUrl
+                            if (page.items.isNotEmpty()) {
+                                genreNextUrl = currentUrl
+                                _state.update { it.copy(genreBooks = it.genreBooks + page.items) }
+                                fetchCovers(page.items)
+                                break
+                            }
+                            // На странице нет книг нужного жанра — пробуем следующую
+                            skipCount++
+                        }
+                        if (currentUrl == null) {
+                            // Все страницы исчерпаны
+                            genreExhausted = true
+                            genreNextUrl = null
+                        } else if (skipCount >= 5) {
+                            // Пропустили 5 страниц подряд без совпадений
+                            genreNextUrl = currentUrl
+                        }
+                    }
                     else -> {}
                 }
             } catch (e: Exception) {
@@ -309,6 +378,7 @@ class SearchViewModel(
                     SearchTab.BOOKS -> isLoadingBooks = false
                     SearchTab.AUTHORS -> isLoadingAuthors = false
                     SearchTab.SERIES -> isLoadingSeries = false
+                    SearchTab.GENRES -> isLoadingGenres = false
                     else -> {}
                 }
             }
@@ -319,15 +389,20 @@ class SearchViewModel(
         booksNextUrl = null
         authorsNextUrl = null
         seriesNextUrl = null
+        // Не сбрасываем genreNextUrl — жанровый поиск асинхронный и часто отменяется
+        // при повторном debounce. Если сбросить, старый nextUrl теряется навсегда.
         isLoadingBooks = false
         isLoadingAuthors = false
         isLoadingSeries = false
+        isLoadingGenres = false
+        genreExhausted = false
     }
 
     fun canLoadMore(tab: SearchTab): Boolean = when (tab) {
         SearchTab.BOOKS -> booksNextUrl != null && !isLoadingBooks
         SearchTab.AUTHORS -> authorsNextUrl != null && !isLoadingAuthors
         SearchTab.SERIES -> seriesNextUrl != null && !isLoadingSeries
+        SearchTab.GENRES -> (genreNextUrl != null || isLoadingGenres) && !genreExhausted
         SearchTab.ALL -> false
     }
 
@@ -350,7 +425,10 @@ class SearchViewModel(
         }
         if (urls.isEmpty()) return
         _state.update { s ->
-            s.copy(books = s.books.map { b -> urls[b.id]?.let { b.copy(coverUrl = it) } ?: b })
+            s.copy(
+                books = s.books.map { b -> urls[b.id]?.let { b.copy(coverUrl = it) } ?: b },
+                genreBooks = s.genreBooks.map { b -> urls[b.id]?.let { b.copy(coverUrl = it) } ?: b }
+            )
         }
     }
 

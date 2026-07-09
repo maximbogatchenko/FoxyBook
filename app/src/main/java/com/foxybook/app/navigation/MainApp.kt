@@ -226,7 +226,14 @@ fun MainApp() {
                             navController.navigate(Routes.reader(bookId, format, filePath))
                         }
                     },
-                    onGoToSettings = { navController.navigate(Routes.SETTINGS) }
+                    onGoToSettings = { navController.navigate(Routes.SETTINGS) },
+                    onGenreSearch = { genre ->
+                        com.foxybook.app.core.models.PendingSearchQuery.query = genre
+                        // Пересоздаём SearchScreen, чтобы запрос подхватился
+                        navController.navigate(Routes.SEARCH) {
+                            popUpTo(Routes.SEARCH) { inclusive = true }
+                        }
+                    }
                 )
             }
 
