@@ -169,7 +169,7 @@ fun LibraryScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text("Импорт книги…", style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.library_import_book), style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }
@@ -191,10 +191,10 @@ fun LibraryScreen(
                             Icon(Icons.Default.CheckCircle, contentDescription = stringResource(R.string.library_select_all))
                         }
                         IconButton(onClick = { viewModel.onEvent(LibraryEvent.BatchToggleFavorite) }) {
-                            Icon(Icons.Default.Favorite, contentDescription = "В избранное", tint = MaterialTheme.colorScheme.error)
+                            Icon(Icons.Default.Favorite, contentDescription = stringResource(R.string.cd_add_to_favorites), tint = MaterialTheme.colorScheme.error)
                         }
                         IconButton(onClick = { viewModel.onEvent(LibraryEvent.BatchShowCollectionDialog) }) {
-                            Icon(Icons.Default.Folder, contentDescription = "В коллекцию")
+                            Icon(Icons.Default.Folder, contentDescription = stringResource(R.string.cd_add_to_collection))
                         }
                         IconButton(onClick = { viewModel.onEvent(LibraryEvent.BatchDeleteSelected) }) {
                             Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.cd_delete), tint = MaterialTheme.colorScheme.error)
@@ -215,7 +215,7 @@ fun LibraryScreen(
                                         LibraryViewMode.COMPACT -> Icons.Default.ViewAgenda
                                         LibraryViewMode.GRID -> Icons.Default.GridView
                                     },
-                                    contentDescription = "Вид"
+                                    contentDescription = stringResource(R.string.cd_view_mode)
                                 )
                             }
                             DropdownMenu(
@@ -256,11 +256,11 @@ fun LibraryScreen(
                         IconButton(onClick = {
                             importLauncher.launch(arrayOf("application/epub+zip", "application/x-fictionbook+xml", "application/x-mobipocket-ebook", "application/octet-stream", "text/plain"))
                         }) {
-                            Icon(Icons.Default.Add, contentDescription = "Импорт книги")
+                            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.library_import_book))
                         }
                         if (state.currentTab == LibraryTab.COLLECTIONS) {
                             IconButton(onClick = { viewModel.onEvent(LibraryEvent.CreateCollectionClicked) }) {
-                                Icon(Icons.Default.CreateNewFolder, contentDescription = "Новая коллекция")
+                                Icon(Icons.Default.CreateNewFolder, contentDescription = stringResource(R.string.collection_create))
                             }
                         }
                     },
@@ -337,8 +337,8 @@ fun LibraryScreen(
                         LibraryTab.ALL -> BookListContent(
                             books = state.allBooks,
                             viewMode = state.viewMode,
-                            emptyTitle = "Библиотека пуста",
-                            emptySubtitle = "Скачайте книги для чтения",
+                            emptyTitle = stringResource(R.string.library_empty_title),
+                            emptySubtitle = stringResource(R.string.library_empty_subtitle),
                             selectedBookIds = state.selectedBookIds,
                             isSelectionMode = state.isSelectionMode,
                             onBookClick = onBookClick,
@@ -353,8 +353,8 @@ fun LibraryScreen(
                         LibraryTab.FAVORITES -> BookListContent(
                             books = state.favoriteBooks,
                             viewMode = state.viewMode,
-                            emptyTitle = "Нет избранных",
-                            emptySubtitle = "Нажмите ♡ чтобы добавить",
+                            emptyTitle = stringResource(R.string.library_empty_favorites_title),
+                            emptySubtitle = stringResource(R.string.library_empty_favorites_subtitle),
                             selectedBookIds = state.selectedBookIds,
                             isSelectionMode = state.isSelectionMode,
                             onBookClick = onBookClick,
@@ -369,8 +369,8 @@ fun LibraryScreen(
                         LibraryTab.HISTORY -> BookListContent(
                             books = state.historyBooks,
                             viewMode = state.viewMode,
-                            emptyTitle = "История пуста",
-                            emptySubtitle = "Начните читать",
+                            emptyTitle = stringResource(R.string.library_empty_history_title),
+                            emptySubtitle = stringResource(R.string.library_empty_history_subtitle),
                             selectedBookIds = state.selectedBookIds,
                             isSelectionMode = state.isSelectionMode,
                             onBookClick = onBookClick,
@@ -442,12 +442,12 @@ fun LibraryScreen(
         if (state.isDeleteBookDialogOpen) {
             AlertDialog(
                 onDismissRequest = { viewModel.onEvent(LibraryEvent.DismissDialogs) },
-                title = { Text("Удалить книгу?") },
+                title = { Text(stringResource(R.string.library_delete_title)) },
                 text = {
                     Column {
                         Text(
-                            if (state.deleteFromDevice) "Книга будет удалена из библиотеки и с устройства."
-                            else "Книга будет удалена только из библиотеки."
+                            if (state.deleteFromDevice) stringResource(R.string.library_delete_body_device)
+                            else stringResource(R.string.library_delete_body_library)
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Row(
@@ -463,7 +463,7 @@ fun LibraryScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                "Удалить файлы с устройства",
+                                stringResource(R.string.library_delete_from_device),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
@@ -480,7 +480,7 @@ fun LibraryScreen(
                 dismissButton = {
                     TextButton(onClick = { viewModel.onEvent(LibraryEvent.DismissDialogs) }) {
                         Text(
-                            "Отмена"
+                            stringResource(R.string.cancel)
                         )
                     }
                 }
@@ -523,10 +523,10 @@ fun LibraryScreen(
         if (state.showBatchDeleteDialog && state.isSelectionMode) {
             AlertDialog(
                 onDismissRequest = { viewModel.onEvent(LibraryEvent.DismissBatchDeleteDialog) },
-                title = { Text("Удалить ${state.selectedBookIds.size} ${pluralBook(state.selectedBookIds.size)}?") },
+                title = { Text(stringResource(R.string.library_delete_batch_title, state.selectedBookIds.size)) },
                 text = {
                     Column {
-                        Text("Выбранные книги будут удалены из библиотеки.")
+                        Text(stringResource(R.string.library_delete_batch_body))
                         Spacer(modifier = Modifier.height(12.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -540,18 +540,18 @@ fun LibraryScreen(
                                 onCheckedChange = { viewModel.setBatchDeleteFromDevice(it) }
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Удалить файлы с устройства", style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(R.string.library_delete_batch_from_device), style = MaterialTheme.typography.bodyMedium)
                         }
                     }
                 },
                 confirmButton = {
                     TextButton(onClick = { viewModel.onEvent(LibraryEvent.BatchDeleteConfirm) }) {
-                        Text("Удалить", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.cd_delete), color = MaterialTheme.colorScheme.error)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { viewModel.onEvent(LibraryEvent.DismissBatchDeleteDialog) }) {
-                        Text("Отмена")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             )
@@ -770,7 +770,7 @@ private fun LibraryBookCard(
             if (isSelected) {
                 Icon(
                     Icons.Default.CheckCircle,
-                    contentDescription = "Выбрано",
+                    contentDescription = stringResource(R.string.cd_selected),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
@@ -799,18 +799,18 @@ private fun LibraryBookCard(
             }
             IconButton(onClick = onToggleFavorite, modifier = Modifier.size(36.dp)) {
                 Icon(if (book.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Избранное",
+                    contentDescription = stringResource(R.string.cd_favorites),
                     tint = if (book.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp))
             }
             Box {
                 IconButton(onClick = { showMenu = true }, modifier = Modifier.size(36.dp)) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "Ещё", modifier = Modifier.size(20.dp))
+                    Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.cd_more), modifier = Modifier.size(20.dp))
                 }
                 DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                    DropdownMenuItem(text = { Text("В коллекцию") }, onClick = { showMenu = false; onMove() },
+                    DropdownMenuItem(text = { Text(stringResource(R.string.cd_add_to_collection)) }, onClick = { showMenu = false; onMove() },
                         leadingIcon = { Icon(Icons.Default.PlaylistAdd, contentDescription = null, modifier = Modifier.size(18.dp)) })
-                    DropdownMenuItem(text = { Text("Удалить", color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDelete() },
+                    DropdownMenuItem(text = { Text(stringResource(R.string.cd_delete), color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDelete() },
                         leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error) })
                 }
             }
@@ -844,7 +844,7 @@ private fun CompactBookCard(
             if (isSelected) {
                 Icon(
                     Icons.Default.CheckCircle,
-                    contentDescription = "Выбрано",
+                    contentDescription = stringResource(R.string.cd_selected),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )
@@ -866,18 +866,18 @@ private fun CompactBookCard(
             }
             IconButton(onClick = onToggleFavorite, modifier = Modifier.size(32.dp)) {
                 Icon(if (book.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Избранное",
+                    contentDescription = stringResource(R.string.cd_favorites),
                     tint = if (book.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp))
             }
             Box {
                 IconButton(onClick = { showMenu = true }, modifier = Modifier.size(32.dp)) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "Ещё", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.cd_more), modifier = Modifier.size(18.dp))
                 }
                 DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                    DropdownMenuItem(text = { Text("В коллекцию") }, onClick = { showMenu = false; onMoveToCollection() },
+                    DropdownMenuItem(text = { Text(stringResource(R.string.cd_add_to_collection)) }, onClick = { showMenu = false; onMoveToCollection() },
                         leadingIcon = { Icon(Icons.Default.PlaylistAdd, contentDescription = null, modifier = Modifier.size(18.dp)) })
-                    DropdownMenuItem(text = { Text("Удалить", color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDeleteBook() },
+                    DropdownMenuItem(text = { Text(stringResource(R.string.cd_delete), color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDeleteBook() },
                         leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error) })
                 }
             }
@@ -932,7 +932,7 @@ private fun GridBookCard(
                         )
                         Icon(
                             Icons.Default.CheckCircle,
-                            contentDescription = "Выбрано",
+                            contentDescription = stringResource(R.string.cd_selected),
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
                                 .align(Alignment.Center)
@@ -951,7 +951,7 @@ private fun GridBookCard(
                         ) {
                             Icon(
                                 if (book.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                contentDescription = "Избранное",
+                                contentDescription = stringResource(R.string.cd_favorites),
                                 tint = if (book.isFavorite) MaterialTheme.colorScheme.error
                                        else MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(18.dp)
@@ -970,15 +970,15 @@ private fun GridBookCard(
                         ) {
                             Icon(
                                 Icons.Default.MoreVert,
-                                contentDescription = "Ещё",
+                                contentDescription = stringResource(R.string.cd_more),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
                         DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                            DropdownMenuItem(text = { Text("В коллекцию") }, onClick = { showMenu = false; onMoveToCollection() },
+                            DropdownMenuItem(text = { Text(stringResource(R.string.cd_add_to_collection)) }, onClick = { showMenu = false; onMoveToCollection() },
                                 leadingIcon = { Icon(Icons.Default.PlaylistAdd, contentDescription = null, modifier = Modifier.size(18.dp)) })
-                            DropdownMenuItem(text = { Text("Удалить", color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDeleteBook() },
+                            DropdownMenuItem(text = { Text(stringResource(R.string.cd_delete), color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDeleteBook() },
                                 leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error) })
                         }
                     }
@@ -1012,7 +1012,7 @@ private fun GridBookCard(
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
-                    if (isSelectionMode) "Выбрать" else "Читать",
+                    if (isSelectionMode) stringResource(R.string.library_select) else stringResource(R.string.book_details_read_btn),
                     style = MaterialTheme.typography.labelMedium
                 )
             }
@@ -1048,10 +1048,7 @@ private fun CollectionsContent(
             FilterChip(
                 selected = selectedCollectionId == null,
                 onClick = { onCollectionClick(null) },
-                label = { Text("Все папки") },
-                leadingIcon = {
-                    Icon(Icons.Default.MenuBook, null, modifier = Modifier.size(18.dp))
-                }
+                label = { Text(stringResource(R.string.library_all_folders)) },
             )
             // Collection chips
             for (collection in collections) {
@@ -1089,8 +1086,8 @@ private fun CollectionsContent(
             BookListContent(
                 books = books.filter { selectedCollectionId in it.collectionIds },
                 viewMode = viewMode,
-                emptyTitle = "Коллекция пуста",
-                emptySubtitle = "Добавьте книги через меню",
+                emptyTitle = stringResource(R.string.library_empty_collection_title),
+                emptySubtitle = stringResource(R.string.library_empty_collection_subtitle),
                 selectedBookIds = selectedBookIds,
                 isSelectionMode = isSelectionMode,
                 onBookClick = onBookClick,
@@ -1117,13 +1114,13 @@ private fun CollectionsContent(
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            "Нет коллекций",
+                            stringResource(R.string.library_no_collections_title),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            "Создайте коллекцию, чтобы упорядочить книги",
+                            stringResource(R.string.library_no_collections_subtitle),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                         )
@@ -1181,22 +1178,22 @@ private fun CollectionsContent(
                                         overflow = TextOverflow.Ellipsis
                                     )
                                     Text(
-                                        "Книг: $count",
+                                        stringResource(R.string.library_books_count_format, count),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                                 IconButton(onClick = { showMenu = true }, modifier = Modifier.size(36.dp)) {
-                                    Icon(Icons.Default.MoreVert, contentDescription = "Ещё", modifier = Modifier.size(20.dp))
+                                    Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.cd_more), modifier = Modifier.size(20.dp))
                                 }
                                 DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                                     DropdownMenuItem(
-                                        text = { Text("Переименовать") },
+                                        text = { Text(stringResource(R.string.collection_rename)) },
                                         onClick = { showMenu = false; onRenameCollection(collection.id) },
                                         leadingIcon = { Icon(Icons.Default.Edit, null, modifier = Modifier.size(18.dp)) }
                                     )
                                     DropdownMenuItem(
-                                        text = { Text("Удалить", color = MaterialTheme.colorScheme.error) },
+                                        text = { Text(stringResource(R.string.cd_delete), color = MaterialTheme.colorScheme.error) },
                                         onClick = { showMenu = false; onDeleteCollection(collection.id) },
                                         leadingIcon = { Icon(Icons.Default.Delete, null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error) }
                                     )
@@ -1225,11 +1222,11 @@ private fun BookDetailsDialog(
             OutlinedButton(onClick = onRead) {
                 Icon(Icons.Default.MenuBook, null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Читать")
+                Text(stringResource(R.string.book_details_read_btn))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Закрыть") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.close)) }
         },
         title = {
             Text(book.title, maxLines = 2, overflow = TextOverflow.Ellipsis)
@@ -1253,12 +1250,10 @@ private fun BookDetailsDialog(
                 Text(book.author, style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(4.dp))
-                // Формат
-                Text("Формат: ${book.format.uppercase()}", style = MaterialTheme.typography.bodySmall,
+                Text(stringResource(R.string.library_format, book.format.uppercase()), style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(4.dp))
-                // Дата добавления
-                Text("Добавлена: ${dateFormat.format(Date(book.downloadDate))}",
+                Text(stringResource(R.string.library_added_date, dateFormat.format(Date(book.downloadDate))),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                 // Дата последнего чтения
@@ -1276,7 +1271,7 @@ private fun BookDetailsDialog(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Прогресс", style = MaterialTheme.typography.labelLarge,
+                            Text(stringResource(R.string.library_progress), style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurface)
                             val displayProgress = if (book.lastReadDate > 0) book.readingProgress else 0
@@ -1296,7 +1291,7 @@ private fun BookDetailsDialog(
                         )
                         if (book.lastReadDate > 0) {
                             Spacer(modifier = Modifier.height(6.dp))
-                            Text("Последнее чтение: ${dateFormat.format(Date(book.lastReadDate))}",
+                            Text(stringResource(R.string.library_last_read, dateFormat.format(Date(book.lastReadDate))),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
@@ -1310,20 +1305,20 @@ private fun BookDetailsDialog(
 @Composable
 private fun CreateCollectionDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
     var name by remember { mutableStateOf("") }
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("Новая коллекция") },
-        text = { OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Название") }, singleLine = true, modifier = Modifier.fillMaxWidth()) },
-        confirmButton = { TextButton(onClick = { if (name.isNotBlank()) onConfirm(name.trim()) }, enabled = name.isNotBlank()) { Text("Создать") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Отмена") } }
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(stringResource(R.string.collection_create)) },
+        text = { OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.collection_name)) }, singleLine = true, modifier = Modifier.fillMaxWidth()) },
+        confirmButton = { TextButton(onClick = { if (name.isNotBlank()) onConfirm(name.trim()) }, enabled = name.isNotBlank()) { Text(stringResource(R.string.collection_create_btn)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
     )
 }
 
 @Composable
 private fun RenameCollectionDialog(currentName: String, onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
     var name by remember { mutableStateOf(currentName) }
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("Переименовать") },
-        text = { OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Название") }, singleLine = true, modifier = Modifier.fillMaxWidth()) },
-        confirmButton = { TextButton(onClick = { if (name.isNotBlank()) onConfirm(name.trim()) }, enabled = name.isNotBlank()) { Text("Сохранить") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Отмена") } }
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(stringResource(R.string.collection_rename)) },
+        text = { OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.collection_name)) }, singleLine = true, modifier = Modifier.fillMaxWidth()) },
+        confirmButton = { TextButton(onClick = { if (name.isNotBlank()) onConfirm(name.trim()) }, enabled = name.isNotBlank()) { Text(stringResource(R.string.collection_save)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
     )
 }
 
@@ -1335,11 +1330,11 @@ private fun MoveBookDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Коллекции", fontWeight = FontWeight.SemiBold) },
+        title = { Text(stringResource(R.string.library_tab_collections), fontWeight = FontWeight.SemiBold) },
         text = {
             Column {
                 if (collections.isEmpty()) {
-                    Text("Нет коллекций", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.library_no_collections_title), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Spacer(modifier = Modifier.height(8.dp))
                 } else {
                     collections.forEach { collection ->
@@ -1381,12 +1376,12 @@ private fun MoveBookDialog(
                 ) {
                     Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Создать коллекцию")
+                    Text(stringResource(R.string.collection_create))
                 }
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Готово") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cd_done)) }
         }
     )
 }
@@ -1406,11 +1401,11 @@ private fun BatchCollectionDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Добавить в коллекцию", fontWeight = FontWeight.SemiBold) },
+        title = { Text(stringResource(R.string.collection_add_to), fontWeight = FontWeight.SemiBold) },
         text = {
             Column {
                 if (collections.isEmpty()) {
-                    Text("Нет коллекций", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.library_no_collections_title), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Spacer(modifier = Modifier.height(8.dp))
                 } else {
                     collections.forEach { collection ->
@@ -1447,12 +1442,12 @@ private fun BatchCollectionDialog(
                 ) {
                     Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Создать коллекцию")
+                    Text(stringResource(R.string.collection_create))
                 }
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Готово") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cd_done)) }
         }
     )
 }

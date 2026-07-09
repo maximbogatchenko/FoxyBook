@@ -182,7 +182,7 @@ fun NewBooksScreen(
                             )
                             Spacer(Modifier.height(24.dp))
                             Text(
-                                text = "Загружаем новинки" + ".".repeat(dots.toInt().coerceIn(0, 4)),
+                                text = stringResource(R.string.new_books_loading_title) + ".".repeat(dots.toInt().coerceIn(0, 4)),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
@@ -197,7 +197,7 @@ fun NewBooksScreen(
                             Icon(Icons.Default.NewReleases, null, modifier = Modifier.size(64.dp),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
                             Spacer(modifier = Modifier.height(16.dp))
-                            Text("Нет новинок", style = MaterialTheme.typography.titleMedium,
+                            Text(stringResource(R.string.new_books_empty), style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
@@ -209,13 +209,13 @@ fun NewBooksScreen(
                             Icon(Icons.Default.Error, null, modifier = Modifier.size(64.dp),
                                 tint = MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
                             Spacer(modifier = Modifier.height(12.dp))
-                            Text("Ошибка", style = MaterialTheme.typography.titleMedium,
+                            Text(stringResource(R.string.reader_error), style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.error)
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(s.message, style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Spacer(modifier = Modifier.height(16.dp))
-                            OutlinedButton(onClick = { viewModel.refresh() }) { Text("Повторить") }
+                            OutlinedButton(onClick = { viewModel.refresh() }) { Text(stringResource(R.string.retry)) }
                         }
                     }
                 }
@@ -297,7 +297,7 @@ private fun LoadingFooter(isLoadingMore: Boolean) {
                 Spacer(Modifier.height(12.dp))
 
                 Text(
-                    text = "Загрузка книг...",
+                    text = stringResource(R.string.new_books_loading_more),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Medium

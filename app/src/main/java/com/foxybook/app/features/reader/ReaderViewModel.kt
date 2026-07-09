@@ -15,6 +15,7 @@ import com.foxybook.app.core.models.ReadingPosition
 import com.foxybook.app.core.reader.BookParser
 import com.foxybook.app.core.reader.ContentBlock
 import com.foxybook.app.core.reader.HtmlBlockParser
+import com.foxybook.app.R
 import com.foxybook.app.core.reader.TextPaginator
 import com.foxybook.app.core.tts.TtsManager
 import kotlinx.coroutines.CoroutineScope
@@ -619,7 +620,7 @@ class ReaderViewModel(
             try {
                 val book = bookParser.parse(filePath, fmt, bId)
                 if (book == null) {
-                    _state.update { it.copy(isLoading = false, error = "Ошибка при открытии книги") }
+                    _state.update { it.copy(isLoading = false, error = application.getString(R.string.reader_open_error)) }
                     return@launch
                 }
 

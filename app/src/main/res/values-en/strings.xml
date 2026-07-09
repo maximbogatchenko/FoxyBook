@@ -114,6 +114,31 @@
     <string name="library_view_list">List</string>
     <string name="library_view_compact">Compact</string>
     <string name="library_view_grid">Grid</string>
+    <string name="library_import_book">Import book…</string>
+    <string name="library_empty_title">Library is empty</string>
+    <string name="library_empty_subtitle">Download books to read</string>
+    <string name="library_empty_favorites_title">No favorites</string>
+    <string name="library_empty_favorites_subtitle">Tap ♡ to add</string>
+    <string name="library_empty_history_title">History is empty</string>
+    <string name="library_empty_history_subtitle">Start reading</string>
+    <string name="library_delete_title">Delete book?</string>
+    <string name="library_delete_body_library">The book will be removed only from the library.</string>
+    <string name="library_delete_body_device">The book will be removed from the library and device.</string>
+    <string name="library_delete_from_device">Delete files from device</string>
+    <string name="library_all_folders">All folders</string>
+    <string name="library_empty_collection_title">Collection is empty</string>
+    <string name="library_empty_collection_subtitle">Add books via menu</string>
+    <string name="library_no_collections_title">No collections</string>
+    <string name="library_no_collections_subtitle">Create a collection to organize books</string>
+    <string name="library_books_count_format">Books: %d</string>
+    <string name="library_select">Select</string>
+    <string name="library_format">Format: %s</string>
+    <string name="library_added_date">Added: %s</string>
+    <string name="library_progress">Progress</string>
+    <string name="library_last_read">Last read: %s</string>
+    <string name="library_delete_batch_title">Delete %d books?</string>
+    <string name="library_delete_batch_body">Selected books will be removed from the library.</string>
+    <string name="library_delete_batch_from_device">Delete files from device</string>
 
     <!-- Reader -->
     <string name="reader_title">Reading</string>
@@ -216,6 +241,7 @@
     <string name="book_details_folder_error_text">The selected download folder is no longer available. Please select a new folder in settings.</string>
     <string name="book_details_go_to_settings">Go to settings</string>
     <string name="book_details_external_open_error">No app available to open this format</string>
+    <string name="book_details_downloaded_label">Downloaded</string>
     <string name="format_description_epub">Bookmarks • Styling</string>
     <string name="format_description_fb2">Russian format • Flibusta books</string>
     <string name="format_description_mobi">Kindle • Amazon compatible</string>
@@ -231,6 +257,7 @@
     <string name="new_books_grid">Grid</string>
     <string name="new_books_list">List</string>
     <string name="new_books_loading_more">Loading books…</string>
+    <string name="new_books_loading_title">Loading new books</string>
     <string name="new_books_fresh_arrivals">Fresh arrivals</string>
 
     <!-- Author -->
@@ -254,12 +281,15 @@
     <string name="collection_create">Create collection</string>
     <string name="collection_name">Collection name</string>
     <string name="collection_create_btn">Create</string>
+    <string name="collection_save">Save</string>
+    <string name="collection_add_to">Add to collection</string>
     <string name="collection_delete">Delete collection</string>
     <string name="collection_delete_confirm">Delete collection «%s»?</string>
     <string name="collection_rename">Rename</string>
 
     <!-- Update -->
     <string name="update_available">Update available</string>
+    <string name="update_version_available">Version %s is available for download.</string>
     <string name="settings_downloading">Downloading…</string>
     <string name="update_downloaded_install_hint">Press Install to update the app</string>
 
@@ -293,4 +323,11 @@
     <string name="cd_download">Download</string>
     <string name="cd_tts_select">Select TTS engine</string>
     <string name="cd_search">Search</string>
+    <string name="cd_add_to_favorites">Add to favorites</string>
+    <string name="cd_add_to_collection">Add to collection</string>
+    <string name="cd_view_mode">View</string>
+    <string name="cd_selected">Selected</string>
+    <string name="cd_favorites">Favorites</string>
+    <string name="cd_more">More</string>
+    <string name="cd_done">Done</string>
 </resources>

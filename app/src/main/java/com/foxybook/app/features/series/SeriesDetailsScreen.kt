@@ -83,7 +83,7 @@ fun SeriesDetailsScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -127,7 +127,7 @@ fun SeriesDetailsScreen(
                         OutlinedButton(onClick = {
                             viewModel.loadSeriesBooks(seriesId, seriesTitle)
                         }) {
-                            Text("Повторить")
+                            Text(stringResource(R.string.retry))
                         }
                     }
                 }

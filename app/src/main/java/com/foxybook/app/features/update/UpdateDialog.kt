@@ -85,10 +85,10 @@ fun UpdateDialog(updateChecker: UpdateChecker) {
                 icon = {
                     Icon(Icons.Default.SystemUpdate, contentDescription = null)
                 },
-                title = { Text("Доступно обновление", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.update_available), fontWeight = FontWeight.Bold) },
                 text = {
                     Column {
-                        Text("Версия ${currentState.info.version} доступна для скачивания.")
+                        Text(stringResource(R.string.update_version_available, currentState.info.version))
                         Spacer(Modifier.height(4.dp))
                         Text(
                             formatSize(currentState.info.size),
@@ -110,10 +110,10 @@ fun UpdateDialog(updateChecker: UpdateChecker) {
                                 }
                                 state = UpdateDialogState.Downloaded(uri)
                             } catch (e: Exception) {
-                                state = UpdateDialogState.Error(e.message ?: "Ошибка скачивания")
+                                state = UpdateDialogState.Error(e.message ?: context.getString(R.string.settings_download_error))
                             }
                         }
-                    }) { Text("Скачать") }
+                    }) { Text(stringResource(R.string.book_details_download)) }
                 },
                 dismissButton = {
                     TextButton(onClick = { state = UpdateDialogState.Idle }) { Text(stringResource(R.string.settings_update_later)) }
@@ -127,7 +127,7 @@ fun UpdateDialog(updateChecker: UpdateChecker) {
                 icon = {
                     CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
                 },
-                title = { Text("Скачивание...", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.book_details_downloading), fontWeight = FontWeight.Bold) },
                 text = {
                     Column {
                         LinearProgressIndicator(
@@ -183,10 +183,10 @@ fun UpdateDialog(updateChecker: UpdateChecker) {
                         tint = MaterialTheme.colorScheme.error
                     )
                 },
-                title = { Text("Ошибка", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.reader_error), fontWeight = FontWeight.Bold) },
                 text = { Text(currentState.message) },
                 confirmButton = {
-                    Button(onClick = { state = UpdateDialogState.Idle }) { Text("Закрыть") }
+                    Button(onClick = { state = UpdateDialogState.Idle }) { Text(stringResource(R.string.close)) }
                 },
                 dismissButton = {}
             )
@@ -216,7 +216,7 @@ private fun ChangeLogSpoiler(releaseNotes: String) {
             )
             Spacer(Modifier.width(4.dp))
             Text(
-                "Что нового",
+                stringResource(R.string.settings_whats_new),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary
@@ -229,7 +229,7 @@ private fun ChangeLogSpoiler(releaseNotes: String) {
             Spacer(Modifier.height(6.dp))
             if (releaseNotes.isBlank()) {
                 Text(
-                    "Автор не указал список изменений",
+                    stringResource(R.string.settings_no_changelog),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 8.dp)

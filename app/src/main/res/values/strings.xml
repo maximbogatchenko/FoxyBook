@@ -114,6 +114,31 @@
     <string name="library_view_list">Список</string>
     <string name="library_view_compact">Компактный</string>
     <string name="library_view_grid">Сетка</string>
+    <string name="library_import_book">Импорт книги…</string>
+    <string name="library_empty_title">Библиотека пуста</string>
+    <string name="library_empty_subtitle">Скачайте книги для чтения</string>
+    <string name="library_empty_favorites_title">Нет избранных</string>
+    <string name="library_empty_favorites_subtitle">Нажмите ♡ чтобы добавить</string>
+    <string name="library_empty_history_title">История пуста</string>
+    <string name="library_empty_history_subtitle">Начните читать</string>
+    <string name="library_delete_title">Удалить книгу?</string>
+    <string name="library_delete_body_library">Книга будет удалена только из библиотеки.</string>
+    <string name="library_delete_body_device">Книга будет удалена из библиотеки и с устройства.</string>
+    <string name="library_delete_from_device">Удалить файлы с устройства</string>
+    <string name="library_all_folders">Все папки</string>
+    <string name="library_empty_collection_title">Коллекция пуста</string>
+    <string name="library_empty_collection_subtitle">Добавьте книги через меню</string>
+    <string name="library_no_collections_title">Нет коллекций</string>
+    <string name="library_no_collections_subtitle">Создайте коллекцию, чтобы упорядочить книги</string>
+    <string name="library_books_count_format">Книг: %d</string>
+    <string name="library_select">Выбрать</string>
+    <string name="library_format">Формат: %s</string>
+    <string name="library_added_date">Добавлена: %s</string>
+    <string name="library_progress">Прогресс</string>
+    <string name="library_last_read">Последнее чтение: %s</string>
+    <string name="library_delete_batch_title">Удалить %d книг?</string>
+    <string name="library_delete_batch_body">Выбранные книги будут удалены из библиотеки.</string>
+    <string name="library_delete_batch_from_device">Удалить файлы с устройства</string>
 
     <!-- Reader -->
     <string name="reader_title">Чтение</string>
@@ -216,6 +241,7 @@
     <string name="book_details_folder_error_text">Выбранная папка для загрузок больше не доступна. Пожалуйста, выберите папку заново в настройках.</string>
     <string name="book_details_go_to_settings">В настройки</string>
     <string name="book_details_external_open_error">Нет приложения для открытия этого формата</string>
+    <string name="book_details_downloaded_label">Скачан</string>
     <string name="format_description_epub">Поддержка закладок • Стилизация</string>
     <string name="format_description_fb2">Русский формат • Книги Flibusta</string>
     <string name="format_description_mobi">Kindle • Amazon совместимый</string>
@@ -231,6 +257,7 @@
     <string name="new_books_grid">Сетка</string>
     <string name="new_books_list">Список</string>
     <string name="new_books_loading_more">Загрузка книг…</string>
+    <string name="new_books_loading_title">Загружаем новинки</string>
     <string name="new_books_fresh_arrivals">Свежие поступления</string>
 
     <!-- Author -->
@@ -254,12 +281,15 @@
     <string name="collection_create">Создать коллекцию</string>
     <string name="collection_name">Название коллекции</string>
     <string name="collection_create_btn">Создать</string>
+    <string name="collection_save">Сохранить</string>
+    <string name="collection_add_to">Добавить в коллекцию</string>
     <string name="collection_delete">Удалить коллекцию</string>
     <string name="collection_delete_confirm">Удалить коллекцию «%s»?</string>
     <string name="collection_rename">Переименовать</string>
 
     <!-- Update -->
     <string name="update_available">Доступно обновление</string>
+    <string name="update_version_available">Версия %s доступна для скачивания.</string>
     <string name="settings_downloading">Скачивание…</string>
     <string name="update_downloaded_install_hint">Нажмите «Установить», чтобы обновить приложение</string>
 
@@ -293,4 +323,11 @@
     <string name="cd_download">Скачать</string>
     <string name="cd_tts_select">Выбор движка TTS</string>
     <string name="cd_search">Поиск</string>
+    <string name="cd_add_to_favorites">В избранное</string>
+    <string name="cd_add_to_collection">В коллекцию</string>
+    <string name="cd_view_mode">Вид</string>
+    <string name="cd_selected">Выбрано</string>
+    <string name="cd_favorites">Избранное</string>
+    <string name="cd_more">Ещё</string>
+    <string name="cd_done">Готово</string>
 </resources>

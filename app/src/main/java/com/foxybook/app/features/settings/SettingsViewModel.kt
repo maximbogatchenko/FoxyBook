@@ -1,11 +1,13 @@
 package com.foxybook.app.features.settings
 
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.foxybook.app.R
 import com.foxybook.app.core.datastore.DataStoreManager
 import com.foxybook.app.core.models.BookSource
 import com.foxybook.app.core.network.OkHttpClientProvider
@@ -40,6 +42,7 @@ data class SettingsState(
 )
 
 class SettingsViewModel(
+    private val application: Application,
     private val dataStoreManager: DataStoreManager,
     private val updateChecker: UpdateChecker,
     private val networkProvider: OkHttpClientProvider
@@ -99,7 +102,7 @@ class SettingsViewModel(
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Update check failed", e)
-                _state.update { it.copy(updateState = UpdateState.Error(e.message ?: "Неизвестная ошибка")) }
+                _state.update { it.copy(updateState = UpdateState.Error(e.message ?: application.getString(R.string.settings_unknown_error))) }
             }
         }
     }
@@ -115,7 +118,7 @@ class SettingsViewModel(
                 _state.update { it.copy(updateState = UpdateState.Downloaded(apkUri), downloadProgress = 1f) }
             } catch (e: Exception) {
                 Log.e(TAG, "Download failed", e)
-                _state.update { it.copy(updateState = UpdateState.Error(e.message ?: "Ошибка скачивания")) }
+                _state.update { it.copy(updateState = UpdateState.Error(e.message ?: application.getString(R.string.settings_download_error))) }
             }
         }
     }

@@ -75,7 +75,7 @@ fun AuthorBooksScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -119,7 +119,7 @@ fun AuthorBooksScreen(
                         OutlinedButton(onClick = {
                             viewModel.loadAuthorBooks(authorId, authorName)
                         }) {
-                            Text("Повторить")
+                            Text(stringResource(R.string.retry))
                         }
                     }
                 }

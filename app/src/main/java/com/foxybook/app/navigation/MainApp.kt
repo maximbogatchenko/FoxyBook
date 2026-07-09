@@ -46,6 +46,8 @@ import com.foxybook.app.features.details.openBookExternally
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.foxybook.app.R
 import java.net.URLDecoder
 
 @Composable
@@ -203,7 +205,7 @@ fun MainApp() {
             ) { backStackEntry ->
                 val bookId = backStackEntry.arguments?.getInt("bookId")
                 if (bookId == null) {
-                    androidx.compose.material3.Text("Ошибка: книга не найдена")
+                    androidx.compose.material3.Text(stringResource(R.string.book_details_loading_error))
                     return@composable
                 }
                 val initialBook = com.foxybook.app.core.models.BookCache.get(bookId)

@@ -80,7 +80,7 @@ val appModule = module {
     viewModel { SearchViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { NewBooksViewModel(get(), get(), get(), get(), get()) }
     viewModel { LibraryViewModel(get(), get(), get(), get()) }
-    viewModel { SettingsViewModel(get(), get(), get()) }
+    viewModel { SettingsViewModel(androidContext() as android.app.Application, get(), get(), get()) }
     viewModel { BookDetailsViewModel(get(), get(), get(), get(), get()) }
     viewModel { ReaderViewModel(get(), get(), get(), get()) }
     viewModel { SeriesDetailsViewModel(get(), get()) }
