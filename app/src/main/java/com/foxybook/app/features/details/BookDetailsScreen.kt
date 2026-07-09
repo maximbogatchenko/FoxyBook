@@ -89,6 +89,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
+import com.foxybook.app.R
 import com.foxybook.app.core.models.BookFormat
 import com.foxybook.app.core.models.Bookmark
 import com.foxybook.app.core.models.DownloadProgress
@@ -99,7 +100,6 @@ import android.net.Uri
 import androidx.core.content.FileProvider
 import java.io.File
 import com.foxybook.app.navigation.Routes
-import com.foxybook.app.R
 import androidx.compose.foundation.background
 import androidx.compose.ui.draw.clip
 import com.foxybook.app.ui.components.CoverViewer
@@ -126,12 +126,12 @@ fun BookDetailsScreen(
             TopAppBar(
                 title = {
                     val title = (state.uiState as? BookDetailsUiState.Success)?.bookInfo?.title
-                        ?: stringResource(R.string.book_details_title)
+                        ?: "Книга"
                     Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -155,7 +155,7 @@ fun BookDetailsScreen(
                             modifier = Modifier.size(64.dp),
                             tint = MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
                         Spacer(modifier = Modifier.height(12.dp))
-                        Text(stringResource(R.string.book_details_loading_error), style = MaterialTheme.typography.titleMedium,
+                        Text("Ошибка загрузки", style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.error)
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(uiState.message, style = MaterialTheme.typography.bodyMedium,
@@ -164,7 +164,7 @@ fun BookDetailsScreen(
                         OutlinedButton(onClick = {
                             viewModel.onEvent(BookDetailsEvent.LoadBook(bookId, null))
                         }) {
-                            Text(stringResource(R.string.retry))
+                            Text("Повторить")
                         }
                     }
                 }
@@ -223,7 +223,7 @@ fun BookDetailsScreen(
 
                         // Description
                         if (info.description.isNotBlank()) {
-                            SectionTitle(stringResource(R.string.book_details_description))
+                            SectionTitle("Описание")
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(info.description, style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -232,14 +232,14 @@ fun BookDetailsScreen(
 
                         // Genres
                         if (info.genres.isNotEmpty()) {
-                            SectionTitle(stringResource(R.string.book_details_genres))
+                            SectionTitle("Жанры")
                             Spacer(modifier = Modifier.height(8.dp))
                             FlowRow(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 info.genres.forEach { genre ->
-                                    AssistChip(onClick = { onGenreSearch(genre.title) }, label = { Text(genre.title) })
+                                    AssistChip(onClick = { }, label = { Text(genre.title) })
                                 }
                             }
                             Spacer(modifier = Modifier.height(16.dp))
@@ -247,7 +247,7 @@ fun BookDetailsScreen(
 
 
                         // Download section
-                        SectionTitle(stringResource(R.string.book_details_download))
+                        SectionTitle("Скачать")
                         Spacer(modifier = Modifier.height(12.dp))
 
                         SingleDownloadButton(
@@ -260,7 +260,7 @@ fun BookDetailsScreen(
 
                         // Bookmarks section
                         if (state.bookmarks.isNotEmpty()) {
-                            SectionTitle(stringResource(R.string.book_details_bookmarks))
+                            SectionTitle("Закладки")
                             Spacer(modifier = Modifier.height(12.dp))
                             state.bookmarks.forEach { bookmark ->
                                 BookmarkItem(
@@ -288,19 +288,19 @@ fun BookDetailsScreen(
     if (state.showFolderErrorDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.onEvent(BookDetailsEvent.DismissFolderError) },
-            title = { Text(stringResource(R.string.book_details_folder_error_title)) },
-            text = { Text(stringResource(R.string.book_details_folder_error_text)) },
+            title = { Text("Доступ к папке потерян") },
+            text = { Text("Выбранная папка для загрузок больше не доступна. Пожалуйста, выберите папку заново в настройках.") },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.onEvent(BookDetailsEvent.DismissFolderError)
                     onGoToSettings()
                 }) {
-                    Text(stringResource(R.string.book_details_go_to_settings))
+                    Text("В настройки")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.onEvent(BookDetailsEvent.DismissFolderError) }) {
-                    Text(stringResource(R.string.cancel))
+                    Text("Отмена")
                 }
             }
         )
@@ -346,7 +346,7 @@ private fun BookmarkItem(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = stringResource(R.string.bookmark_chapter, bookmark.chapterIndex + 1),
+                    text = "Глава ${bookmark.chapterIndex + 1}",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -360,7 +360,7 @@ private fun BookmarkItem(
                 IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = stringResource(R.string.cd_delete),
+                        contentDescription = "Удалить",
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
                     )
@@ -423,12 +423,12 @@ private fun DownloadButton(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = when (progress.status) {
-                            DownloadStatus.IDLE -> stringResource(R.string.book_details_ready)
+                            DownloadStatus.IDLE -> "Готово к скачиванию"
                             DownloadStatus.DOWNLOADING -> {
-                                if (progress.percent < 0) stringResource(R.string.book_details_downloading) else stringResource(R.string.book_details_downloading_progress, progress.percent)
+                                if (progress.percent < 0) "Скачивание…" else "Скачивание… ${progress.percent}%"
                             }
-                            DownloadStatus.DOWNLOADED -> stringResource(R.string.book_details_downloaded)
-                            DownloadStatus.ERROR -> progress.error ?: stringResource(R.string.book_details_error)
+                            DownloadStatus.DOWNLOADED -> "Скачано"
+                            DownloadStatus.ERROR -> progress.error ?: "Ошибка"
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = if (progress.status == DownloadStatus.DOWNLOADED) FontWeight.SemiBold else FontWeight.Normal,
@@ -449,7 +449,7 @@ private fun DownloadButton(
                         ) {
                             Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(stringResource(R.string.book_details_download))
+                            Text("Скачать")
                         }
                     }
                     DownloadStatus.DOWNLOADING -> {
@@ -467,7 +467,7 @@ private fun DownloadButton(
                         ) {
                             Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(stringResource(R.string.book_details_read_btn))
+                            Text("Читать")
                         }
                     }
                 }
@@ -519,7 +519,7 @@ private fun SingleDownloadButton(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.book_details_format),
+                    text = "Формат",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -577,7 +577,7 @@ private fun SingleDownloadButton(
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = formatDescription(selectedFormat),
+                                text = stringResource(formatDescriptionRes(selectedFormat)),
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -663,7 +663,7 @@ private fun SingleDownloadButton(
                                     else MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = formatDescription(format),
+                                    text = stringResource(formatDescriptionRes(format)),
                                     fontSize = 11.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -677,7 +677,7 @@ private fun SingleDownloadButton(
                                         .padding(horizontal = 8.dp, vertical = 3.dp)
                                 ) {
                                     Text(
-                                        text = stringResource(R.string.book_details_downloaded),
+                                        text = "Скачан",
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Medium,
                                         color = MaterialTheme.colorScheme.tertiary
@@ -720,13 +720,13 @@ private fun SingleDownloadButton(
                     ) {
                         Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(22.dp))
                         Spacer(Modifier.width(10.dp))
-                        Text(stringResource(R.string.book_details_download_btn), style = MaterialTheme.typography.titleMedium,
+                        Text("Скачать книгу", style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold)
                     }
                     if (progress.status == DownloadStatus.ERROR) {
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            text = progress.error ?: stringResource(R.string.settings_download_error),
+                            text = progress.error ?: "Ошибка скачивания",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.fillMaxWidth()
@@ -746,7 +746,7 @@ private fun SingleDownloadButton(
                             )
                             Spacer(Modifier.width(12.dp))
                             Text(
-                                text = if (progress.percent < 0) stringResource(R.string.book_details_downloading) else stringResource(R.string.book_details_downloading_progress, progress.percent),
+                                text = if (progress.percent < 0) "Скачивание..." else "Скачивание ${progress.percent}%",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.primary
@@ -778,7 +778,7 @@ private fun SingleDownloadButton(
                     ) {
                         Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(22.dp))
                         Spacer(Modifier.width(10.dp))
-                        Text(stringResource(R.string.book_details_read), style = MaterialTheme.typography.titleMedium,
+                        Text("Читать книгу", style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold)
                     }
                 }
@@ -820,7 +820,7 @@ fun openBookExternally(context: Context, filePath: String, mimeType: String) {
         // createChooser обходит ограничение Android 14+ на неявные интенты
         context.startActivity(Intent.createChooser(intent, null))
     } catch (_: Exception) {
-        android.widget.Toast.makeText(context, context.getString(R.string.book_details_external_open_error), android.widget.Toast.LENGTH_SHORT).show()
+        android.widget.Toast.makeText(context, "Нет приложения для открытия этого формата", android.widget.Toast.LENGTH_SHORT).show()
     }
 }
 
@@ -1014,7 +1014,7 @@ fun BookLoadingAnimation() {
 
                 Icon(
                     Icons.Default.AutoStories,
-                    contentDescription = stringResource(R.string.loading),
+                    contentDescription = "Загрузка",
                     modifier = Modifier
                         .size(64.dp)
                         .scale(scale),
@@ -1030,7 +1030,7 @@ fun BookLoadingAnimation() {
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = stringResource(R.string.book_details_loading),
+                    text = "Загружаем книгу",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
@@ -1046,7 +1046,7 @@ fun BookLoadingAnimation() {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = stringResource(R.string.book_details_loading_info),
+                text = "Получаем информацию о книге…",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
             )
@@ -1054,10 +1054,10 @@ fun BookLoadingAnimation() {
     }
 }
 
-private fun formatDescription(format: BookFormat): String = when (format) {
-    BookFormat.EPUB -> "Поддержка закладок • Стилизация"
-    BookFormat.FB2 -> "Русский формат • Книги Flibusta"
-    BookFormat.MOBI -> "Kindle • Amazon совместимый"
-    BookFormat.TXT -> "Простой текст • Макс. совместимость"
-    BookFormat.PDF -> "Документы • Внешний просмотр"
+private fun formatDescriptionRes(format: BookFormat): Int = when (format) {
+    BookFormat.EPUB -> R.string.format_description_epub
+    BookFormat.FB2 -> R.string.format_description_fb2
+    BookFormat.MOBI -> R.string.format_description_mobi
+    BookFormat.TXT -> R.string.format_description_txt
+    BookFormat.PDF -> R.string.format_description_pdf
 }

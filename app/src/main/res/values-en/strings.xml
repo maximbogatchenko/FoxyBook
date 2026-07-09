@@ -109,6 +109,11 @@
     <string name="library_empty_history">No books in history</string>
     <string name="library_continue_reading">Continue reading</string>
     <string name="library_books_count">%d books</string>
+    <string name="library_selected_count">Selected: %d</string>
+    <string name="library_select_all">Select all</string>
+    <string name="library_view_list">List</string>
+    <string name="library_view_compact">Compact</string>
+    <string name="library_view_grid">Grid</string>
 
     <!-- Reader -->
     <string name="reader_title">Reading</string>
@@ -128,6 +133,7 @@
     <string name="reader_no_bookmarks">No bookmarks</string>
     <string name="reader_bookmark_position">Position: chapter %1$d, offset %2$d</string>
     <string name="reader_content_description_book">Book</string>
+    <string name="reader_chapters">Chapters</string>
 
     <!-- Reader Settings Panel -->
     <string name="reader_settings_title">Reading settings</string>
@@ -196,6 +202,11 @@
     <string name="book_details_folder_error_text">The selected download folder is no longer available. Please select a new folder in settings.</string>
     <string name="book_details_go_to_settings">Go to settings</string>
     <string name="book_details_external_open_error">No app available to open this format</string>
+    <string name="format_description_epub">Bookmarks • Styling</string>
+    <string name="format_description_fb2">Russian format • Flibusta books</string>
+    <string name="format_description_mobi">Kindle • Amazon compatible</string>
+    <string name="format_description_txt">Plain text • Max compatibility</string>
+    <string name="format_description_pdf">Documents • External viewer</string>
 
     <!-- New Books -->
     <string name="new_books_title">New Books</string>
@@ -206,6 +217,7 @@
     <string name="new_books_grid">Grid</string>
     <string name="new_books_list">List</string>
     <string name="new_books_loading_more">Loading books…</string>
+    <string name="new_books_fresh_arrivals">Fresh arrivals</string>
 
     <!-- Author -->
     <string name="author_books_title">Author\'s books</string>
@@ -234,6 +246,13 @@
 
     <!-- Update -->
     <string name="update_available">Update available</string>
+    <string name="settings_downloading">Downloading…</string>
+    <string name="update_downloaded_install_hint">Press Install to update the app</string>
+
+    <!-- Splash -->
+    <string name="splash_skip">Skip</string>
+    <string name="splash_please_wait">Please wait</string>
+    <string name="splash_continue">Continue</string>
 
     <!-- Shelf/Collection item -->
     <string name="books_plural_one">book</string>

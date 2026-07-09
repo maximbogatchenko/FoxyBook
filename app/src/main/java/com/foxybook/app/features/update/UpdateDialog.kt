@@ -42,8 +42,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
-import com.foxybook.app.core.updater.UpdateChecker
 import com.foxybook.app.R
+import com.foxybook.app.core.updater.UpdateChecker
 import com.foxybook.app.core.updater.UpdateInfo
 import kotlinx.coroutines.launch
 
@@ -62,7 +62,6 @@ fun UpdateDialog(updateChecker: UpdateChecker) {
     var state by remember { mutableStateOf<UpdateDialogState>(UpdateDialogState.Idle) }
     var downloadProgress by remember { mutableStateOf(0f) }
     val scope = rememberCoroutineScope()
-    val downloadErrorStr = stringResource(R.string.settings_download_error)
 
     LaunchedEffect(Unit) {
         state = UpdateDialogState.Checking
@@ -86,10 +85,10 @@ fun UpdateDialog(updateChecker: UpdateChecker) {
                 icon = {
                     Icon(Icons.Default.SystemUpdate, contentDescription = null)
                 },
-                title = { Text(stringResource(R.string.update_available), fontWeight = FontWeight.Bold) },
+                title = { Text("Доступно обновление", fontWeight = FontWeight.Bold) },
                 text = {
                     Column {
-                        Text(stringResource(R.string.settings_update_available, currentState.info.version))
+                        Text("Версия ${currentState.info.version} доступна для скачивания.")
                         Spacer(Modifier.height(4.dp))
                         Text(
                             formatSize(currentState.info.size),
@@ -111,10 +110,10 @@ fun UpdateDialog(updateChecker: UpdateChecker) {
                                 }
                                 state = UpdateDialogState.Downloaded(uri)
                             } catch (e: Exception) {
-                                state = UpdateDialogState.Error(e.message ?: downloadErrorStr)
+                                state = UpdateDialogState.Error(e.message ?: "Ошибка скачивания")
                             }
                         }
-                    }) { Text(stringResource(R.string.book_details_download)) }
+                    }) { Text("Скачать") }
                 },
                 dismissButton = {
                     TextButton(onClick = { state = UpdateDialogState.Idle }) { Text(stringResource(R.string.settings_update_later)) }
@@ -128,7 +127,7 @@ fun UpdateDialog(updateChecker: UpdateChecker) {
                 icon = {
                     CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
                 },
-                title = { Text(stringResource(R.string.book_details_downloading), fontWeight = FontWeight.Bold) },
+                title = { Text("Скачивание...", fontWeight = FontWeight.Bold) },
                 text = {
                     Column {
                         LinearProgressIndicator(
@@ -156,8 +155,8 @@ fun UpdateDialog(updateChecker: UpdateChecker) {
                         tint = MaterialTheme.colorScheme.primary
                     )
                 },
-                title = { Text("Обновление загружено", fontWeight = FontWeight.Bold) },
-                text = { Text("Нажмите «Установить», чтобы обновить приложение.") },
+                title = { Text(stringResource(R.string.settings_update_downloaded), fontWeight = FontWeight.Bold) },
+                text = { Text(stringResource(R.string.update_downloaded_install_hint)) },
                 confirmButton = {
                     Button(onClick = {
                         val intent = Intent(Intent.ACTION_VIEW).apply {
@@ -184,10 +183,10 @@ fun UpdateDialog(updateChecker: UpdateChecker) {
                         tint = MaterialTheme.colorScheme.error
                     )
                 },
-                title = { Text(stringResource(R.string.book_details_error), fontWeight = FontWeight.Bold) },
+                title = { Text("Ошибка", fontWeight = FontWeight.Bold) },
                 text = { Text(currentState.message) },
                 confirmButton = {
-                    Button(onClick = { state = UpdateDialogState.Idle }) { Text(stringResource(R.string.close)) }
+                    Button(onClick = { state = UpdateDialogState.Idle }) { Text("Закрыть") }
                 },
                 dismissButton = {}
             )
@@ -217,7 +216,7 @@ private fun ChangeLogSpoiler(releaseNotes: String) {
             )
             Spacer(Modifier.width(4.dp))
             Text(
-                stringResource(R.string.settings_whats_new),
+                "Что нового",
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary
@@ -230,7 +229,7 @@ private fun ChangeLogSpoiler(releaseNotes: String) {
             Spacer(Modifier.height(6.dp))
             if (releaseNotes.isBlank()) {
                 Text(
-                    stringResource(R.string.settings_no_changelog),
+                    "Автор не указал список изменений",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 8.dp)

@@ -27,9 +27,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 enum class LibraryViewMode(val label: String) {
-    LIST("Список"),
-    COMPACT("Компактный"),
-    GRID("Сетка")
+    LIST("list"),
+    COMPACT("compact"),
+    GRID("grid")
 }
 
 data class LibraryState(

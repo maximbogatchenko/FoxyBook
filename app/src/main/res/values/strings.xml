@@ -109,6 +109,11 @@
     <string name="library_empty_history">Нет книг в истории</string>
     <string name="library_continue_reading">Продолжить чтение</string>
     <string name="library_books_count">%d книг</string>
+    <string name="library_selected_count">Выбрано: %d</string>
+    <string name="library_select_all">Выбрать всё</string>
+    <string name="library_view_list">Список</string>
+    <string name="library_view_compact">Компактный</string>
+    <string name="library_view_grid">Сетка</string>
 
     <!-- Reader -->
     <string name="reader_title">Чтение</string>
@@ -128,6 +133,7 @@
     <string name="reader_no_bookmarks">Нет закладок</string>
     <string name="reader_bookmark_position">Позиция: %1$d глава, %2$d символ</string>
     <string name="reader_content_description_book">Книга</string>
+    <string name="reader_chapters">Главы</string>
 
     <!-- Reader Settings Panel -->
     <string name="reader_settings_title">Настройки чтения</string>
@@ -196,6 +202,11 @@
     <string name="book_details_folder_error_text">Выбранная папка для загрузок больше не доступна. Пожалуйста, выберите папку заново в настройках.</string>
     <string name="book_details_go_to_settings">В настройки</string>
     <string name="book_details_external_open_error">Нет приложения для открытия этого формата</string>
+    <string name="format_description_epub">Поддержка закладок • Стилизация</string>
+    <string name="format_description_fb2">Русский формат • Книги Flibusta</string>
+    <string name="format_description_mobi">Kindle • Amazon совместимый</string>
+    <string name="format_description_txt">Простой текст • Макс. совместимость</string>
+    <string name="format_description_pdf">Документы • Внешний просмотр</string>
 
     <!-- New Books -->
     <string name="new_books_title">Новинки</string>
@@ -206,6 +217,7 @@
     <string name="new_books_grid">Сетка</string>
     <string name="new_books_list">Список</string>
     <string name="new_books_loading_more">Загрузка книг…</string>
+    <string name="new_books_fresh_arrivals">Свежие поступления</string>
 
     <!-- Author -->
     <string name="author_books_title">Книги автора</string>
@@ -234,6 +246,13 @@
 
     <!-- Update -->
     <string name="update_available">Доступно обновление</string>
+    <string name="settings_downloading">Скачивание…</string>
+    <string name="update_downloaded_install_hint">Нажмите «Установить», чтобы обновить приложение</string>
+
+    <!-- Splash -->
+    <string name="splash_skip">Пропустить</string>
+    <string name="splash_please_wait">Пожалуйста, подождите</string>
+    <string name="splash_continue">Продолжить</string>
 
     <!-- Shelf/Collection item -->
     <string name="books_plural_one">книга</string>

@@ -1,14 +1,5 @@
 package com.foxybook.app.features.search
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,22 +52,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.foxybook.app.R
 import com.foxybook.app.core.models.Author
 import com.foxybook.app.core.models.Book
 import com.foxybook.app.core.models.BookSource
-import com.foxybook.app.core.models.PendingSearchQuery
 import com.foxybook.app.core.models.SearchTab
 import com.foxybook.app.core.models.Series
 import com.foxybook.app.ui.components.CoverWithAuthor
+import com.foxybook.app.ui.components.PulsingBookLoader
+import androidx.compose.ui.res.stringResource
+import com.foxybook.app.R
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
@@ -89,15 +79,6 @@ fun SearchScreen(
     onAuthorClick: (String, String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-
-    // Подхватываем поисковый запрос, переданный с другого экрана (например, из жанра)
-    LaunchedEffect(Unit) {
-        val pending = PendingSearchQuery.query
-        if (pending != null) {
-            PendingSearchQuery.query = null
-            viewModel.onEvent(SearchEvent.QueryChanged(pending))
-        }
-    }
 
     Column(
         modifier = Modifier.fillMaxSize().statusBarsPadding()
@@ -112,7 +93,7 @@ fun SearchScreen(
             trailingIcon = {
                 if (state.query.isNotEmpty()) {
                     IconButton(onClick = { viewModel.onEvent(SearchEvent.QueryChanged("")) }) {
-                        Icon(Icons.Default.Clear, stringResource(R.string.cd_clear))
+                        Icon(Icons.Default.Clear, "Очистить")
                     }
                 }
             },
@@ -158,9 +139,9 @@ fun SearchScreen(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 listOf(
-                    BookSource.FLIBUSTA to stringResource(R.string.flibusta),
-                    BookSource.COOLLIB to stringResource(R.string.coollib),
-                    BookSource.FANTASY_WORLDS to stringResource(R.string.fantasy_worlds)
+                    BookSource.FLIBUSTA to "Flibusta",
+                    BookSource.COOLLIB to "CoolLib",
+                    BookSource.FANTASY_WORLDS to "Fantasy"
                 ).forEach { (source, label) ->
                     val selected = state.bookSource == source
                     FilterChip(
@@ -231,10 +212,10 @@ private fun IdleContent() {
         Icon(Icons.Default.MenuBook, null, modifier = Modifier.size(88.dp),
             tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
         Spacer(Modifier.height(20.dp))
-        Text(stringResource(R.string.search_idle_title), style = MaterialTheme.typography.headlineMedium,
+        Text("FoxyBook", style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.height(8.dp))
-        Text(stringResource(R.string.search_idle_subtitle), style = MaterialTheme.typography.bodyLarge,
+        Text("Введите запрос для поиска", style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
@@ -245,7 +226,7 @@ private fun LoadingContent() {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.height(16.dp))
-            Text(stringResource(R.string.search_ing), style = MaterialTheme.typography.bodyMedium,
+            Text("Поиск…", style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
@@ -260,10 +241,10 @@ private fun EmptyContent() {
         Icon(Icons.Default.Search, null, modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
         Spacer(Modifier.height(16.dp))
-        Text(stringResource(R.string.search_no_results), style = MaterialTheme.typography.titleMedium,
+        Text("Ничего не найдено", style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(4.dp))
-        Text(stringResource(R.string.search_try_another), style = MaterialTheme.typography.bodyMedium,
+        Text("Попробуйте другой запрос", style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f))
     }
 }
@@ -277,13 +258,13 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
         Icon(Icons.Default.Search, null, modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
         Spacer(Modifier.height(16.dp))
-        Text(stringResource(R.string.search_error), style = MaterialTheme.typography.titleMedium,
+        Text("Ошибка поиска", style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.error)
         Spacer(Modifier.height(4.dp))
         Text(message, style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(16.dp))
-        OutlinedButton(onClick = onRetry) { Text(stringResource(R.string.retry)) }
+        OutlinedButton(onClick = onRetry) { Text("Повторить") }
     }
 }
 
@@ -348,7 +329,7 @@ private fun SearchContent(
         )
     }
 
-    // Infinite scroll for all single-type tabs (BOOKS, AUTHORS, SERIES, GENRES)
+    // Infinite scroll for BOOKS/AUTHORS/SERIES tabs
     if (state.selectedTab != SearchTab.ALL) {
         val nearEnd by remember {
             derivedStateOf {
@@ -383,7 +364,7 @@ private fun AllTab(
         // Books section
         if (state.books.isNotEmpty()) {
             item {
-                SectionHeader(stringResource(R.string.search_section_books), onViewAll = { onTabClick(SearchTab.BOOKS) })
+                SectionHeader("Книги", onViewAll = { onTabClick(SearchTab.BOOKS) })
             }
             val showBooks = state.books.take(5)
             showBooks.forEach { book ->
@@ -402,7 +383,7 @@ private fun AllTab(
         if (state.authors.isNotEmpty()) {
             item { HorizontalDivider(Modifier.padding(vertical = 4.dp)) }
             item {
-                SectionHeader(stringResource(R.string.search_section_authors), onViewAll = { onTabClick(SearchTab.AUTHORS) })
+                SectionHeader("Авторы", onViewAll = { onTabClick(SearchTab.AUTHORS) })
             }
             val showAuthors = state.authors.take(5)
             showAuthors.forEach { author ->
@@ -412,20 +393,20 @@ private fun AllTab(
             }
             if (state.authors.size > 5) {
                 item {
-                    TextButton(stringResource(R.string.search_all_authors)) { onTabClick(SearchTab.AUTHORS) }
+                    TextButton("Все авторы →") { onTabClick(SearchTab.AUTHORS) }
                 }
             }
         } else if (state.isSearchingAuthors) {
             item { HorizontalDivider(Modifier.padding(vertical = 4.dp)) }
             item {
-                SectionHeader(stringResource(R.string.search_section_authors), onViewAll = {})
+                SectionHeader("Авторы", onViewAll = {})
             }
             item {
                 Box(Modifier.fillMaxWidth().padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                         CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                         Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.search_authors), style = MaterialTheme.typography.bodySmall,
+                        Text("Поиск авторов...", style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
@@ -436,7 +417,7 @@ private fun AllTab(
         if (state.series.isNotEmpty()) {
             item { HorizontalDivider(Modifier.padding(vertical = 4.dp)) }
             item {
-                SectionHeader(stringResource(R.string.search_section_series), onViewAll = { onTabClick(SearchTab.SERIES) })
+                SectionHeader("Серии", onViewAll = { onTabClick(SearchTab.SERIES) })
             }
             state.series.take(5).forEach { seriesItem ->
                 item(key = "as_${seriesItem.seriesId}") {
@@ -445,53 +426,20 @@ private fun AllTab(
             }
             if (state.series.size > 5) {
                 item {
-                    TextButton(stringResource(R.string.search_all_series)) { onTabClick(SearchTab.SERIES) }
+                    TextButton("Все серии →") { onTabClick(SearchTab.SERIES) }
                 }
             }
         } else if (state.isSearchingSeries) {
             item { HorizontalDivider(Modifier.padding(vertical = 4.dp)) }
             item {
-                SectionHeader(stringResource(R.string.search_section_series), onViewAll = {})
+                SectionHeader("Серии", onViewAll = {})
             }
             item {
                 Box(Modifier.fillMaxWidth().padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                         CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                         Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.search_series), style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-            }
-        }
-
-        // Genres section
-        if (state.genreBooks.isNotEmpty()) {
-            item { HorizontalDivider(Modifier.padding(vertical = 4.dp)) }
-            item {
-                SectionHeader(stringResource(R.string.search_section_genres), onViewAll = { onTabClick(SearchTab.GENRES) })
-            }
-            state.genreBooks.take(5).forEach { book ->
-                item(key = "ag_${book.id}") {
-                    BookCard(book = book, onClick = { onBookClick(book) })
-                }
-            }
-            if (state.genreBooks.size > 5) {
-                item {
-                    TextButton(stringResource(R.string.search_all_genres)) { onTabClick(SearchTab.GENRES) }
-                }
-            }
-        } else if (state.isSearchingGenres) {
-            item { HorizontalDivider(Modifier.padding(vertical = 4.dp)) }
-            item {
-                SectionHeader(stringResource(R.string.search_section_genres), onViewAll = {})
-            }
-            item {
-                Box(Modifier.fillMaxWidth().padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.search_genres), style = MaterialTheme.typography.bodySmall,
+                        Text("Поиск серий...", style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
@@ -532,19 +480,16 @@ private fun BooksTab(
     onBookClick: (Book) -> Unit,
     onLoadMore: () -> Unit,
     canLoadMore: () -> Boolean,
-    emptyMessage: String = "",
-    loadingMessage: String = ""
+    emptyMessage: String = stringResource(R.string.search_no_books),
+    loadingMessage: String = stringResource(R.string.search_books)
 ) {
     if (isLoading && books.isEmpty()) {
         Box(Modifier.fillMaxSize().padding(vertical = 48.dp), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.height(16.dp))
-                Text(
-                    if (loadingMessage.isNotEmpty()) loadingMessage else stringResource(R.string.search_books),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Text(stringResource(R.string.search_books), style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     } else if (books.isEmpty()) {
@@ -555,11 +500,8 @@ private fun BooksTab(
             Icon(Icons.Default.Search, null, modifier = Modifier.size(64.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
             Spacer(Modifier.height(16.dp))
-            Text(
-                if (emptyMessage.isNotEmpty()) emptyMessage else stringResource(R.string.search_no_books),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Text("Книги не найдены", style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     } else {
         LazyColumn(state = listState, contentPadding = PaddingValues(16.dp),
@@ -592,7 +534,7 @@ private fun AuthorsTab(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.height(16.dp))
-                Text(stringResource(R.string.search_authors), style = MaterialTheme.typography.bodyMedium,
+                Text("Поиск авторов…", style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
@@ -604,7 +546,7 @@ private fun AuthorsTab(
             Icon(Icons.Default.PersonSearch, null, modifier = Modifier.size(64.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
             Spacer(Modifier.height(16.dp))
-            Text(stringResource(R.string.search_no_authors), style = MaterialTheme.typography.titleMedium,
+            Text("Авторы не найдены", style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     } else {
@@ -638,7 +580,7 @@ private fun SeriesTab(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.height(16.dp))
-                Text(stringResource(R.string.search_series), style = MaterialTheme.typography.bodyMedium,
+                Text("Поиск серий…", style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
@@ -650,7 +592,7 @@ private fun SeriesTab(
             Icon(Icons.Default.AutoStories, null, modifier = Modifier.size(64.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
             Spacer(Modifier.height(16.dp))
-            Text(stringResource(R.string.search_no_series), style = MaterialTheme.typography.titleMedium,
+            Text("Серии не найдены", style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     } else {
@@ -719,7 +661,7 @@ private fun AuthorCard(author: Author, onClick: () -> Unit) {
                     maxLines = 2, overflow = TextOverflow.Ellipsis)
                 if (author.bookCount > 0) {
                     Spacer(Modifier.height(4.dp))
-                    Text("${author.bookCount} ${plural(author.bookCount)}",
+                    Text("${author.bookCount} " + stringResource(R.string.books_plural_many),
                         style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium)
                 }
@@ -753,7 +695,7 @@ private fun SeriesCard(series: Series, onClick: () -> Unit) {
                     maxLines = 2, overflow = TextOverflow.Ellipsis)
                 if (series.bookCount > 0) {
                     Spacer(Modifier.height(4.dp))
-                    Text("${series.bookCount} ${plural(series.bookCount)} · Серия",
+                    Text("${series.bookCount} " + stringResource(R.string.books_plural_many) + " · " + stringResource(R.string.series_details_books_in_series),
                         style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium)
                 }
@@ -768,55 +710,7 @@ private fun SeriesCard(series: Series, onClick: () -> Unit) {
 
 @Composable
 private fun LoadingFooter(canLoadMore: () -> Boolean) {
-    AnimatedVisibility(
-        visible = canLoadMore(),
-        enter = fadeIn(animationSpec = tween(400)),
-        exit = fadeOut(animationSpec = tween(300))
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                val infiniteTransition = rememberInfiniteTransition(label = "loading_more")
-                val rotation by infiniteTransition.animateFloat(
-                    initialValue = 0f,
-                    targetValue = 360f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(1200, easing = LinearEasing),
-                        repeatMode = RepeatMode.Restart
-                    ),
-                    label = "rotation"
-                )
-
-                Box(modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(48.dp).alpha(0.3f),
-                        strokeWidth = 3.dp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(36.dp),
-                        strokeWidth = 3.dp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-
-                Spacer(Modifier.height(12.dp))
-                Text(stringResource(R.string.loading), style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        }
-    }
-}
-
-private fun plural(count: Int): String {
-    val m10 = count % 10
-    val m100 = count % 100
-    return when {
-        m100 in 11..19 -> "книг"
-        m10 == 1 -> "книга"
-        m10 in 2..4 -> "книги"
-        else -> "книг"
+    if (canLoadMore()) {
+        PulsingBookLoader()
     }
 }

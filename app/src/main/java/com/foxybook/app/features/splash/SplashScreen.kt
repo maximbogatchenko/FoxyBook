@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -73,6 +74,7 @@ fun SplashScreen(
     var downloadProgress by remember { mutableStateOf(0f) }
     var changelogExpanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val downloadErrorStr = stringResource(R.string.settings_download_error)
 
     // ─── Анимации ───
 
@@ -164,7 +166,7 @@ fun SplashScreen(
                                 }
                                 updateState = SplashUpdateState.Downloaded(uri)
                             } catch (e: Exception) {
-                                updateState = SplashUpdateState.Error(e.message ?: "Ошибка скачивания")
+                                updateState = SplashUpdateState.Error(e.message ?: downloadErrorStr)
                             }
                         }
                     },
@@ -250,7 +252,7 @@ private fun LoadingContent(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = if (isChecking) "Проверка обновлений..." else "Загрузка...",
+            text = if (isChecking) stringResource(R.string.settings_checking) else stringResource(R.string.loading),
             fontSize = 16.sp,
             color = Orange.copy(alpha = 0.7f)
         )
@@ -344,7 +346,7 @@ private fun UpdateAvailableContent(
 
         // ── Заголовок ──
         Text(
-            text = "Доступно обновление",
+            text = stringResource(R.string.update_available),
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -405,7 +407,7 @@ private fun UpdateAvailableContent(
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
             ) {
                 Text(
-                    "Скачать обновление",
+                    stringResource(R.string.settings_download_update),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -422,7 +424,7 @@ private fun UpdateAvailableContent(
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White.copy(alpha = 0.6f))
             ) {
-                Text("Пропустить", fontSize = 15.sp)
+                Text(stringResource(R.string.splash_skip), fontSize = 15.sp)
             }
         }
     }
@@ -473,7 +475,7 @@ private fun DownloadingContent(progress: Float) {
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "Скачивание...",
+            text = stringResource(R.string.settings_downloading),
             fontSize = 22.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.White
@@ -482,7 +484,7 @@ private fun DownloadingContent(progress: Float) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Пожалуйста, подождите",
+            text = stringResource(R.string.splash_please_wait),
             fontSize = 14.sp,
             color = Color.White.copy(alpha = 0.5f)
         )
@@ -539,7 +541,7 @@ private fun DownloadedContent(
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "Обновление загружено!",
+            text = stringResource(R.string.settings_update_downloaded),
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -549,7 +551,7 @@ private fun DownloadedContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Нажмите «Установить», чтобы обновить приложение",
+            text = stringResource(R.string.update_downloaded_install_hint),
             fontSize = 14.sp,
             color = Color.White.copy(alpha = 0.6f),
             textAlign = TextAlign.Center
@@ -570,7 +572,7 @@ private fun DownloadedContent(
             ),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
         ) {
-            Text("Установить", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.settings_update_install), fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -581,7 +583,7 @@ private fun DownloadedContent(
             shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White.copy(alpha = 0.6f))
         ) {
-            Text("Позже", fontSize = 15.sp)
+            Text(stringResource(R.string.settings_update_later), fontSize = 15.sp)
         }
     }
 }
@@ -617,7 +619,7 @@ private fun ErrorContent(message: String, onDismiss: () -> Unit) {
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "Ошибка",
+            text = stringResource(R.string.book_details_error),
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White
@@ -644,7 +646,7 @@ private fun ErrorContent(message: String, onDismiss: () -> Unit) {
             ),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
         ) {
-            Text("Продолжить", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.splash_continue), fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -721,7 +723,7 @@ private fun ChangeLogSection(
             )
             Spacer(Modifier.width(8.dp))
             Text(
-                "Что нового",
+                stringResource(R.string.settings_whats_new),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Orange.copy(alpha = 0.9f)
