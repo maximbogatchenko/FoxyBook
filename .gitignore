@@ -16,3 +16,5 @@ captures/
 *.keystore
 .DS_Store.claude/worktrees/
 .claude/worktrees/
+.DS_Store
+.DS_Store
