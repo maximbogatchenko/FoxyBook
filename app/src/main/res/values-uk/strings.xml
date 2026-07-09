@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">FoxyBook</string>
+    <string name="loading">Завантаження…</string>
+    <string name="error_loading">Помилка завантаження</string>
+    <string name="retry">Повторити</string>
+    <string name="cancel">Скасувати</string>
+    <string name="back">Назад</string>
+    <string name="delete">Видалити</string>
+    <string name="confirm">Підтвердити</string>
+    <string name="close">Закрити</string>
+
+    <!-- Navigation -->
+    <string name="nav_new_books">Новинки</string>
+    <string name="nav_search">Пошук</string>
+    <string name="nav_library">Бібліотека</string>
+    <string name="nav_settings">Налаштування</string>
+
+    <!-- Search -->
+    <string name="search_hint">Пошук книг, авторів, серій…</string>
+    <string name="search_clear">Очистити</string>
+    <string name="search_tab_all">Все</string>
+    <string name="search_tab_books">Книги</string>
+    <string name="search_tab_authors">Автори</string>
+    <string name="search_tab_series">Серії</string>
+    <string name="search_tab_genres">Жанри</string>
+    <string name="search_books">Пошук книг…</string>
+    <string name="search_authors">Пошук авторів…</string>
+    <string name="search_series">Пошук серій…</string>
+    <string name="search_genres">Пошук за жанрами…</string>
+    <string name="search_no_results">Нічого не знайдено</string>
+    <string name="search_no_books">Книги не знайдено</string>
+    <string name="search_no_authors">Авторів не знайдено</string>
+    <string name="search_no_series">Серії не знайдено</string>
+    <string name="search_no_genres">Книги за жанром не знайдено</string>
+    <string name="search_try_another">Спробуйте інший запит</string>
+    <string name="search_error">Помилка пошуку</string>
+    <string name="search_idle_title">FoxyBook</string>
+    <string name="search_idle_subtitle">Введіть запит для пошуку</string>
+    <string name="search_section_books">Книги</string>
+    <string name="search_section_authors">Автори</string>
+    <string name="search_section_series">Серії</string>
+    <string name="search_section_genres">Схожі жанри</string>
+    <string name="search_view_all">Все →</string>
+    <string name="search_all_books">Всі книги →</string>
+    <string name="search_all_authors">Всі автори →</string>
+    <string name="search_all_series">Всі серії →</string>
+    <string name="search_all_genres">Всі жанри →</string>
+    <string name="flibusta">Flibusta</string>
+    <string name="coollib">CoolLib</string>
+    <string name="fantasy_worlds">Fantasy</string>
+    <string name="search_source_label">Застосовується до Новинок та Пошуку</string>
+    <string name="search_ing">Пошук…</string>
+
+    <!-- Source selection -->
+    <string name="source_book_source">Джерело книг</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Налаштування</string>
+    <string name="settings_appearance">Оформлення</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_system">Системна</string>
+    <string name="settings_theme_light">Світла</string>
+    <string name="settings_theme_dark">Темна</string>
+    <string name="settings_theme_amoled">AMOLED</string>
+    <string name="settings_default_format">Формат за замовчуванням</string>
+    <string name="settings_language">Мова</string>
+    <string name="settings_language_ru">Російська</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_restart_title">Зміна мови</string>
+    <string name="settings_language_restart_message">Для зміни мови необхідно перезапустити застосунок. Перезапустити зараз?</string>
+    <string name="settings_language_restart_confirm">Перезапустити</string>
+    <string name="settings_download_folder">Папка для завантаження</string>
+    <string name="settings_download_folder_choose">Вибрати папку</string>
+    <string name="settings_download_folder_reset">Скинути</string>
+    <string name="settings_download_folder_info">Буде створена підпапка FoxyBook</string>
+    <string name="settings_cache">Кеш</string>
+    <string name="settings_cache_desc">Обкладинки, зображення книг та імпортовані файли</string>
+    <string name="settings_cache_clear">Очистити кеш</string>
+    <string name="settings_updates">Оновлення</string>
+    <string name="settings_current_version">Поточна версія: %s</string>
+    <string name="settings_check_updates">Перевірити оновлення</string>
+    <string name="settings_checking">Перевірка…</string>
+    <string name="settings_update_available">Доступна версія %s</string>
+    <string name="settings_download_update">Завантажити оновлення</string>
+    <string name="settings_update_downloaded">Завантажено</string>
+    <string name="settings_update_install">Встановити</string>
+    <string name="settings_update_later">Відкласти</string>
+    <string name="settings_up_to_date">У вас актуальна версія</string>
+    <string name="settings_update_dialog_title">Доступне оновлення</string>
+    <string name="settings_about">Про застосунок</string>
+    <string name="settings_author">Created by ßoлк</string>
+    <string name="settings_author_contact">Написати автору</string>
+    <string name="settings_author_support">Підтримати автора</string>
+    <string name="settings_whats_new">Що нового</string>
+    <string name="settings_no_changelog">Автор не вказав список змін</string>
+    <string name="settings_unknown_error">Невідома помилка</string>
+    <string name="settings_download_error">Помилка завантаження</string>
+
+    <!-- Library -->
+    <string name="library_title">Бібліотека</string>
+    <string name="library_tab_all">Всі книги</string>
+    <string name="library_tab_favorites">Обране</string>
+    <string name="library_tab_history">Історія</string>
+    <string name="library_tab_collections">Колекції</string>
+    <string name="library_empty">У бібліотеці поки немає книг</string>
+    <string name="library_empty_favorites">Немає обраних книг</string>
+    <string name="library_empty_history">Немає книг в історії</string>
+    <string name="library_continue_reading">Продовжити читання</string>
+    <string name="library_books_count">%d книг</string>
+    <string name="library_selected_count">Вибрано: %d</string>
+    <string name="library_select_all">Вибрати все</string>
+    <string name="library_view_list">Список</string>
+    <string name="library_view_compact">Компактний</string>
+    <string name="library_view_grid">Сітка</string>
+    <string name="library_import_book">Імпорт книги…</string>
+    <string name="library_empty_title">Бібліотека порожня</string>
+    <string name="library_empty_subtitle">Завантажте книги для читання</string>
+    <string name="library_empty_favorites_title">Немає обраних</string>
+    <string name="library_empty_favorites_subtitle">Натисніть ♡ щоб додати</string>
+    <string name="library_empty_history_title">Історія порожня</string>
+    <string name="library_empty_history_subtitle">Почніть читати</string>
+    <string name="library_delete_title">Видалити книгу?</string>
+    <string name="library_delete_body_library">Книга буде видалена лише з бібліотеки.</string>
+    <string name="library_delete_body_device">Книга буде видалена з бібліотеки та з пристрою.</string>
+    <string name="library_delete_from_device">Видалити файли з пристрою</string>
+    <string name="library_all_folders">Всі папки</string>
+    <string name="library_empty_collection_title">Колекція порожня</string>
+    <string name="library_empty_collection_subtitle">Додайте книги через меню</string>
+    <string name="library_no_collections_title">Немає колекцій</string>
+    <string name="library_no_collections_subtitle">Створіть колекцію, щоб упорядкувати книги</string>
+    <string name="library_books_count_format">Книг: %d</string>
+    <string name="library_select">Вибрати</string>
+    <string name="library_format">Формат: %s</string>
+    <string name="library_added_date">Додана: %s</string>
+    <string name="library_progress">Прогрес</string>
+    <string name="library_last_read">Останнє читання: %s</string>
+    <string name="library_delete_batch_title">Видалити %d книг?</string>
+    <string name="library_delete_batch_body">Вибрані книги будуть видалені з бібліотеки.</string>
+    <string name="library_delete_batch_from_device">Видалити файли з пристрою</string>
+
+    <!-- Reader -->
+    <string name="reader_title">Читання</string>
+    <string name="reader_bookmark_added">Закладка додана</string>
+    <string name="reader_bookmark_removed">Закладка видалена</string>
+    <string name="reader_bookmark">Закладка</string>
+    <string name="reader_book">Книга</string>
+    <string name="reader_settings">Налаштування</string>
+    <string name="reader_error">Помилка</string>
+    <string name="reader_open_error">Помилка при відкритті книги</string>
+    <string name="reader_chapter">Розділ %d</string>
+    <string name="reader_chapter_page">Стор. %1$d/%2$d</string>
+    <string name="reader_end">Кінець книги</string>
+    <string name="reader_previous">Попер.</string>
+    <string name="reader_next">Наст.</string>
+    <string name="reader_bookmarks">Закладки</string>
+    <string name="reader_no_bookmarks">Немає закладок</string>
+    <string name="reader_bookmark_position">Позиція: %1$d розділ, %2$d символ</string>
+    <string name="reader_content_description_book">Книга</string>
+    <string name="reader_chapters">Розділи</string>
+
+    <!-- Reader Settings Panel -->
+    <string name="reader_settings_title">Налаштування читання</string>
+    <string name="reader_settings_theme_book">Тема книги</string>
+    <string name="reader_settings_theme_light">Світла</string>
+    <string name="reader_settings_theme_dark">Темна</string>
+    <string name="reader_settings_theme_system">Системна</string>
+    <string name="reader_settings_tts">Озвучення книги</string>
+    <string name="reader_settings_tts_pause">Пауза</string>
+    <string name="reader_settings_tts_play">Продовжити</string>
+    <string name="reader_settings_tts_stop">Зупинити</string>
+    <string name="reader_settings_brightness">Яскравість</string>
+    <string name="reader_settings_brightness_reset">Скидання</string>
+    <string name="reader_settings_font">Шрифт</string>
+    <string name="reader_settings_font_reset">Скидання</string>
+    <string name="reader_settings_line_height">Міжрядковий</string>
+    <string name="reader_settings_line_height_reset">Скидання</string>
+    <string name="reader_settings_margins">Поля</string>
+    <string name="reader_settings_margins_reset">Скидання</string>
+    <string name="reader_settings_mode">Режим</string>
+    <string name="reader_settings_mode_scroll">Прокрутка</string>
+    <string name="reader_settings_mode_pages">Сторінки</string>
+    <string name="reader_settings_progress">Відображення прогресу</string>
+    <string name="reader_settings_progress_percent">Відсотки</string>
+    <string name="reader_settings_progress_counter">Лічильник</string>
+
+    <!-- Reader TTS -->
+    <string name="reader_tts_title">Озвучення книги</string>
+    <string name="reader_tts_engine">Рушій</string>
+    <string name="reader_tts_engine_select">Вибір рушія TTS</string>
+    <string name="reader_tts_play_current">Читати з поточного місця</string>
+    <string name="reader_tts_select_position">Вибрати місце початку читання</string>
+    <string name="reader_tts_select_paragraph">Виберіть абзац для початку озвучення</string>
+    <string name="reader_tts_default_engine">системний</string>
+    <string name="reader_tts_language">Мова</string>
+    <string name="reader_tts_voice">Голос</string>
+    <string name="reader_tts_speed">Швидкість: %.1fx</string>
+    <string name="reader_tts_pitch">Висота: %.1f</string>
+    <string name="reader_tts_sleep_timer">Таймер сну</string>
+    <string name="reader_tts_sleep_active">Таймер активний</string>
+    <string name="reader_tts_sleep_cancel">Скасувати</string>
+    <string name="reader_tts_sleep_auto_stop">Читання зупиниться автоматично</string>
+    <string name="reader_tts_sleep_choose">Виберіть час, через який читання зупиниться</string>
+    <string name="reader_tts_book">Книга</string>
+    <string name="reader_tts_chapter">Розділ %d</string>
+    <string name="reader_tts_speed_format">Швидкість: %.1fx</string>
+    <string name="reader_tts_pitch_format">Висота: %.1f</string>
+
+    <!-- TTS Service -->
+    <string name="tts_channel_name">Озвучення</string>
+
+    <!-- Reader UI (missing) -->
+    <string name="reader_chapters_tab">Розділи</string>
+    <string name="reader_continue_reading">Продовжити читання</string>
+    <string name="reader_tts_minutes">хв</string>
+
+    <!-- Cover Viewer -->
+    <string name="cover_viewer_close">Закрити</string>
+    <string name="cover_viewer_cover">Обкладинка</string>
+
+    <!-- Book Details -->
+    <string name="book_details_title">Книга</string>
+    <string name="book_details_loading">Завантажуємо книгу</string>
+    <string name="book_details_loading_info">Отримуємо інформацію про книгу…</string>
+    <string name="book_details_loading_error">Помилка завантаження</string>
+    <string name="book_details_description">Опис</string>
+    <string name="book_details_genres">Жанри</string>
+    <string name="book_details_download">Завантажити</string>
+    <string name="book_details_download_btn">Завантажити книгу</string>
+    <string name="book_details_read">Читати книгу</string>
+    <string name="book_details_read_btn">Читати</string>
+    <string name="book_details_bookmarks">Закладки</string>
+    <string name="book_details_format">Формат</string>
+    <string name="book_details_ready">Готово до завантаження</string>
+    <string name="book_details_downloading">Завантаження…</string>
+    <string name="book_details_downloading_progress">Завантаження… %d%%</string>
+    <string name="book_details_downloaded">Завантажено</string>
+    <string name="book_details_error">Помилка</string>
+    <string name="book_details_folder_error_title">Доступ до папки втрачено</string>
+    <string name="book_details_folder_error_text">Вибрана папка для завантажень більше не доступна. Будь ласка, виберіть папку заново в налаштуваннях.</string>
+    <string name="book_details_go_to_settings">В налаштування</string>
+    <string name="book_details_external_open_error">Немає застосунку для відкриття цього формату</string>
+    <string name="book_details_downloaded_label">Завантажено</string>
+    <string name="format_description_epub">Підтримка закладок • Стилізація</string>
+    <string name="format_description_fb2">Російський формат • Книги Flibusta</string>
+    <string name="format_description_mobi">Kindle • Amazon сумісний</string>
+    <string name="format_description_txt">Простий текст • Макс. сумісність</string>
+    <string name="format_description_pdf">Документи • Зовнішній перегляд</string>
+
+    <!-- New Books -->
+    <string name="new_books_title">Новинки</string>
+    <string name="new_books_loading">Завантажуємо новинки…</string>
+    <string name="new_books_error">Помилка завантаження новинок</string>
+    <string name="new_books_empty">Немає нових книг</string>
+    <string name="new_books_all_read">Ви прочитали всі новинки</string>
+    <string name="new_books_grid">Сітка</string>
+    <string name="new_books_list">Список</string>
+    <string name="new_books_loading_more">Завантаження книг…</string>
+    <string name="new_books_loading_title">Завантажуємо новинки</string>
+    <string name="new_books_fresh_arrivals">Свіжі надходження</string>
+
+    <!-- Author -->
+    <string name="author_books_title">Книги автора</string>
+    <string name="author_books_load_error">Не вдалося завантажити книги автора</string>
+    <string name="author_books_error">Помилка завантаження</string>
+
+    <!-- Series -->
+    <string name="series_details_title">Серія</string>
+    <string name="series_details_load_error">Не вдалося завантажити книги серії</string>
+    <string name="series_details_error">Помилка завантаження</string>
+    <string name="series_details_books_in_series">Серія</string>
+    <string name="series_book_count_one">%d книга</string>
+    <string name="series_book_count_few">%d книги</string>
+    <string name="series_book_count_many">%d книг</string>
+
+    <!-- Bookmark -->
+    <string name="bookmark_chapter">Розділ %d</string>
+
+    <!-- Collection -->
+    <string name="collection_create">Створити колекцію</string>
+    <string name="collection_name">Назва колекції</string>
+    <string name="collection_create_btn">Створити</string>
+    <string name="collection_save">Зберегти</string>
+    <string name="collection_add_to">Додати в колекцію</string>
+    <string name="collection_delete">Видалити колекцію</string>
+    <string name="collection_delete_confirm">Видалити колекцію «%s»?</string>
+    <string name="collection_rename">Перейменувати</string>
+
+    <!-- Update -->
+    <string name="update_available">Доступне оновлення</string>
+    <string name="update_version_available">Версія %s доступна для завантаження.</string>
+    <string name="settings_downloading">Завантаження…</string>
+    <string name="update_downloaded_install_hint">Натисніть «Встановити», щоб оновити застосунок</string>
+
+    <!-- Splash -->
+    <string name="splash_skip">Пропустити</string>
+    <string name="splash_please_wait">Будь ласка, зачекайте</string>
+    <string name="splash_continue">Продовжити</string>
+
+    <!-- Shelf/Collection item -->
+    <string name="books_plural_one">книга</string>
+    <string name="books_plural_few">книги</string>
+    <string name="books_plural_many">книг</string>
+
+    <!-- Reader Page Mode -->
+    <string name="reader_page_label">Розд.%1$d Стор.%2$d / %3$d</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_bookmark">Закладка</string>
+    <string name="cd_book">Книга</string>
+    <string name="cd_settings">Налаштування</string>
+    <string name="cd_back">Назад</string>
+    <string name="cd_previous">Попер.</string>
+    <string name="cd_next">Наст.</string>
+    <string name="cd_delete">Видалити</string>
+    <string name="cd_clear">Очистити</string>
+    <string name="cd_stop">Зупинити</string>
+    <string name="cd_pause">Пауза</string>
+    <string name="cd_play">Продовжити</string>
+    <string name="cd_reset">Скидання</string>
+    <string name="cd_cancel">Скасувати</string>
+    <string name="cd_download">Завантажити</string>
+    <string name="cd_tts_select">Вибір рушія TTS</string>
+    <string name="cd_search">Пошук</string>
+    <string name="cd_add_to_favorites">В обране</string>
+    <string name="cd_add_to_collection">В колекцію</string>
+    <string name="cd_view_mode">Вигляд</string>
+    <string name="cd_selected">Вибрано</string>
+    <string name="cd_favorites">Обране</string>
+    <string name="cd_more">Ще</string>
+    <string name="cd_done">Готово</string>
+</resources>

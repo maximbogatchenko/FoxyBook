@@ -68,6 +68,7 @@
     <string name="settings_language">Язык</string>
     <string name="settings_language_ru">Русский</string>
     <string name="settings_language_en">English</string>
+    <string name="settings_language_uk">Українська</string>
     <string name="settings_language_restart_title">Смена языка</string>
     <string name="settings_language_restart_message">Для смены языка необходимо перезапустить приложение. Перезапустить сейчас?</string>
     <string name="settings_language_restart_confirm">Перезапустить</string>

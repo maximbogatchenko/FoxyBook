@@ -138,6 +138,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 ) {
                     listOf(
                         "ru" to stringResource(R.string.settings_language_ru),
+                        "uk" to stringResource(R.string.settings_language_uk),
                         "en" to stringResource(R.string.settings_language_en)
                     ).forEach { (value, label) ->
                         val selected = state.language == value

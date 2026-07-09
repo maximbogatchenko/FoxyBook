@@ -68,6 +68,7 @@
     <string name="settings_language">Language</string>
     <string name="settings_language_ru">Русский</string>
     <string name="settings_language_en">English</string>
+    <string name="settings_language_uk">Ukrainian</string>
     <string name="settings_language_restart_title">Change language</string>
     <string name="settings_language_restart_message">The app needs to restart to change the language. Restart now?</string>
     <string name="settings_language_restart_confirm">Restart</string>
