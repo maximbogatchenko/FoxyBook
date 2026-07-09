@@ -30,6 +30,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.foxybook.app.R
 
 /**
  * Анимированный индикатор загрузки: пульсирующая иконка книги + подпрыгивающие точки.
@@ -90,7 +92,7 @@ fun PulsingBookLoader() {
             Dot(alpha = 0.3f + dot3 * 0.7f, scale = 0.6f + dot3 * 0.8f, color = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.width(8.dp))
             Text(
-                "Загрузка…",
+                stringResource(R.string.loading),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

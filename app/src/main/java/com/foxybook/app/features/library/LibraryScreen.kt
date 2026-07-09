@@ -106,13 +106,23 @@ import androidx.compose.ui.unit.dp
 import com.foxybook.app.core.models.BookCollection
 import com.foxybook.app.core.models.LibraryBook
 import com.foxybook.app.core.models.LibraryTab
-import androidx.compose.ui.res.stringResource
 import com.foxybook.app.R
 import com.foxybook.app.ui.components.CoverViewer
 import com.foxybook.app.ui.components.CoverWithAuthor
+import androidx.compose.ui.res.stringResource
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+@Composable
+private fun libraryTabLabel(tab: LibraryTab): String {
+    return when (tab) {
+        LibraryTab.ALL -> stringResource(R.string.library_tab_all)
+        LibraryTab.FAVORITES -> stringResource(R.string.library_tab_favorites)
+        LibraryTab.HISTORY -> stringResource(R.string.library_tab_history)
+        LibraryTab.COLLECTIONS -> stringResource(R.string.library_tab_collections)
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -173,7 +183,7 @@ fun LibraryScreen(
                     title = { Text(stringResource(R.string.library_selected_count, state.selectedBookIds.size), fontWeight = FontWeight.Bold) },
                     navigationIcon = {
                         IconButton(onClick = { viewModel.onEvent(LibraryEvent.ClearSelection) }) {
-                            Icon(Icons.Default.Close, contentDescription = "Отменить")
+                            Icon(Icons.Default.Close, contentDescription = stringResource(R.string.cd_cancel))
                         }
                     },
                     actions = {
@@ -187,7 +197,7 @@ fun LibraryScreen(
                             Icon(Icons.Default.Folder, contentDescription = "В коллекцию")
                         }
                         IconButton(onClick = { viewModel.onEvent(LibraryEvent.BatchDeleteSelected) }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Удалить", tint = MaterialTheme.colorScheme.error)
+                            Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.cd_delete), tint = MaterialTheme.colorScheme.error)
                         }
                     },
                     windowInsets = WindowInsets(0),
@@ -195,7 +205,7 @@ fun LibraryScreen(
                 )
             } else {
                 TopAppBar(
-                    title = { Text("Библиотека", fontWeight = FontWeight.Bold) },
+                    title = { Text(stringResource(R.string.library_title), fontWeight = FontWeight.Bold) },
                     actions = {
                         Box {
                             IconButton(onClick = { showViewModeMenu = true }) {
@@ -269,7 +279,7 @@ fun LibraryScreen(
                     androidx.compose.material3.Tab(
                         selected = state.currentTab == tab,
                         onClick = { viewModel.onEvent(LibraryEvent.TabSelected(tab)) },
-                        text = { Text(tab.label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        text = { Text(libraryTabLabel(tab), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         icon = {
                             Icon(
                                 when (tab) {
@@ -462,7 +472,7 @@ fun LibraryScreen(
                 confirmButton = {
                     TextButton(onClick = { viewModel.confirmDeleteBook() }) {
                         Text(
-                            "Удалить",
+                            stringResource(R.string.cd_delete),
                             color = MaterialTheme.colorScheme.error
                         )
                     }
@@ -1066,7 +1076,7 @@ private fun CollectionsContent(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = "Создать коллекцию",
+                    contentDescription = stringResource(R.string.collection_create),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )

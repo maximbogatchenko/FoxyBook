@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -50,6 +51,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -62,7 +64,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.material3.TextButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -75,6 +76,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -88,7 +90,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import coil3.compose.SubcomposeAsyncImage
-import androidx.compose.foundation.layout.heightIn
+import com.foxybook.app.R
 import com.foxybook.app.core.models.ReaderMode
 import com.foxybook.app.core.models.ReaderTheme
 import com.foxybook.app.core.reader.ContentBlock
@@ -96,8 +98,6 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import androidx.compose.ui.res.stringResource
-import com.foxybook.app.R
 
 // ─── Reader Colors ───
 
@@ -291,7 +291,7 @@ fun ReaderScreen(
                                 modifier = Modifier.size(64.dp),
                                 tint = MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
                             Spacer(modifier = Modifier.height(12.dp))
-                            Text(state.error ?: "Ошибка", style = MaterialTheme.typography.titleMedium,
+                            Text(state.error ?: stringResource(R.string.reader_error), style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.error)
                         }
                     }
@@ -328,7 +328,7 @@ fun ReaderScreen(
                     TopAppBar(
                         title = {
                             Text(
-                                text = state.book?.title ?: "Чтение",
+                                text = state.book?.title ?: stringResource(R.string.reader_title),
                                 maxLines = 1, overflow = TextOverflow.Ellipsis,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
@@ -339,7 +339,7 @@ fun ReaderScreen(
                             IconButton(onClick = onBackClick) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Назад",
+                                    contentDescription = stringResource(R.string.cd_back),
                                     tint = colors.text
                                 )
                             }
@@ -364,6 +364,8 @@ fun ReaderScreen(
                                     modifier = Modifier.padding(end = 4.dp)
                                 )
 
+                                val bookmarkRemovedStr = stringResource(R.string.reader_bookmark_removed)
+                                val bookmarkAddedStr = stringResource(R.string.reader_bookmark_added)
                                 val isBookmarked = if (ReaderMode.valueOf(settings.readerMode) == ReaderMode.HORIZONTAL) {
                                     state.bookmarks.any {
                                         it.chapterIndex == state.currentChapter &&
@@ -391,7 +393,7 @@ fun ReaderScreen(
                                         }
                                         if (b != null) {
                                             viewModel.onEvent(ReaderEvent.RemoveBookmark(b))
-                                            scope.launch { snackbarHostState.showSnackbar("Закладка удалена") }
+                                            scope.launch { snackbarHostState.showSnackbar(bookmarkRemovedStr) }
                                         }
                                     } else {
                                         val preview = if (ReaderMode.valueOf(settings.readerMode) == ReaderMode.HORIZONTAL) {
@@ -400,22 +402,22 @@ fun ReaderScreen(
                                             state.chapterBlocks[state.currentChapter]?.getOrNull(state.scrollY)?.getTextContent() ?: ""
                                         }
                                         viewModel.onEvent(ReaderEvent.AddBookmark(preview))
-                                        scope.launch { snackbarHostState.showSnackbar("Закладка добавлена") }
+                                        scope.launch { snackbarHostState.showSnackbar(bookmarkAddedStr) }
                                     }
                                 }) {
                                     Icon(
                                         if (isBookmarked) Icons.Default.Star else Icons.Default.StarBorder,
-                                        contentDescription = "Закладка",
+                                        contentDescription = stringResource(R.string.cd_bookmark),
                                         tint = if (isBookmarked) MaterialTheme.colorScheme.primary else colors.text
                                     )
                                 }
 
                                 IconButton(onClick = { viewModel.onEvent(ReaderEvent.ToggleChapters) }) {
-                                    Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = "Книга", tint = colors.text)
+                                    Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = stringResource(R.string.cd_book), tint = colors.text)
                                 }
 
                                 IconButton(onClick = { viewModel.onEvent(ReaderEvent.ToggleSettings) }) {
-                                    Icon(Icons.Default.Settings, contentDescription = "Настройки", tint = colors.text)
+                                    Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.cd_settings), tint = colors.text)
                                 }
                             }
                         },
@@ -473,7 +475,7 @@ fun ReaderScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            "Выберите абзац для начала озвучивания",
+                            stringResource(R.string.reader_tts_select_paragraph),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier.weight(1f),
@@ -483,7 +485,7 @@ fun ReaderScreen(
                             onClick = { viewModel.onEvent(ReaderEvent.CancelTtsSelection) },
                             contentPadding = PaddingValues(horizontal = 12.dp)
                         ) {
-                            Text("Отмена", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.cd_cancel), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -520,7 +522,7 @@ private fun BookSheet(
 ) {
     val sheetState = rememberModalBottomSheetState()
     var selectedTab by remember { mutableIntStateOf(initialTab) }
-    val tabs = listOf<String>(stringResource(R.string.reader_chapters), stringResource(R.string.reader_bookmarks))
+    val tabs = listOf(stringResource(R.string.reader_chapters), stringResource(R.string.reader_bookmarks))
 
     ModalBottomSheet(
         onDismissRequest = { viewModel.onEvent(ReaderEvent.ToggleChapters) },
@@ -579,7 +581,7 @@ private fun ChaptersList(
             val displayTitle = extractedTitles[index]
                 ?.ifBlank { null }
                 ?: originalTitles.getOrNull(index)
-                ?: "Глава ${index + 1}"
+                ?: stringResource(R.string.reader_chapter, index + 1)
 
             Row(
                 modifier = Modifier
@@ -614,7 +616,7 @@ private fun BookmarksList(
 
     if (bookmarks.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("Нет закладок", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.reader_no_bookmarks), color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     } else {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -623,7 +625,7 @@ private fun BookmarksList(
                 val displayChapterTitle = bookmark.chapterTitle.ifBlank {
                     extractedTitles[bookmark.chapterIndex]?.ifBlank { null }
                         ?: chapterTitles.getOrNull(bookmark.chapterIndex)
-                        ?: "Глава ${bookmark.chapterIndex + 1}"
+                        ?: stringResource(R.string.reader_chapter, bookmark.chapterIndex + 1)
                 }
                 Row(
                     modifier = Modifier
@@ -661,16 +663,17 @@ private fun BookmarksList(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Позиция: ${bookmark.chapterIndex + 1} глава, ${bookmark.textOffset} символ",
+                            text = stringResource(R.string.reader_bookmark_position, bookmark.chapterIndex + 1, bookmark.textOffset),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                         )
                     }
+                    val bmRemovedText = stringResource(R.string.reader_bookmark_removed)
                     IconButton(onClick = {
                         viewModel.onEvent(ReaderEvent.RemoveBookmark(bookmark))
-                        scope.launch { snackbarHostState.showSnackbar("Закладка удалена") }
+                        scope.launch { snackbarHostState.showSnackbar(bmRemovedText) }
                     }) {
-                        Icon(Icons.Default.Delete, "Удалить", tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f))
+                        Icon(Icons.Default.Delete, stringResource(R.string.cd_delete), tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f))
                     }
                 }
             }
@@ -823,7 +826,7 @@ fun ReaderBottomBar(
 
     Row(modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         IconButton(onClick = { viewModel.onEvent(ReaderEvent.PreviousChapter) }, enabled = state.currentChapter > 0, modifier = Modifier.size(36.dp)) {
-            Icon(Icons.Default.PlayArrow, "Пред.", modifier = Modifier.size(24.dp).rotate(180f),
+            Icon(Icons.Default.PlayArrow, stringResource(R.string.cd_previous), modifier = Modifier.size(24.dp).rotate(180f),
                 tint = if (state.currentChapter > 0) MaterialTheme.colorScheme.primary else colors.text.copy(alpha = 0.2f))
         }
         Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -831,7 +834,7 @@ fun ReaderBottomBar(
             Text(text = if (state.settings.showProgressAsPercentage) {
                     "${state.readingPercentage}%"
                 } else if (mode == ReaderMode.HORIZONTAL) {
-                    "Стр. ${state.pageCurrent + 1}/${state.pageTotal}"
+                    stringResource(R.string.reader_chapter_page, state.pageCurrent + 1, state.pageTotal)
                 } else {
                     val blocks = state.chapterBlocks[state.currentChapter]
                     val blockProgress = if (blocks != null && blocks.size > 1) {
@@ -842,7 +845,7 @@ fun ReaderBottomBar(
                 style = MaterialTheme.typography.labelSmall, color = colors.text.copy(alpha = 0.6f))
         }
         IconButton(onClick = { viewModel.onEvent(ReaderEvent.NextChapter) }, enabled = state.currentChapter < book.chapters.size - 1, modifier = Modifier.size(36.dp)) {
-            Icon(Icons.Default.PlayArrow, "След.", modifier = Modifier.size(24.dp),
+            Icon(Icons.Default.PlayArrow, stringResource(R.string.cd_next), modifier = Modifier.size(24.dp),
                 tint = if (state.currentChapter < book.chapters.size - 1) MaterialTheme.colorScheme.primary else colors.text.copy(alpha = 0.2f))
         }
     }

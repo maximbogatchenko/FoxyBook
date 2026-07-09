@@ -13,6 +13,7 @@ import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import com.foxybook.app.MainActivity
+import com.foxybook.app.R
 import kotlinx.coroutines.*
 
 class TtsService : Service(), TextToSpeech.OnInitListener {
@@ -245,7 +246,7 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
         val channelId = "tts_channel"
         val notificationManager = getSystemService(NotificationManager::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "Озвучивание", NotificationManager.IMPORTANCE_LOW)
+            val channel = NotificationChannel(channelId, getString(R.string.tts_channel_name), NotificationManager.IMPORTANCE_LOW)
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -262,14 +263,14 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setStyle(Notification.MediaStyle().setMediaSession(mediaSession?.sessionToken))
 
-        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_previous, "Назад", createActionIntent("PREV")).build())
+        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_previous, getString(R.string.cd_back), createActionIntent("PREV")).build())
         if (isPaused) {
-            builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_play, "Играть", createActionIntent("RESUME")).build())
+            builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_play, getString(R.string.cd_play), createActionIntent("RESUME")).build())
         } else {
-            builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_pause, "Пауза", createActionIntent("PAUSE")).build())
+            builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_pause, getString(R.string.cd_pause), createActionIntent("PAUSE")).build())
         }
-        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_next, "Вперед", createActionIntent("NEXT")).build())
-        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_menu_close_clear_cancel, "Закрыть", createActionIntent("STOP")).build())
+        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_next, getString(R.string.cd_next), createActionIntent("NEXT")).build())
+        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_menu_close_clear_cancel, getString(R.string.cd_cancel), createActionIntent("STOP")).build())
 
         return builder.build()
     }
@@ -293,7 +294,7 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
         val channelId = "tts_channel"
         val notificationManager = getSystemService(NotificationManager::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "Озвучивание", NotificationManager.IMPORTANCE_LOW)
+            val channel = NotificationChannel(channelId, getString(R.string.tts_channel_name), NotificationManager.IMPORTANCE_LOW)
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -305,21 +306,21 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
 
         val builder = Notification.Builder(this, channelId)
             .setContentTitle(currentChapterTitle)
-            .setContentText("$currentBookTitle - Сон: $timerText")
+            .setContentText("$currentBookTitle - ${getString(R.string.reader_tts_sleep_timer)}: $timerText")
             .setSmallIcon(android.R.drawable.ic_lock_silent_mode_off)
             .setContentIntent(openAppIntent)
             .setOngoing(true)
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setStyle(Notification.MediaStyle().setMediaSession(mediaSession?.sessionToken))
 
-        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_previous, "Назад", createActionIntent("PREV")).build())
+        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_previous, getString(R.string.cd_back), createActionIntent("PREV")).build())
         if (isPaused) {
-            builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_play, "Играть", createActionIntent("RESUME")).build())
+            builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_play, getString(R.string.cd_play), createActionIntent("RESUME")).build())
         } else {
-            builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_pause, "Пауза", createActionIntent("PAUSE")).build())
+            builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_pause, getString(R.string.cd_pause), createActionIntent("PAUSE")).build())
         }
-        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_next, "Вперед", createActionIntent("NEXT")).build())
-        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_menu_close_clear_cancel, "Закрыть", createActionIntent("STOP")).build())
+        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_next, getString(R.string.cd_next), createActionIntent("NEXT")).build())
+        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_menu_close_clear_cancel, getString(R.string.cd_cancel), createActionIntent("STOP")).build())
 
         return builder.build()
     }

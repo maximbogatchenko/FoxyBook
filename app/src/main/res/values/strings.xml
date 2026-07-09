@@ -179,6 +179,20 @@
     <string name="reader_tts_sleep_choose">Выберите время, через которое чтение остановится</string>
     <string name="reader_tts_book">Книга</string>
     <string name="reader_tts_chapter">Глава %d</string>
+    <string name="reader_tts_speed_format">Скорость: %.1fx</string>
+    <string name="reader_tts_pitch_format">Высота: %.1f</string>
+
+    <!-- TTS Service -->
+    <string name="tts_channel_name">Озвучивание</string>
+
+    <!-- Reader UI (missing) -->
+    <string name="reader_chapters_tab">Главы</string>
+    <string name="reader_continue_reading">Продолжить чтение</string>
+    <string name="reader_tts_minutes">мин</string>
+
+    <!-- Cover Viewer -->
+    <string name="cover_viewer_close">Закрыть</string>
+    <string name="cover_viewer_cover">Обложка</string>
 
     <!-- Book Details -->
     <string name="book_details_title">Книга</string>

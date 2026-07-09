@@ -32,6 +32,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.foxybook.app.R
 import androidx.activity.compose.BackHandler
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
@@ -88,7 +90,7 @@ fun CoverViewer(
             // Zoomable image with swipe-to-dismiss
             AsyncImage(
                 model = coverModel,
-                contentDescription = "Обложка",
+                contentDescription = stringResource(R.string.cover_viewer_cover),
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
@@ -165,7 +167,7 @@ fun CoverViewer(
             ) {
                 Icon(
                     Icons.Default.Close,
-                    contentDescription = "Закрыть",
+                    contentDescription = stringResource(R.string.cover_viewer_close),
                     tint = Color.White,
                     modifier = Modifier.size(28.dp)
                 )

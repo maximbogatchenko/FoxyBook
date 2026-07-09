@@ -40,8 +40,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.foxybook.app.R
 
 @Composable
 fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
@@ -59,7 +61,7 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
             pkg.contains("ibm") -> "IBM TTS"
             else -> pkg.substringAfterLast(".")
         }
-    } ?: "системный"
+    } ?: stringResource(R.string.reader_tts_default_engine)
     var selectedLang by remember(state.settings.ttsLanguage, state.availableLanguages) {
         mutableStateOf(state.settings.ttsLanguage ?: state.availableLanguages.firstOrNull { it == "Русский" } ?: state.availableLanguages.firstOrNull() ?: "")
     }
@@ -71,9 +73,9 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { viewModel.onEvent(ReaderEvent.ToggleTtsControls) }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cd_back))
             }
-            Text("Озвучивание книги", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.reader_tts_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.weight(1f))
             IconButton(onClick = {
                 try {
@@ -90,14 +92,14 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
                     context.startActivity(intent)
                 }
             }) {
-                Icon(Icons.Default.Settings, contentDescription = "Выбор движка TTS")
+                Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.cd_tts_select))
             }
         }
 
         // Выбор TTS-движка
         if (state.availableEngines.size > 1) {
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Движок", style = MaterialTheme.typography.labelLarge)
+            Text(stringResource(R.string.reader_tts_engine), style = MaterialTheme.typography.labelLarge)
             LazyRow(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(state.availableEngines) { engine ->
                     val isSelected = state.settings.ttsEngine == engine.packageName
@@ -125,7 +127,7 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
                     ) {
                         Icon(Icons.Default.PlayArrow, null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Читать с текущего места")
+                        Text(stringResource(R.string.reader_tts_play_current))
                     }
                     Spacer(modifier = Modifier.height(12.dp))
                     OutlinedButton(
@@ -134,24 +136,24 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
                     ) {
                         Icon(Icons.Default.TouchApp, null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Выбрать место начала чтения")
+                        Text(stringResource(R.string.reader_tts_select_position))
                     }
                 }
             } else {
                 if (state.isSpeaking) {
                     IconButton(onClick = { viewModel.onEvent(ReaderEvent.PauseTts) }, modifier = Modifier.size(64.dp)) {
-                        Icon(Icons.Default.Pause, "Пауза", modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.Default.Pause, stringResource(R.string.cd_pause), modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary)
                     }
                 } else {
                     IconButton(onClick = { viewModel.onEvent(ReaderEvent.ResumeTts) }, modifier = Modifier.size(64.dp)) {
-                        Icon(Icons.Default.PlayArrow, "Продолжить", modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.Default.PlayArrow, stringResource(R.string.cd_play), modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary)
                     }
                 }
 
                 Spacer(modifier = Modifier.width(32.dp))
 
                 IconButton(onClick = { viewModel.onEvent(ReaderEvent.StopTts) }, modifier = Modifier.size(64.dp)) {
-                    Icon(Icons.Default.Stop, "Остановить", modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.error)
+                    Icon(Icons.Default.Stop, stringResource(R.string.cd_stop), modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.error)
                 }
             }
         }
@@ -161,7 +163,7 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
         if (state.currentEngine?.contains("google") == true) {
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Язык", style = MaterialTheme.typography.labelLarge)
+            Text(stringResource(R.string.reader_tts_language), style = MaterialTheme.typography.labelLarge)
             LazyRow(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(state.availableLanguages) { lang ->
                     FilterChip(
@@ -177,7 +179,7 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text("Голос", style = MaterialTheme.typography.labelLarge)
+            Text(stringResource(R.string.reader_tts_voice), style = MaterialTheme.typography.labelLarge)
             LazyRow(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(filteredVoices) { voice ->
                     FilterChip(
@@ -192,7 +194,7 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Скорость: %.1fx".format(state.settings.ttsRate), style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(80.dp))
+            Text(stringResource(R.string.reader_tts_speed_format, state.settings.ttsRate), style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(80.dp))
             Slider(
                 value = state.settings.ttsRate,
                 onValueChange = { viewModel.onEvent(ReaderEvent.SetTtsRate(it)) },
@@ -202,7 +204,7 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Высота: %.1f".format(state.settings.ttsPitch), style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(80.dp))
+            Text(stringResource(R.string.reader_tts_pitch_format, state.settings.ttsPitch), style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(80.dp))
             Slider(
                 value = state.settings.ttsPitch,
                 onValueChange = { viewModel.onEvent(ReaderEvent.SetTtsPitch(it)) },
@@ -213,7 +215,7 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text("Таймер сна", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Text(stringResource(R.string.reader_tts_sleep_timer), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(12.dp))
 
         if (state.sleepTimerRemainingSeconds > 0) {
@@ -232,7 +234,7 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                "Таймер активен",
+                                stringResource(R.string.reader_tts_sleep_active),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontWeight = FontWeight.Medium
@@ -251,7 +253,7 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
                         ) {
                             Icon(
                                 Icons.Default.Delete,
-                                contentDescription = "Отменить",
+                                contentDescription = stringResource(R.string.cd_cancel),
                                 tint = MaterialTheme.colorScheme.error,
                                 modifier = Modifier.size(24.dp)
                             )
@@ -266,7 +268,7 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "Чтение остановится автоматически",
+                        stringResource(R.string.reader_tts_sleep_auto_stop),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -274,7 +276,7 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
             }
         } else {
             Text(
-                "Выберите время, через которое чтение остановится",
+                stringResource(R.string.reader_tts_sleep_choose),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -293,7 +295,7 @@ fun TtsControlsUI(state: ReaderState, viewModel: ReaderViewModel) {
                 FilterChip(
                     selected = isSelected,
                     onClick = { viewModel.onEvent(ReaderEvent.SetSleepTimer(minutes)) },
-                    label = { Text("$minutes мин") },
+                    label = { Text("$minutes ${stringResource(R.string.reader_tts_minutes)}") },
                     leadingIcon = if (isSelected) {
                         { Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp)) }
                     } else null

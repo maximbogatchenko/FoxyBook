@@ -179,6 +179,20 @@
     <string name="reader_tts_sleep_choose">Choose when to stop reading</string>
     <string name="reader_tts_book">Book</string>
     <string name="reader_tts_chapter">Chapter %d</string>
+    <string name="reader_tts_speed_format">Speed: %.1fx</string>
+    <string name="reader_tts_pitch_format">Pitch: %.1f</string>
+
+    <!-- TTS Service -->
+    <string name="tts_channel_name">Reading</string>
+
+    <!-- Reader UI (missing) -->
+    <string name="reader_chapters_tab">Chapters</string>
+    <string name="reader_continue_reading">Continue reading</string>
+    <string name="reader_tts_minutes">min</string>
+
+    <!-- Cover Viewer -->
+    <string name="cover_viewer_close">Close</string>
+    <string name="cover_viewer_cover">Cover</string>
 
     <!-- Book Details -->
     <string name="book_details_title">Book</string>
