@@ -58,6 +58,9 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -241,10 +244,18 @@ fun ReaderScreen(
         window.attributes = lp
     }
 
-    // Save reading position when leaving the screen
-    DisposableEffect(Unit) {
+    // Save reading position when leaving the screen OR when app goes to background
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_PAUSE) {
+                viewModel.savePositionNow()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
             viewModel.savePositionNow()
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 

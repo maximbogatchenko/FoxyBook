@@ -161,39 +161,41 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
         SearchPage(emptyList())
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    //  Genre search — Fantasy-worlds не имеет OPDS-каталога жанров,
+    //  используем поиск через opdssearch + клиентская фильтрация
+    // ═══════════════════════════════════════════════════════════════
+
     override suspend fun searchByGenre(query: String, limit: Int): SearchPage<Book> = withContext(Dispatchers.IO) {
         val encoded = URLEncoder.encode(query, "UTF-8")
+        val cleanQuery = query.trim().lowercase()
         val url = "$baseUrl/opdssearch?searchType=books&q=$encoded"
         Log.d(TAG, "searchByGenre | $url")
         val xml = fetchXml(url)
         val allBooks = parseOpdsBooks(xml, limit)
-        val cleanQuery = query.trim().lowercase()
         val filtered = allBooks.filter { book ->
             book.genres.any { it.lowercase().contains(cleanQuery) }
         }
-        // Формируем URL следующей страницы вручную
         val nextUrl = if (filtered.isNotEmpty()) "$baseUrl/opdssearch?searchType=books&q=$encoded&page=1" else null
-        Log.d(TAG, "searchByGenre | found=${filtered.size}, next=$nextUrl")
+        Log.d(TAG, "searchByGenre | found=${filtered.size} from ${allBooks.size}, next=$nextUrl")
         SearchPage(filtered.distinctBy { it.id }, nextUrl)
     }
 
     override suspend fun searchByGenreNextPage(url: String, limit: Int): SearchPage<Book> = withContext(Dispatchers.IO) {
         val xml = fetchXml(url)
         val allBooks = parseOpdsBooks(xml, limit)
-        // Фильтруем по жанру, используя q из URL
         val searchTerm = Regex("""[?&]q=([^&]+)""").find(url)?.groupValues?.get(1) ?: ""
         val cleanQuery = java.net.URLDecoder.decode(searchTerm, "UTF-8").lowercase()
         val filtered = allBooks.filter { book ->
             book.genres.any { it.lowercase().contains(cleanQuery) }
         }
-        // Вычисляем следующую страницу
         val nextPage = Regex("""[?&]page=(\d+)""").find(url)?.groupValues?.get(1)?.toIntOrNull()
         val nextUrl = if (nextPage != null) {
             url.replace(Regex("""page=\d+"""), "page=${nextPage + 1}")
         } else {
             null
         }
-        Log.d(TAG, "searchByGenreNextPage | found=${filtered.size} from ${allBooks.size}, nextPage=$nextPage")
+        Log.d(TAG, "searchByGenreNextPage | fallback found=${filtered.size} from ${allBooks.size}, nextPage=$nextPage")
         SearchPage(filtered.distinctBy { it.id }, nextUrl)
     }
 

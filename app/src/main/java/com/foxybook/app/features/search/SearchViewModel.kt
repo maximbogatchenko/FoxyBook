@@ -166,10 +166,9 @@ class SearchViewModel(
                 isSearchingSeries = false,
                 isSearchingGenres = false
             ) }
-            genreNextUrl = null  // при смене источника сбрасываем явно
+            genreNextUrl = null
             genreExhausted = false
             networkProvider.switchSource(source)
-            dataStoreManager.setBookSource(source)
             resetPagination()
             val q = _state.value.query
             if (q.isNotBlank()) performSearch()
@@ -257,15 +256,10 @@ class SearchViewModel(
                 try {
                     val genrePage = searchByGenreUseCase(query)
                     genreNextUrl = genrePage.nextPageUrl
-                    // Клиентская фильтрация — сервер может возвращать неточные результаты
-                    // на первой странице при пагинации по жанрам
-                    val filtered = genrePage.items.filter { book ->
-                        book.genres.any { it.lowercase().contains(query.lowercase()) }
-                    }
-                    android.util.Log.d("SearchGenre", "first page: ${filtered.size} items from ${genrePage.items.size}, nextUrl=${genrePage.nextPageUrl}")
-                    _state.update { it.copy(genreBooks = filtered, isSearchingGenres = false) }
-                    if (filtered.isNotEmpty()) {
-                        fetchCovers(filtered)
+                    android.util.Log.d("SearchGenre", "first page: ${genrePage.items.size} items, nextUrl=${genrePage.nextPageUrl}")
+                    _state.update { it.copy(genreBooks = genrePage.items, isSearchingGenres = false) }
+                    if (genrePage.items.isNotEmpty()) {
+                        fetchCovers(genrePage.items)
                     }
                 } catch (e: Exception) {
                     android.util.Log.e("SearchGenre", "first page error", e)

@@ -305,7 +305,7 @@
     <string name="books_plural_many">books</string>
 
     <!-- Reader Page Mode -->
-    <string name="reader_page_label">Ch.%1$d Page %2$d / %3$d</string>
+    <string name="reader_page_label">Page %2$d / %3$d</string>
 
     <!-- Content descriptions -->
     <string name="cd_bookmark">Bookmark</string>

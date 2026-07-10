@@ -163,41 +163,316 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
         SearchPage(emptyList())
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    //  Genre catalog navigation — correct OPDS genre browsing
+    // ═══════════════════════════════════════════════════════════════
+    //
+    //  Flibusta OPDS genre structure (3 levels):
+    //    /opds/genres              → 24 top-level genres (flat list)
+    //    /opds/genres/ИМЯ_ЖАНРА   → sub-genres with book counts
+    //    /opds/genres/ИМЯ_ЖАНРА/ID → actual books with <link rel="next">
+    // ═══════════════════════════════════════════════════════════════
+
+    /**
+     * Парсит OPDS-фид, содержащий навигационные entry (жанры или поджанры).
+     * Каждый entry имеет <title> и <link href="..."> (rel может отсутствовать).
+     * Пример: /opds/genres или /opds/genres/Фантастика
+     */
+    private data class GenreNavEntry(
+        val name: String,
+        val url: String
+    )
+
+    /**
+     * Парсит любой навигационный OPDS-фид: достаёт title + href из каждого entry.
+     * Подходит для /opds/genres (список жанров) и /opds/genres/Фантастика (поджанры).
+     */
+    private fun parseNavEntries(xml: String): List<GenreNavEntry> {
+        val entries = mutableListOf<GenreNavEntry>()
+        val parser = XmlUtils.createParser(xml)
+        var eventType = parser.eventType
+        var inEntry = false
+        var title: String? = null
+        var linkHref: String? = null
+
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            val name = parser.name
+            when (eventType) {
+                XmlPullParser.START_TAG -> {
+                    when (name) {
+                        "entry" -> { title = null; linkHref = null; inEntry = true }
+                        "title" -> if (inEntry) title = parser.nextText()
+                        "link" -> {
+                            if (inEntry && linkHref == null) {
+                                val href = parser.getAttributeValue(null, "href")
+                                // Берём первую ссылку (alternate по умолчанию),
+                                // пропускаем rel="search", rel="start", rel="up", rel="next"
+                                val rel = parser.getAttributeValue(null, "rel") ?: ""
+                                if (href != null && rel !in listOf("search", "start", "up", "next", "self")) {
+                                    linkHref = if (href.startsWith("http")) href else "$baseUrl$href"
+                                }
+                            }
+                        }
+                    }
+                }
+                XmlPullParser.END_TAG -> {
+                    if (name == "entry") {
+                        inEntry = false
+                        if (title != null && linkHref != null) {
+                            entries.add(GenreNavEntry(title!!, linkHref!!))
+                        }
+                    }
+                }
+            }
+            eventType = parser.next()
+        }
+        return entries
+    }
+
+    /**
+     * Состояние пагинации поиска по жанрам.
+     */
+    @Volatile
+    private var genreState: GenreSearchState? = null
+
+    private data class GenreSearchState(
+        val matchingGenres: List<GenreNavEntry>,
+        val currentGenreIndex: Int,
+        val subGenres: List<GenreNavEntry>,
+        val currentSubGenreIndex: Int,
+        val subGenreNextUrl: String?   // rel="next" из текущего фида поджанра
+    )
+
     override suspend fun searchByGenre(query: String, limit: Int): SearchPage<Book> = withContext(Dispatchers.IO) {
+        val cleanQuery = query.trim().lowercase()
+        Log.d(TAG, "searchByGenre | query=$cleanQuery, limit=$limit")
+
+        // 1. Загружаем /opds/genres — список всех жанров
+        val genresXml = try {
+            fetchXml("$baseUrl/opds/genres")
+        } catch (e: Exception) {
+            Log.e(TAG, "searchByGenre | /opds/genres failed, falling back to search", e)
+            return@withContext searchByGenreFallback(query, limit, cleanQuery)
+        }
+        val allGenres = parseNavEntries(genresXml)
+        Log.d(TAG, "searchByGenre | /opds/genres has ${allGenres.size} genres")
+
+        // 2. Фильтруем по запросу пользователя
+        val matching = allGenres.filter { it.name.lowercase().contains(cleanQuery) }
+        if (matching.isEmpty()) {
+            Log.d(TAG, "searchByGenre | no matching genres, falling back to search")
+            return@withContext searchByGenreFallback(query, limit, cleanQuery)
+        }
+        Log.d(TAG, "searchByGenre | matching: ${matching.map { it.name }}")
+
+        // 3. Загружаем поджанры первого подходящего жанра
+        val subGenresXml = try {
+            fetchXml(matching[0].url)
+        } catch (e: Exception) {
+            Log.e(TAG, "searchByGenre | sub-genre feed failed for '${matching[0].name}', falling back", e)
+            return@withContext searchByGenreFallback(query, limit, cleanQuery)
+        }
+        val subGenres = parseNavEntries(subGenresXml)
+        Log.d(TAG, "searchByGenre | '${matching[0].name}' has ${subGenres.size} sub-genres")
+
+        // 4. Перебираем поджанры, пока не найдём книги
+        val books = mutableListOf<Book>()
+        var foundSubGenreIndex = -1
+        var nextSubUrl: String? = null
+
+        for (i in subGenres.indices) {
+            if (books.size >= limit) break
+            val sub = subGenres[i]
+            try {
+                val subXml = fetchXml(sub.url)
+                val subBooks = parseOpdsBooks(subXml, limit - books.size)
+                if (subBooks.isNotEmpty()) {
+                    books.addAll(subBooks)
+                    foundSubGenreIndex = i
+                    nextSubUrl = parseNextLink(subXml).let { if (it.isNotBlank()) it else null }
+                    break
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "searchByGenre | sub-genre '${sub.name}' error", e)
+            }
+        }
+
+        if (books.isEmpty()) {
+            Log.d(TAG, "searchByGenre | no books in OPDS genre feeds, falling back to search")
+            return@withContext searchByGenreFallback(query, limit, cleanQuery)
+        }
+
+        // 5. Сохраняем состояние пагинации
+        genreState = GenreSearchState(
+            matchingGenres = matching,
+            currentGenreIndex = 0,
+            subGenres = subGenres,
+            currentSubGenreIndex = foundSubGenreIndex,
+            subGenreNextUrl = nextSubUrl
+        )
+
+        val hasMore = nextSubUrl != null || foundSubGenreIndex + 1 < subGenres.size || matching.size > 1
+        Log.d(TAG, "searchByGenre | found ${books.size} books via OPDS nav, hasMore=$hasMore")
+        SearchPage(books.distinctBy { it.id }, if (hasMore) "genre_next://0" else null)
+    }
+
+    /**
+     * Fallback: поиск через /opds/search + клиентская фильтрация по жанру.
+     * Используется когда OPDS-каталог жанров недоступен.
+     */
+    private suspend fun searchByGenreFallback(query: String, limit: Int, cleanQuery: String): SearchPage<Book> {
+        Log.d(TAG, "searchByGenreFallback | query=$query")
         val encoded = URLEncoder.encode(query, "UTF-8")
         val url = "$baseUrl/opds/search?searchType=books&searchTerm=$encoded"
-        Log.d(TAG, "searchByGenre | $url")
-        val xml = fetchXml(url)
+        val xml = try {
+            fetchXml(url)
+        } catch (e: Exception) {
+            Log.e(TAG, "searchByGenreFallback | search failed", e)
+            return SearchPage(emptyList())
+        }
         val allBooks = parseOpdsBooks(xml, limit)
-        val cleanQuery = query.trim().lowercase()
         val filtered = allBooks.filter { book ->
             book.genres.any { it.lowercase().contains(cleanQuery) }
         }
-        // Формируем URL следующей страницы вручную, т.к. серверный next может
-        // содержать обрезанный searchTerm или вести на неправильное зеркало
         val nextUrl = if (filtered.isNotEmpty()) "$baseUrl/opds/search?searchType=books&searchTerm=$encoded&pageNumber=1" else null
-        Log.d(TAG, "searchByGenre | found=${filtered.size}, next=$nextUrl")
-        SearchPage(filtered.distinctBy { it.id }, nextUrl)
+        Log.d(TAG, "searchByGenreFallback | found=${filtered.size} from ${allBooks.size}, next=$nextUrl")
+        return SearchPage(filtered.distinctBy { it.id }, nextUrl)
     }
 
     override suspend fun searchByGenreNextPage(url: String, limit: Int): SearchPage<Book> = withContext(Dispatchers.IO) {
-        val xml = fetchXml(url)
+        // Fallback: если URL не genre_next:// — это обычная пагинация через /opds/search
+        if (!url.startsWith("genre_next://")) {
+            Log.d(TAG, "searchByGenreNextPage | fallback pagination for $url")
+            return@withContext searchByGenreNextPageFallback(url, limit)
+        }
+
+        val state = genreState
+        if (state == null) {
+            Log.d(TAG, "searchByGenreNextPage | no state")
+            return@withContext SearchPage(emptyList())
+        }
+
+        // 1. Пробуем следующую страницу текущего поджанра (rel="next")
+        var currentState = state
+        if (currentState.subGenreNextUrl != null) {
+            val xml = try {
+                fetchXml(currentState.subGenreNextUrl)
+            } catch (e: Exception) {
+                Log.e(TAG, "searchByGenreNextPage | fetch next failed", e)
+                null
+            }
+            if (xml != null) {
+                val books = parseOpdsBooks(xml, limit)
+                val nextNext = parseNextLink(xml).let { if (it.isNotBlank()) it else null }
+                if (books.isNotEmpty()) {
+                    genreState = currentState.copy(subGenreNextUrl = nextNext)
+                    val hasMore = nextNext != null ||
+                        currentState.currentSubGenreIndex + 1 < currentState.subGenres.size ||
+                        currentState.currentGenreIndex + 1 < currentState.matchingGenres.size
+                    return@withContext SearchPage(
+                        books.distinctBy { it.id },
+                        if (hasMore) "genre_next://${currentState.currentGenreIndex}" else null
+                    )
+                }
+                // Страница пуста — сбрасываем nextUrl и пробуем следующий поджанр
+                currentState = currentState.copy(subGenreNextUrl = nextNext)
+            }
+        }
+
+        // 2. Пробуем следующий поджанр
+        if (currentState.currentSubGenreIndex + 1 < currentState.subGenres.size) {
+            for (i in (currentState.currentSubGenreIndex + 1)..<currentState.subGenres.size) {
+                val sub = currentState.subGenres[i]
+                try {
+                    val subXml = fetchXml(sub.url)
+                    val subBooks = parseOpdsBooks(subXml, limit)
+                    if (subBooks.isNotEmpty()) {
+                        val nextInSub = parseNextLink(subXml).let { if (it.isNotBlank()) it else null }
+                        genreState = currentState.copy(
+                            currentSubGenreIndex = i,
+                            subGenreNextUrl = nextInSub
+                        )
+                        val hasMore = nextInSub != null ||
+                            i + 1 < currentState.subGenres.size ||
+                            currentState.currentGenreIndex + 1 < currentState.matchingGenres.size
+                        return@withContext SearchPage(
+                            subBooks.distinctBy { it.id },
+                            if (hasMore) "genre_next://${currentState.currentGenreIndex}" else null
+                        )
+                    }
+                } catch (e: Exception) {
+                    Log.w(TAG, "searchByGenreNextPage | sub-genre '${sub.name}' error", e)
+                }
+            }
+        }
+
+        // 3. Пробуем следующий жанр
+        if (currentState.currentGenreIndex + 1 < currentState.matchingGenres.size) {
+            val nextGenreIdx = currentState.currentGenreIndex + 1
+            val nextGenre = currentState.matchingGenres[nextGenreIdx]
+            try {
+                val subGenresXml = fetchXml(nextGenre.url)
+                val subGenres = parseNavEntries(subGenresXml)
+                for (i in subGenres.indices) {
+                    val sub = subGenres[i]
+                    try {
+                        val subXml = fetchXml(sub.url)
+                        val subBooks = parseOpdsBooks(subXml, limit)
+                        if (subBooks.isNotEmpty()) {
+                            val nextInSub = parseNextLink(subXml).let { if (it.isNotBlank()) it else null }
+                            genreState = GenreSearchState(
+                                matchingGenres = currentState.matchingGenres,
+                                currentGenreIndex = nextGenreIdx,
+                                subGenres = subGenres,
+                                currentSubGenreIndex = i,
+                                subGenreNextUrl = nextInSub
+                            )
+                            val hasMore = nextInSub != null ||
+                                i + 1 < subGenres.size ||
+                                nextGenreIdx + 1 < currentState.matchingGenres.size
+                            return@withContext SearchPage(
+                                subBooks.distinctBy { it.id },
+                                if (hasMore) "genre_next://$nextGenreIdx" else null
+                            )
+                        }
+                    } catch (e: Exception) { /* skip */ }
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "searchByGenreNextPage | genre '${nextGenre.name}' error", e)
+            }
+        }
+
+        // 4. Всё исчерпано
+        Log.d(TAG, "searchByGenreNextPage | no more results")
+        genreState = null
+        SearchPage(emptyList())
+    }
+
+    /**
+     * Fallback-пагинация через /opds/search (когда OPDS-каталог жанров недоступен).
+     */
+    private suspend fun searchByGenreNextPageFallback(url: String, limit: Int): SearchPage<Book> {
+        val xml = try {
+            fetchXml(url)
+        } catch (e: Exception) {
+            Log.e(TAG, "searchByGenreNextPageFallback | fetch failed", e)
+            return SearchPage(emptyList())
+        }
         val allBooks = parseOpdsBooks(xml, limit)
-        // Фильтруем по жанру, используя searchTerm из URL
+        // Извлекаем searchTerm из URL для клиентской фильтрации
         val searchTerm = Regex("""searchTerm=([^&]+)""").find(url)?.groupValues?.get(1) ?: ""
         val cleanQuery = java.net.URLDecoder.decode(searchTerm, "UTF-8").lowercase()
         val filtered = allBooks.filter { book ->
             book.genres.any { it.lowercase().contains(cleanQuery) }
         }
-        // Вычисляем следующую страницу: pageNumber=N → pageNumber=N+1
         val nextPageNumber = Regex("""pageNumber=(\d+)""").find(url)?.groupValues?.get(1)?.toIntOrNull()
         val nextUrl = if (nextPageNumber != null) {
             url.replace(Regex("""pageNumber=\d+"""), "pageNumber=${nextPageNumber + 1}")
         } else {
             null
         }
-        Log.d(TAG, "searchByGenreNextPage | found=${filtered.size} from ${allBooks.size}, nextPage=$nextPageNumber")
-        SearchPage(filtered.distinctBy { it.id }, nextUrl)
+        Log.d(TAG, "searchByGenreNextPageFallback | found=${filtered.size} from ${allBooks.size}, nextPage=$nextPageNumber")
+        return SearchPage(filtered.distinctBy { it.id }, nextUrl)
     }
 
     override suspend fun getSeriesBooks(seriesId: String, authorId: String?, limit: Int): List<Book> = withContext(Dispatchers.IO) {

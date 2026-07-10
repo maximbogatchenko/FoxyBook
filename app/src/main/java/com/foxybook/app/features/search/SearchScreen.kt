@@ -1,5 +1,14 @@
 package com.foxybook.app.features.search
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,6 +61,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -95,6 +105,15 @@ fun SearchScreen(
     onAuthorClick: (String, String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+
+    // Подхватываем запрос, переданный из карточки книги (жанр)
+    LaunchedEffect(Unit) {
+        val pending = com.foxybook.app.core.models.PendingSearchQuery.query
+        if (pending != null) {
+            com.foxybook.app.core.models.PendingSearchQuery.query = null
+            viewModel.onEvent(SearchEvent.QueryChanged(pending))
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().statusBarsPadding()
@@ -239,12 +258,7 @@ private fun IdleContent() {
 @Composable
 private fun LoadingContent() {
     Box(Modifier.fillMaxSize().padding(vertical = 48.dp), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-            Spacer(Modifier.height(16.dp))
-            Text(stringResource(R.string.search_ing), style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
+        PulsingBookLoader()
     }
 }
 
@@ -313,6 +327,7 @@ private fun SearchContent(
             books = state.books,
             listState = listState,
             isLoading = state.isSearching,
+            isLoadingMore = state.isLoadingMore,
             onBookClick = onBookClick,
             onLoadMore = { onLoadMore(SearchTab.BOOKS) },
             canLoadMore = { canLoadMore(SearchTab.BOOKS) }
@@ -321,6 +336,7 @@ private fun SearchContent(
             authors = state.authors,
             listState = listState,
             isLoading = state.isSearchingAuthors,
+            isLoadingMore = state.isLoadingMore,
             onAuthorClick = onAuthorClick,
             onLoadMore = { onLoadMore(SearchTab.AUTHORS) },
             canLoadMore = { canLoadMore(SearchTab.AUTHORS) }
@@ -329,12 +345,21 @@ private fun SearchContent(
             series = state.series,
             listState = listState,
             isLoading = state.isSearchingSeries,
+            isLoadingMore = state.isLoadingMore,
             onSeriesClick = onSeriesClick,
             onLoadMore = { onLoadMore(SearchTab.SERIES) },
             canLoadMore = { canLoadMore(SearchTab.SERIES) }
         )
         SearchTab.GENRES -> {
-            // GENRES tab - uses BooksTab to show genre books
+            GenresTab(
+                books = state.genreBooks,
+                listState = listState,
+                isLoading = state.isSearchingGenres,
+                isLoadingMore = state.isLoadingMore,
+                onBookClick = onBookClick,
+                onLoadMore = { onLoadMore(SearchTab.GENRES) },
+                canLoadMore = { canLoadMore(SearchTab.GENRES) }
+            )
         }
     }
 
@@ -486,18 +511,14 @@ private fun BooksTab(
     books: List<Book>,
     listState: androidx.compose.foundation.lazy.LazyListState,
     isLoading: Boolean,
+    isLoadingMore: Boolean,
     onBookClick: (Book) -> Unit,
     onLoadMore: () -> Unit,
     canLoadMore: () -> Boolean
 ) {
     if (isLoading && books.isEmpty()) {
         Box(Modifier.fillMaxSize().padding(vertical = 48.dp), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                Spacer(Modifier.height(16.dp))
-                Text(stringResource(R.string.search_books), style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
+            PulsingBookLoader()
         }
     } else if (books.isEmpty()) {
         Column(
@@ -518,7 +539,7 @@ private fun BooksTab(
                     BookCard(book = book, onClick = { onBookClick(book) })
                 }
             }
-            item { LoadingFooter(canLoadMore) }
+            item { LoadingFooter(isLoading = isLoadingMore, canLoadMore = canLoadMore) }
         }
     }
 }
@@ -532,18 +553,14 @@ private fun AuthorsTab(
     authors: List<Author>,
     listState: androidx.compose.foundation.lazy.LazyListState,
     isLoading: Boolean,
+    isLoadingMore: Boolean,
     onAuthorClick: (String, String) -> Unit,
     onLoadMore: () -> Unit,
     canLoadMore: () -> Boolean
 ) {
     if (isLoading && authors.isEmpty()) {
         Box(Modifier.fillMaxSize().padding(vertical = 48.dp), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                Spacer(Modifier.height(16.dp))
-                Text(stringResource(R.string.search_authors), style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
+            PulsingBookLoader()
         }
     } else if (authors.isEmpty()) {
         Column(
@@ -564,7 +581,7 @@ private fun AuthorsTab(
                     AuthorCard(author = author, onClick = { onAuthorClick(author.authorId, author.name) })
                 }
             }
-            item { LoadingFooter(canLoadMore) }
+            item { LoadingFooter(isLoading = isLoadingMore, canLoadMore = canLoadMore) }
         }
     }
 }
@@ -578,18 +595,14 @@ private fun SeriesTab(
     series: List<Series>,
     listState: androidx.compose.foundation.lazy.LazyListState,
     isLoading: Boolean,
+    isLoadingMore: Boolean,
     onSeriesClick: (String, String, String) -> Unit,
     onLoadMore: () -> Unit,
     canLoadMore: () -> Boolean
 ) {
     if (isLoading && series.isEmpty()) {
         Box(Modifier.fillMaxSize().padding(vertical = 48.dp), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                Spacer(Modifier.height(16.dp))
-                Text(stringResource(R.string.search_series), style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
+            PulsingBookLoader()
         }
     } else if (series.isEmpty()) {
         Column(
@@ -610,7 +623,49 @@ private fun SeriesTab(
                     SeriesCard(series = s, onClick = { onSeriesClick(s.seriesId, s.seriesTitle, s.authorId) })
                 }
             }
-            item { LoadingFooter(canLoadMore) }
+            item { LoadingFooter(isLoading = isLoadingMore, canLoadMore = canLoadMore) }
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  Genres Tab
+// ═══════════════════════════════════════════════════════════════
+
+@Composable
+private fun GenresTab(
+    books: List<Book>,
+    listState: androidx.compose.foundation.lazy.LazyListState,
+    isLoading: Boolean,
+    isLoadingMore: Boolean,
+    onBookClick: (Book) -> Unit,
+    onLoadMore: () -> Unit,
+    canLoadMore: () -> Boolean
+) {
+    if (isLoading && books.isEmpty()) {
+        Box(Modifier.fillMaxSize().padding(vertical = 48.dp), contentAlignment = Alignment.Center) {
+            PulsingBookLoader()
+        }
+    } else if (books.isEmpty()) {
+        Column(
+            Modifier.fillMaxSize().padding(vertical = 48.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(Icons.Default.Style, null, modifier = Modifier.size(64.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
+            Spacer(Modifier.height(16.dp))
+            Text(stringResource(R.string.search_no_genres), style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    } else {
+        LazyColumn(state = listState, contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            for (book in books) {
+                item(key = "g_${book.id}") {
+                    BookCard(book = book, onClick = { onBookClick(book) })
+                }
+            }
+            item { LoadingFooter(isLoading = isLoadingMore, canLoadMore = canLoadMore) }
         }
     }
 }
@@ -716,8 +771,60 @@ private fun SeriesCard(series: Series, onClick: () -> Unit) {
 }
 
 @Composable
-private fun LoadingFooter(canLoadMore: () -> Boolean) {
-    if (canLoadMore()) {
-        PulsingBookLoader()
+private fun LoadingFooter(isLoading: Boolean, canLoadMore: () -> Boolean) {
+    AnimatedVisibility(
+        visible = isLoading && canLoadMore(),
+        enter = fadeIn(animationSpec = tween(400)),
+        exit = fadeOut(animationSpec = tween(300))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                val infiniteTransition = rememberInfiniteTransition(label = "search_loading_more")
+                val rotation by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = 360f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(1200, easing = LinearEasing),
+                        repeatMode = RepeatMode.Restart
+                    ),
+                    label = "rotation"
+                )
+
+                Box(
+                    modifier = Modifier.size(48.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .alpha(0.3f),
+                        strokeWidth = 3.dp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(36.dp),
+                        strokeWidth = 3.dp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                Spacer(Modifier.height(12.dp))
+
+                Text(
+                    text = stringResource(R.string.search_loading_more),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
     }
 }

@@ -304,7 +304,7 @@
     <string name="books_plural_many">книг</string>
 
     <!-- Reader Page Mode -->
-    <string name="reader_page_label">Розд.%1$d Стор.%2$d / %3$d</string>
+    <string name="reader_page_label">Стор.%2$d / %3$d</string>
 
     <!-- Content descriptions -->
     <string name="cd_bookmark">Закладка</string>

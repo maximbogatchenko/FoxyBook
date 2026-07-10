@@ -239,7 +239,10 @@ fun BookDetailsScreen(
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 info.genres.forEach { genre ->
-                                    AssistChip(onClick = { }, label = { Text(genre.title) })
+                                    AssistChip(
+                                        onClick = { onGenreSearch(genre.title) },
+                                        label = { Text(genre.title) }
+                                    )
                                 }
                             }
                             Spacer(modifier = Modifier.height(16.dp))

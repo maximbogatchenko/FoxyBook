@@ -52,6 +52,7 @@
     <string name="fantasy_worlds">Fantasy</string>
     <string name="search_source_label">Применяется к Новинкам и Поиску</string>
     <string name="search_ing">Поиск…</string>
+    <string name="search_loading_more">Загрузка…</string>
 
     <!-- Source selection -->
     <string name="source_book_source">Источник книг</string>
@@ -305,7 +306,7 @@
     <string name="books_plural_many">книг</string>
 
     <!-- Reader Page Mode -->
-    <string name="reader_page_label">Гл.%1$d Стр.%2$d / %3$d</string>
+    <string name="reader_page_label">Стр.%2$d / %3$d</string>
 
     <!-- Content descriptions -->
     <string name="cd_bookmark">Закладка</string>
