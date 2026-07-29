@@ -14,8 +14,10 @@ captures/
 .cxx/
 *.jks
 *.keystore
-.DS_Store.claude/worktrees/
-.claude/worktrees/
+
+# macOS
 .DS_Store
-.DS_Store
-.claude/worktrees/
+__MACOSX/
+
+# Claude Code worktrees and config
+.claude/

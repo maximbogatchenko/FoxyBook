@@ -105,6 +105,16 @@ fun PageModeContent(
         }
     }
 
+    // Retry pagination when blocks load for chapters that don't have pages yet
+    LaunchedEffect(state.chapterBlocks) {
+        for ((chIdx, blocks) in state.chapterBlocks) {
+            if (blocks.isNotEmpty() && !state.chapterPages.containsKey(chIdx)) {
+                Log.d("ReaderNav", "PageMode: Retry pagination for ch$chIdx after blocks loaded")
+                viewModel.ensurePaginated(chIdx)
+            }
+        }
+    }
+
     if (globalPages.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
@@ -148,10 +158,9 @@ fun PageModeContent(
             pagerState.scrollToPage(targetIdx)
             lastHandledRestoreTrigger = state.lastPositionRestoreTrigger
             delay(250)
-        } else {
-            lastHandledRestoreTrigger = state.lastPositionRestoreTrigger
-            isRestoring = false
         }
+        // Если targetIdx < 0 — не сохраняем lastHandledRestoreTrigger,
+        // чтобы при дозагрузке глав LaunchedEffect сработал снова
         isRestoring = false
     }
 

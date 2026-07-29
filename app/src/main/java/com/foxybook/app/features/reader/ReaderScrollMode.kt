@@ -153,9 +153,9 @@ fun ScrollModeContent(
                     block.offsetInChapter
                 ))
             }
-        } else {
-            lastHandledRestoreTrigger = state.lastPositionRestoreTrigger
         }
+        // Если targetIdx < 0 — не сохраняем lastHandledRestoreTrigger,
+        // чтобы при дозагрузке глав LaunchedEffect сработал снова
         isRestoring = false
     }
 

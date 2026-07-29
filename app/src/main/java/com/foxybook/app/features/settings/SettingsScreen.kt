@@ -84,6 +84,8 @@ import androidx.compose.ui.unit.sp
 import com.foxybook.app.R
 import com.foxybook.app.core.models.BookSource
 import com.foxybook.app.core.utils.StorageHelper
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,11 +94,19 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
     val context = LocalContext.current
     var showRestartDialog by remember { mutableStateOf(false) }
     var pendingLanguage by remember { mutableStateOf("") }
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.settings_title), fontWeight = FontWeight.Bold) },
+                title = {
+                    Text(
+                        stringResource(R.string.settings_title),
+                        fontWeight = FontWeight.Bold,
+                        style = if (isLandscape) MaterialTheme.typography.titleLarge else MaterialTheme.typography.headlineSmall
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
@@ -108,9 +118,9 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = if (isLandscape) 24.dp else 16.dp)
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(if (isLandscape) 4.dp else 8.dp))
 
             // ─── Оформление ───
             SettingsSection(

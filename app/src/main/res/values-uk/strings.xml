@@ -3,6 +3,7 @@
     <!-- App -->
     <string name="app_name">FoxyBook</string>
     <string name="loading">Завантаження…</string>
+    <string name="offline_banner">Немає підключення до інтернету</string>
     <string name="error_loading">Помилка завантаження</string>
     <string name="retry">Повторити</string>
     <string name="cancel">Скасувати</string>
@@ -52,6 +53,7 @@
     <string name="fantasy_worlds">Fantasy</string>
     <string name="search_source_label">Застосовується до Новинок та Пошуку</string>
     <string name="search_ing">Пошук…</string>
+    <string name="search_load_more">Завантажити ще</string>
 
     <!-- Source selection -->
     <string name="source_book_source">Джерело книг</string>
@@ -159,6 +161,12 @@
     <string name="reader_bookmark_position">Позиція: %1$d розділ, %2$d символ</string>
     <string name="reader_content_description_book">Книга</string>
     <string name="reader_chapters">Розділи</string>
+    <string name="reader_search_by_book">Пошук у книзі</string>
+    <string name="reader_search_no_results">Нічого не знайдено</string>
+    <string name="reader_search_results">Результати: %1$d</string>
+    <string name="reader_search_prev">Попер.</string>
+    <string name="reader_search_next">Наст.</string>
+    <string name="reader_search_of">%1$d з %2$d</string>
 
     <!-- Reader Settings Panel -->
     <string name="reader_settings_title">Налаштування читання</string>

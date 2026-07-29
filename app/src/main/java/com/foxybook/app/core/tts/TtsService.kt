@@ -9,6 +9,7 @@ import android.media.session.PlaybackState
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.graphics.drawable.Icon
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
@@ -90,6 +91,7 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
                         onBlockCompleted?.invoke()
                     }
                 }
+                @Suppress("DEPRECATION")
                 override fun onError(utteranceId: String?) {
                     Log.e("TtsService", "onError: utteranceId=$utteranceId")
                     updatePlaybackState(PlaybackState.STATE_ERROR)
@@ -215,7 +217,7 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
         isPaused = true
         tts?.stop()
         updatePlaybackState(PlaybackState.STATE_STOPPED)
-        stopForeground(true)
+        stopForeground(Service.STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 
@@ -263,14 +265,14 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setStyle(Notification.MediaStyle().setMediaSession(mediaSession?.sessionToken))
 
-        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_previous, getString(R.string.cd_back), createActionIntent("PREV")).build())
+        builder.addAction(Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_media_previous), getString(R.string.cd_back), createActionIntent("PREV")).build())
         if (isPaused) {
-            builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_play, getString(R.string.cd_play), createActionIntent("RESUME")).build())
+            builder.addAction(Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_media_play), getString(R.string.cd_play), createActionIntent("RESUME")).build())
         } else {
-            builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_pause, getString(R.string.cd_pause), createActionIntent("PAUSE")).build())
+            builder.addAction(Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_media_pause), getString(R.string.cd_pause), createActionIntent("PAUSE")).build())
         }
-        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_next, getString(R.string.cd_next), createActionIntent("NEXT")).build())
-        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_menu_close_clear_cancel, getString(R.string.cd_cancel), createActionIntent("STOP")).build())
+        builder.addAction(Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_media_next), getString(R.string.cd_next), createActionIntent("NEXT")).build())
+        builder.addAction(Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_menu_close_clear_cancel), getString(R.string.cd_cancel), createActionIntent("STOP")).build())
 
         return builder.build()
     }
@@ -313,14 +315,14 @@ class TtsService : Service(), TextToSpeech.OnInitListener {
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setStyle(Notification.MediaStyle().setMediaSession(mediaSession?.sessionToken))
 
-        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_previous, getString(R.string.cd_back), createActionIntent("PREV")).build())
+        builder.addAction(Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_media_previous), getString(R.string.cd_back), createActionIntent("PREV")).build())
         if (isPaused) {
-            builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_play, getString(R.string.cd_play), createActionIntent("RESUME")).build())
+            builder.addAction(Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_media_play), getString(R.string.cd_play), createActionIntent("RESUME")).build())
         } else {
-            builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_pause, getString(R.string.cd_pause), createActionIntent("PAUSE")).build())
+            builder.addAction(Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_media_pause), getString(R.string.cd_pause), createActionIntent("PAUSE")).build())
         }
-        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_media_next, getString(R.string.cd_next), createActionIntent("NEXT")).build())
-        builder.addAction(Notification.Action.Builder(android.R.drawable.ic_menu_close_clear_cancel, getString(R.string.cd_cancel), createActionIntent("STOP")).build())
+        builder.addAction(Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_media_next), getString(R.string.cd_next), createActionIntent("NEXT")).build())
+        builder.addAction(Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_menu_close_clear_cancel), getString(R.string.cd_cancel), createActionIntent("STOP")).build())
 
         return builder.build()
     }

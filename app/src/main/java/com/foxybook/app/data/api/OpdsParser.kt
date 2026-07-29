@@ -1,374 +1,91 @@
 package com.foxybook.app.data.api
 
-import android.util.Log
 import com.foxybook.app.core.models.Author
 import com.foxybook.app.core.models.Book
-import com.foxybook.app.core.models.BookFormat
 import com.foxybook.app.core.models.BookGenre
 import com.foxybook.app.core.models.BookInfo
-import com.foxybook.app.core.models.NewBooksPage
-import com.foxybook.app.core.models.SearchPage
 import com.foxybook.app.core.models.Series
-import com.foxybook.app.core.network.OkHttpClientProvider
 import com.foxybook.app.core.utils.XmlUtils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
-import okhttp3.Request
-import okhttp3.ResponseBody
 import org.xmlpull.v1.XmlPullParser
-import org.jsoup.Jsoup
-import java.net.URLEncoder
-import kotlin.time.Duration.Companion.seconds
 
-class FantasyWorldsApiOpdsImpl(
-    private val networkClient: OkHttpClientProvider
-) : FlibustaApi {
-
-    private companion object {
-        const val TAG = "FANTASY_WORLDS_OPDS"
-        const val MAX_RETRIES = 3
-        const val ALL_RESULTS = Int.MAX_VALUE
-        const val MAX_AUTHORS_TO_CRAWL = 3
-        const val MAX_SEQ_PAGES = 15
-
-        @Volatile
-        private var seriesCache: Map<String, List<Series>>? = null
-        @Volatile
-        private var isCacheBuilding = false
-        private val cacheLock = Any()
-    }
-
-    private val client = networkClient.client
-    private val downloadClient = networkClient.createDownloadClient()
-    private val baseUrl: String get() = networkClient.getBaseUrl()
-    private val searchBookCache = mutableMapOf<String, List<Book>>()
-override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatchers.IO) {
-        val url = "$baseUrl/opds/last"
-        Log.d(TAG, "getNewBooks | $url")
-        val xml = fetchXml(url)
-        val books = parseOpdsBooks(xml, limit.coerceAtMost(50))
-        Log.d(TAG, "getNewBooks | found=${books.size}")
-        books.distinctBy { it.id }
-    }
-
-    override suspend fun getNewBooksFirstPage(): NewBooksPage = withContext(Dispatchers.IO) {
-        val url = "$baseUrl/opds/last/0"
-        Log.d(TAG, "getNewBooksFirstPage | $url")
-        val xml = fetchXml(url)
-        val books = parseOpdsBooks(xml, 50)
-        val nextUrl = if (books.isNotEmpty()) "$baseUrl/opds/last/${books.size}" else null
-        NewBooksPage(books.distinctBy { it.id }, nextUrl)
-    }
-
-    override suspend fun getNewBooksNextPage(url: String): NewBooksPage = withContext(Dispatchers.IO) {
-        Log.d(TAG, "getNewBooksNextPage | $url")
-        val xml = fetchXml(url)
-        val books = parseOpdsBooks(xml, 50)
-        val currentOffset = Regex("""/last/(\d+)""").find(url)?.groupValues?.get(1)?.toIntOrNull() ?: 0
-        val nextUrl = if (books.isNotEmpty()) "$baseUrl/opds/last/${currentOffset + books.size}" else null
-        NewBooksPage(books.distinctBy { it.id }, nextUrl)
-    }
-
-    override suspend fun searchBooks(query: String, limit: Int): SearchPage<Book> = withContext(Dispatchers.IO) {
-        val encoded = URLEncoder.encode(query, "UTF-8")
-        val effectiveLimit = limit.coerceAtLeast(50)
-
-        // Сначала пробуем стандартный OPDS search endpoint (с <link rel="next">)
-        val url = "$baseUrl/opds/search?searchType=books&searchTerm=$encoded"
-        Log.d(TAG, "searchBooks | $url")
-
-        var xml: String? = null
-        var allBooks: List<Book> = emptyList()
-        var books: List<Book> = emptyList()
-
-        try {
-            xml = fetchXml(url)
-            allBooks = parseOpdsBooks(xml, effectiveLimit)
-            books = allBooks.distinctBy { it.id }
-        } catch (e: Exception) {
-            Log.w(TAG, "searchBooks | primary endpoint failed: ${e.message}")
-        }
-
-        // Если не нашло (ошибка или пустой результат) — пробуем альтернативный endpoint
-        if (books.isEmpty()) {
-            val fallbackUrl = "$baseUrl/opdssearch?searchType=books&q=$encoded"
-            Log.d(TAG, "searchBooks | fallback → $fallbackUrl")
-            try {
-                xml = fetchXml(fallbackUrl)
-                allBooks = parseOpdsBooks(xml, effectiveLimit)
-                books = allBooks.distinctBy { it.id }
-            } catch (e: Exception) {
-                Log.w(TAG, "searchBooks | fallback also failed: ${e.message}")
-            }
-        }
-
-        val nextUrl = if (books.isNotEmpty() && xml != null) parseNextLink(xml!!).let { if (it.isNotBlank()) it else null } else null
-        Log.d(TAG, "searchBooks | found=${books.size}, next=$nextUrl")
-        SearchPage(books, nextUrl)
-    }
-
-    override suspend fun searchBooksNextPage(url: String, limit: Int): SearchPage<Book> = withContext(Dispatchers.IO) {
-        Log.d(TAG, "searchBooksNextPage | $url")
-        val xml = fetchXml(url)
-        val allBooks = parseOpdsBooks(xml, limit.coerceAtLeast(50))
-        val books = allBooks.distinctBy { it.id }
-        val nextUrl = if (books.isNotEmpty()) parseNextLink(xml).let { if (it.isNotBlank()) it else null } else null
-        Log.d(TAG, "searchBooksNextPage | found=${books.size}, next=$nextUrl")
-        SearchPage(books, nextUrl)
-    }
-
-    override suspend fun searchByAuthor(query: String, limit: Int): SearchPage<Author> = withContext(Dispatchers.IO) {
-        val encoded = URLEncoder.encode(query, "UTF-8")
-        val url = "$baseUrl/opdssearch?searchType=authors&q=$encoded"
-        Log.d(TAG, "searchByAuthor | $url")
-        val xml = fetchXml(url)
-        val authors = parseOpdsAuthors(xml, limit)
-        val nextUrl = if (authors.isNotEmpty()) parseNextLink(xml).let { if (it.isNotBlank()) it else null } else null
-        SearchPage(authors.distinctBy { it.authorId }, nextUrl)
-    }
-
-    override suspend fun searchByAuthorNextPage(url: String, limit: Int): SearchPage<Author> = withContext(Dispatchers.IO) {
-        val xml = fetchXml(url)
-        val authors = parseOpdsAuthors(xml, limit)
-        val nextUrl = if (authors.isNotEmpty()) parseNextLink(xml).let { if (it.isNotBlank()) it else null } else null
-        SearchPage(authors.distinctBy { it.authorId }, nextUrl)
-    }
-
-    override suspend fun getAuthorBooks(authorId: String, limit: Int): List<Book> = withContext(Dispatchers.IO) {
-        val url = "$baseUrl/opds/author/$authorId/alphabet"
-        Log.d(TAG, "getAuthorBooks | $url")
-        val pages = fetchAllPages(url)
-        val books = mutableListOf<Book>()
-        for (xml in pages) {
-            if (books.size >= limit) break
-            books.addAll(parseOpdsBooks(xml, limit))
-        }
-        books.sortedBy { it.sequenceNumber }.distinctBy { it.id }
-    }
+/**
+ * Shared OPDS parser extracted from FlibustaApiOpdsImpl and FantasyWorldsApiOpdsImpl.
+ *
+ * Contains all pure OPDS/XML parsing logic that was duplicated ~700 lines across the two files.
+ * Each API implementation creates an instance with its own [baseUrlProvider] and [fetchFn].
+ *
+ * Thread-safe: all methods are stateless — they parse input and return results without mutation.
+ */
+class OpdsParser(
+    private val baseUrlProvider: () -> String,
+    private val fetchFn: (String) -> String
+) {
+    private val resolvedBaseUrl: String get() = baseUrlProvider()
+    fun getBaseUrl(): String = resolvedBaseUrl
 
     // ═══════════════════════════════════════════════════════════════
-    //  Series cache — загружаем все серии один раз в память
+    //  Genre navigation entries (OPDS catalog)
     // ═══════════════════════════════════════════════════════════════
 
-    private suspend fun ensureSeriesCache() {
-        if (seriesCache != null || isCacheBuilding) return
-        synchronized(cacheLock) {
-            if (seriesCache != null || isCacheBuilding) return
-            isCacheBuilding = true
-        }
+    data class GenreNavEntry(
+        val name: String,
+        val url: String
+    )
 
-        Log.d(TAG, "ensureSeriesCache | building series cache...")
-        val startTime = System.currentTimeMillis()
-        val cache = mutableMapOf<String, MutableList<Series>>()
-        var currentUrl = "$baseUrl/opds/sequences"
-        var pageCount = 0
-        val seenUrls = mutableSetOf<String>()
+    /**
+     * Парсит любой навигационный OPDS-фид: достаёт title + href из каждого entry.
+     * Подходит для /opds/genres (список жанров) и /opds/genres/Фантастика (поджанры).
+     */
+    fun parseNavEntries(xml: String): List<GenreNavEntry> {
+        val entries = mutableListOf<GenreNavEntry>()
+        val parser = XmlUtils.createParser(xml)
+        var eventType = parser.eventType
+        var inEntry = false
+        var title: String? = null
+        var linkHref: String? = null
 
-        try {
-            while (currentUrl.isNotBlank() && pageCount < 200) {
-                if (currentUrl in seenUrls) break
-                seenUrls.add(currentUrl)
-
-                val xml = try {
-                    fetchXml(currentUrl)
-                } catch (e: Exception) {
-                    Log.w(TAG, "ensureSeriesCache | page $pageCount: ${e.message}")
-                    break
-                }
-
-                val series = parseOpdsSequences(xml, ALL_RESULTS)
-                for (s in series) {
-                    val key = s.seriesTitle.trim().lowercase()
-                        .replace(Regex("""[.,!?;:'\"«»()\[\]{}–—]"""), "")
-                    cache.getOrPut(key) { mutableListOf() }.add(s)
-                }
-
-                pageCount++
-                currentUrl = parseNextLink(xml)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "ensureSeriesCache | error: ${e.message}")
-        }
-
-        val elapsed = System.currentTimeMillis() - startTime
-        Log.d(TAG, "ensureSeriesCache | done: ${cache.size} titles, ${pageCount} pages, ${elapsed}ms")
-
-        synchronized(cacheLock) {
-            seriesCache = cache
-            isCacheBuilding = false
-        }
-    }
-
-    override suspend fun searchBySeries(query: String, limit: Int): SearchPage<Series> = withContext(Dispatchers.IO) {
-        val cleanQuery = query.trim().lowercase()
-            .replace(Regex("""[.,!?;:'\"«»()\[\]{}]"""), "")
-        val allSeries = mutableListOf<Series>()
-        val encoded = URLEncoder.encode(query, "UTF-8")
-
-        // 0. Сначала пробуем кеш всех серий
-        ensureSeriesCache()
-        val cache = seriesCache
-        if (cache != null) {
-            val cached = cache.filterKeys { it.contains(cleanQuery) }.values.flatten()
-            if (cached.isNotEmpty()) {
-                val result = cached.distinctBy { it.seriesId }
-                Log.d(TAG, "searchBySeries | cache hit: ${result.size} series")
-                return@withContext SearchPage(result, null)
-            }
-        }
-
-        Log.d(TAG, "searchBySeries | cache miss, trying API search...")
-
-        val bookUrl = "$baseUrl/opds/search?searchType=books&searchTerm=$encoded"
-        Log.d(TAG, "searchBySeries | books → $bookUrl")
-        val bookPages = fetchAllPages(bookUrl)
-        for (xml in bookPages) {
-            allSeries.addAll(parseOpdsSeriesFromBooks(xml, limit))
-        }
-
-        val authorIds = mutableListOf<String>()
-        for (xml in bookPages) {
-            authorIds.addAll(parseOpdsAuthorIdsFromBooks(xml, Int.MAX_VALUE))
-        }
-        authorIds.distinct().take(5).chunked(2).forEach { batch ->
-            coroutineScope {
-                batch.map { id ->
-                    async {
-                        try {
-                            fetchAllPages("$baseUrl/opds/authorsequences/$id").flatMap { parseOpdsSeries(it, limit) }
-                        } catch (e: Exception) { emptyList() }
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            val name = parser.name
+            when (eventType) {
+                XmlPullParser.START_TAG -> {
+                    when (name) {
+                        "entry" -> { title = null; linkHref = null; inEntry = true }
+                        "title" -> if (inEntry) title = parser.nextText()
+                        "link" -> {
+                            if (inEntry && linkHref == null) {
+                                val href = parser.getAttributeValue(null, "href")
+                                // Берём первую ссылку (alternate по умолчанию),
+                                // пропускаем rel="search", rel="start", rel="up", rel="next"
+                                val rel = parser.getAttributeValue(null, "rel") ?: ""
+                                if (href != null && rel !in listOf("search", "start", "up", "next", "self")) {
+                                    linkHref = if (href.startsWith("http")) href else "$resolvedBaseUrl$href"
+                                }
+                            }
+                        }
                     }
-                }.forEach { allSeries.addAll(it.await()) }
-            }
-        }
-
-        val page0 = fetchXml("$baseUrl/opds/sequences")
-        if (page0 != null) {
-            allSeries.addAll(parseOpdsSequences(page0, limit))
-            for (i in 1..5) {
-                val xml = fetchXml("$baseUrl/opds/sequences/%252F$i") ?: break
-                if (!xml.contains("<entry>")) break
-                allSeries.addAll(parseOpdsSequences(xml, limit))
-            }
-        }
-
-        val filtered = allSeries.filter {
-            it.seriesTitle.trim().lowercase()
-                .replace(Regex("""[.,!?;:'\"«»()\[\]{}]"""), "")
-                .contains(cleanQuery)
-        }.distinctBy { it.seriesId }
-
-        Log.d(TAG, "searchBySeries | found=${filtered.size}")
-        SearchPage(filtered, null)
-    }
-
-    override suspend fun searchBySeriesNextPage(url: String, limit: Int): SearchPage<Series> = withContext(Dispatchers.IO) {
-        SearchPage(emptyList())
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    //  Genre search — Fantasy-worlds не имеет OPDS-каталога жанров,
-    //  используем поиск через opdssearch + клиентская фильтрация
-    // ═══════════════════════════════════════════════════════════════
-
-    override suspend fun searchByGenre(query: String, limit: Int): SearchPage<Book> = withContext(Dispatchers.IO) {
-        val encoded = URLEncoder.encode(query, "UTF-8")
-        val cleanQuery = query.trim().lowercase()
-            .replace(Regex("""[.,!?;:'\"«»()\[\]{}]"""), "")
-        val url = "$baseUrl/opdssearch?searchType=books&q=$encoded"
-        Log.d(TAG, "searchByGenre | $url")
-        val xml = fetchXml(url)
-        val allBooks = parseOpdsBooks(xml, limit)
-        val filtered = allBooks.filter { book ->
-            book.genres.any { it.lowercase().contains(cleanQuery) }
-        }
-        val nextUrl = if (filtered.isNotEmpty()) "$baseUrl/opdssearch?searchType=books&q=$encoded&page=1" else null
-        Log.d(TAG, "searchByGenre | found=${filtered.size} from ${allBooks.size}, next=$nextUrl")
-        SearchPage(filtered.distinctBy { it.id }, nextUrl)
-    }
-
-    override suspend fun searchByGenreNextPage(url: String, limit: Int): SearchPage<Book> = withContext(Dispatchers.IO) {
-        val xml = fetchXml(url)
-        val allBooks = parseOpdsBooks(xml, limit)
-        val searchTerm = Regex("""[?&]q=([^&]+)""").find(url)?.groupValues?.get(1) ?: ""
-        val cleanQuery = java.net.URLDecoder.decode(searchTerm, "UTF-8").lowercase()
-            .replace(Regex("""[.,!?;:'\"«»()\[\]{}]"""), "")
-        val filtered = allBooks.filter { book ->
-            book.genres.any { it.lowercase().contains(cleanQuery) }
-        }
-        val nextPage = Regex("""[?&]page=(\d+)""").find(url)?.groupValues?.get(1)?.toIntOrNull()
-        val nextUrl = if (nextPage != null) {
-            url.replace(Regex("""page=\d+"""), "page=${nextPage + 1}")
-        } else {
-            null
-        }
-        Log.d(TAG, "searchByGenreNextPage | fallback found=${filtered.size} from ${allBooks.size}, nextPage=$nextPage")
-        SearchPage(filtered.distinctBy { it.id }, nextUrl)
-    }
-
-    override suspend fun getSeriesBooks(seriesId: String, authorId: String?, limit: Int): List<Book> = withContext(Dispatchers.IO) {
-        val url = if (!authorId.isNullOrBlank()) {
-            "$baseUrl/opds/authorsequence/$authorId/$seriesId"
-        } else {
-            "$baseUrl/opds/sequencebooks/$seriesId"
-        }
-        Log.d(TAG, "getSeriesBooks | $url")
-        val pages = fetchAllPages(url)
-        val books = mutableListOf<Book>()
-        for (xml in pages) {
-            if (books.size >= limit) break
-            books.addAll(parseOpdsBooks(xml, limit))
-        }
-        books.sortedBy { it.sequenceNumber }.distinctBy { it.id }
-    }
-
-    override suspend fun getBookInfo(id: Int): BookInfo? = withContext(Dispatchers.IO) {
-        try {
-            val htmlUrl = "$baseUrl/lib/id$id/"
-            Log.d(TAG, "getBookInfo | HTML $htmlUrl")
-            val html = fetchHtml(htmlUrl)
-            parseHtmlBookInfo(html, id)
-        } catch (e: Exception) {
-            Log.e(TAG, "getBookInfo error", e)
-            null
-        }
-    }
-
-    override fun getDownloadUrl(id: String, format: BookFormat): String {
-        return "$baseUrl/lib/id$id/download/${format.extension}"
-    }
-
-    override suspend fun downloadBook(id: String, format: BookFormat, onProgress: (Float) -> Unit): ResponseBody? = withContext(Dispatchers.IO) {
-        val url = getDownloadUrl(id, format)
-        var lastException: Exception? = null
-
-        for (attempt in 1..MAX_RETRIES) {
-            try {
-                val request = Request.Builder().url(url).build()
-                val response = downloadClient.newCall(request).execute()
-                if (!response.isSuccessful) {
-                    response.close()
-                    lastException = Exception("HTTP ${response.code}")
-                    continue
                 }
-                return@withContext response.body
-            } catch (e: Exception) {
-                lastException = e
-                if (attempt < MAX_RETRIES) kotlinx.coroutines.delay(attempt.seconds)
+                XmlPullParser.END_TAG -> {
+                    if (name == "entry") {
+                        inEntry = false
+                        if (title != null && linkHref != null) {
+                            entries.add(GenreNavEntry(title!!, linkHref!!))
+                        }
+                    }
+                }
             }
+            eventType = parser.next()
         }
-        throw lastException ?: Exception("Download failed")
+        return entries
     }
+
     // ═══════════════════════════════════════════════════════════════
     //  Pagination — follow <link rel="next">
     // ═══════════════════════════════════════════════════════════════
 
-    private fun fetchAllPages(url: String, maxPages: Int = 5): List<String> {
+    fun fetchAllPages(url: String, maxPages: Int = 5): List<String> {
         val pages = mutableListOf<String>()
         var currentUrl = url
-        var seenUrls = mutableSetOf<String>()
+        val seenUrls = mutableSetOf<String>()
         var pageCount = 0
         while (currentUrl.isNotBlank() && pageCount < maxPages) {
             if (currentUrl in seenUrls) break
@@ -381,7 +98,7 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
         return pages
     }
 
-    private fun parseNextLink(xml: String): String {
+    fun parseNextLink(xml: String): String {
         val parser = XmlUtils.createParser(xml)
         var eventType = parser.eventType
         while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -389,7 +106,7 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
                 val rel = parser.getAttributeValue(null, "rel")
                 val href = parser.getAttributeValue(null, "href")
                 if (rel == "next" && href != null) {
-                    return if (href.startsWith("http")) href else "$baseUrl$href"
+                    return if (href.startsWith("http")) href else "$resolvedBaseUrl$href"
                 }
             }
             eventType = parser.next()
@@ -397,7 +114,11 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
         return ""
     }
 
-    private fun parseNewBooksFast(xml: String, limit: Int): List<Book> {
+    // ═══════════════════════════════════════════════════════════════
+    //  Fast OPDS parsing (regex-based, for new-books feeds)
+    // ═══════════════════════════════════════════════════════════════
+
+    fun parseNewBooksFast(xml: String, limit: Int): List<Book> {
         val books = mutableListOf<Book>()
         val entryRegex = Regex("<entry>(.*?)</entry>", RegexOption.DOT_MATCHES_ALL)
         val entries = entryRegex.findAll(xml).map { it.groupValues[1] }.toList()
@@ -420,7 +141,7 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
 
             val coverUrl = Regex("""<link\s+href="([^"]*)"\s+rel="http://opds-spec.org/image""")
                 .find(entryText)?.groupValues?.get(1)?.let { href ->
-                    if (href.startsWith("http")) href else "$baseUrl$href"
+                    if (href.startsWith("http")) href else "$resolvedBaseUrl$href"
                 } ?: ""
 
             val genres = Regex("""<category\s+[^>]*label="([^"]*)""")
@@ -429,6 +150,15 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
             val description = Regex("<content[^>]*>(.*?)</content>", RegexOption.DOT_MATCHES_ALL)
                 .find(entryText)?.groupValues?.get(1)?.let { stripHtmlAndTruncate(it) }
                 ?: ""
+
+            val formats = Regex(
+                """<link\s+href="[^"]*/([a-z0-9]+)"\s+rel="http://opds-spec.org/acquisition/open-access""",
+                RegexOption.IGNORE_CASE
+            )
+                .findAll(entryText)
+                .map { it.groupValues[1] }
+                .filter { it in listOf("epub", "fb2", "mobi", "txt", "pdf") }
+                .toList()
 
             books.add(Book(
                 id = id,
@@ -439,17 +169,17 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
                 coverUrl = coverUrl,
                 genres = genres,
                 description = description,
+                formats = formats,
             ))
         }
         return books
     }
 
     // ═══════════════════════════════════════════════════════════════
-    //  Parse OPDS entries — books
+    //  Parse OPDS entries — books (XmlPullParser-based)
     // ═══════════════════════════════════════════════════════════════
 
-    private fun parseOpdsBooks(xml: String, limit: Int): List<Book> {
-
+    fun parseOpdsBooks(xml: String, limit: Int): List<Book> {
         val books = mutableListOf<Book>()
         val parser = XmlUtils.createParser(xml)
         var eventType = parser.eventType
@@ -459,10 +189,13 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
         val authors = mutableListOf<String>()
         var coverUrl: String? = null
         val genres = mutableListOf<String>()
+        val formats = mutableListOf<String>()
         var seqNumber = 0
         var inEntry = false
         var hasBookLink = false
         var description = ""
+
+        val knownFormats = listOf("epub", "fb2", "mobi", "txt", "pdf")
 
         while (eventType != XmlPullParser.END_DOCUMENT && books.size < limit) {
             val name = parser.name
@@ -470,7 +203,9 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
                 XmlPullParser.START_TAG -> {
                     when (name) {
                         "entry" -> {
-                            title = null; id = null; authors.clear(); coverUrl = null; genres.clear(); seqNumber = 0; inEntry = true; hasBookLink = false; description = ""
+                            title = null; id = null; authors.clear(); coverUrl = null
+                            genres.clear(); formats.clear(); seqNumber = 0; inEntry = true
+                            hasBookLink = false; description = ""
                         }
                         "title" -> if (inEntry) title = parser.nextText()
                         "id" -> {
@@ -497,7 +232,14 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
                                 val rel = parser.getAttributeValue(null, "rel")
                                 val href = parser.getAttributeValue(null, "href")
                                 if ((rel == "http://opds-spec.org/image" || rel == "http://opds-spec.org/image/thumbnail") && href != null) {
-                                    coverUrl = if (href.startsWith("http")) href else "$baseUrl$href"
+                                    coverUrl = if (href.startsWith("http")) href else "$resolvedBaseUrl$href"
+                                }
+                                // Извлекаем формат из acquisition-ссылок (например, /b/523168/fb2 → "fb2")
+                                if (rel == "http://opds-spec.org/acquisition/open-access" && href != null) {
+                                    val ext = href.substringAfterLast("/").lowercase()
+                                    if (ext in knownFormats && ext !in formats) {
+                                        formats.add(ext)
+                                    }
                                 }
                                 // Check for book link in Fantasy-worlds format: /lib/id39665/
                                 if (href != null) {
@@ -528,9 +270,11 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
                                 if (label != null) genres.add(label)
                             }
                         }
-                        "content" -> {
+                        "content", "summary" -> {
                             if (inEntry) {
-                                description = parser.nextText()
+                                val raw = parser.nextText()
+                                description = raw
+                                    .let { decodeXml(it) }
                                     .replace(Regex("<[^>]+>"), " ")
                                     .replace(Regex("\\s+"), " ")
                                     .trim()
@@ -545,10 +289,6 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
                         val currentId = id
                         val currentTitle = title
                         if (currentId != null && currentTitle != null && hasBookLink) {
-                            val formatsList = mutableListOf<String>()
-                            // acquisition links уже обработаны как hasBookLink, извлекаем форматы
-                            val formatRegex = Regex("""<link\s+href="[^"]*/([a-z0-9]+)"\s+rel="http://opds-spec.org/acquisition/open-access""")
-                            // Форматы извлекать неоткуда в этом парсере, используем стандартный набор
                             books.add(
                                 Book(
                                     id = currentId,
@@ -560,6 +300,7 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
                                     genres = genres.toList(),
                                     sequenceNumber = seqNumber,
                                     description = description,
+                                    formats = formats.toList(),
                                 )
                             )
                         }
@@ -575,7 +316,7 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
     //  Parse OPDS entries — author IDs
     // ═══════════════════════════════════════════════════════════════
 
-    private fun parseOpdsAuthorIds(xml: String, limit: Int): List<String> {
+    fun parseOpdsAuthorIds(xml: String, limit: Int): List<String> {
         val ids = mutableListOf<String>()
         val parser = XmlUtils.createParser(xml)
         var eventType = parser.eventType
@@ -629,7 +370,7 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
     //  Parse author IDs from book entries (search <uri> inside <author>)
     // ═══════════════════════════════════════════════════════════════
 
-    private fun parseOpdsAuthorIdsFromBooks(xml: String, limit: Int): List<String> {
+    fun parseOpdsAuthorIdsFromBooks(xml: String, limit: Int): List<String> {
         val ids = mutableListOf<String>()
         val parser = XmlUtils.createParser(xml)
         var eventType = parser.eventType
@@ -647,6 +388,21 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
                         val uri = parser.nextText()
                         val match = Regex("""/a/(\d+)""").find(uri)
                         if (match != null) currentId = match.groupValues[1]
+                    }
+                    // Fallback for Fantasy-worlds: author ID in <link rel="related" href="/opds/author/id{NUM}">
+                    if (name == "link" && inEntry && currentId == null) {
+                        val rel = parser.getAttributeValue(null, "rel")
+                        val href = parser.getAttributeValue(null, "href")
+                        if (rel == "related" && href != null) {
+                            val fantasyMatch = Regex("""/opds/author/id(\d+)""").find(href)
+                            if (fantasyMatch != null) {
+                                currentId = fantasyMatch.groupValues[1]
+                            } else {
+                                // Flibusta-style: /author/{NUM} in href
+                                val linkMatch = Regex("""/author/(\d+)""").find(href)
+                                if (linkMatch != null) currentId = linkMatch.groupValues[1]
+                            }
+                        }
                     }
                 }
                 XmlPullParser.END_TAG -> {
@@ -669,7 +425,7 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
     //  Parse OPDS entries — full author objects
     // ═══════════════════════════════════════════════════════════════
 
-    private fun parseOpdsAuthors(xml: String, limit: Int): List<Author> {
+    fun parseOpdsAuthors(xml: String, limit: Int): List<Author> {
         val authors = mutableListOf<Author>()
         val parser = XmlUtils.createParser(xml)
         var eventType = parser.eventType
@@ -711,7 +467,7 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
                                     if (linkMatch != null) id = linkMatch.groupValues[1]
                                 }
                                 if ((rel == "http://opds-spec.org/image" || rel == "http://opds-spec.org/image/thumbnail") && href != null) {
-                                    portraitUrl = if (href.startsWith("http")) href else "$baseUrl$href"
+                                    portraitUrl = if (href.startsWith("http")) href else "$resolvedBaseUrl$href"
                                 }
                             }
                         }
@@ -741,10 +497,10 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
     }
 
     // ═══════════════════════════════════════════════════════════════
-    //  Parse OPDS entries — series
+    //  Parse OPDS entries — series (from author sequences)
     // ═══════════════════════════════════════════════════════════════
 
-    private fun parseOpdsSeries(xml: String, limit: Int): List<Series> {
+    fun parseOpdsSeries(xml: String, limit: Int): List<Series> {
         val seriesList = mutableListOf<Series>()
         val parser = XmlUtils.createParser(xml)
         var eventType = parser.eventType
@@ -795,7 +551,7 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
                                 Series(
                                     seriesId = currentId,
                                     seriesTitle = currentTitle,
-                                    seriesUrl = "$baseUrl/sequence/$currentId",
+                                    seriesUrl = "$resolvedBaseUrl/sequence/$currentId",
                                     bookCount = count,
                                     authorId = authorId ?: "",
                                 )
@@ -814,7 +570,7 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
     //  Entries have IDs like tag:sequence:96783
     // ═══════════════════════════════════════════════════════════════
 
-    private fun parseOpdsSequences(xml: String, limit: Int): List<Series> {
+    fun parseOpdsSequences(xml: String, limit: Int): List<Series> {
         val seriesList = mutableListOf<Series>()
         val parser = XmlUtils.createParser(xml)
         var eventType = parser.eventType
@@ -857,7 +613,7 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
                                 Series(
                                     seriesId = currentId,
                                     seriesTitle = currentTitle.trim(),
-                                    seriesUrl = "$baseUrl/sequencebooks/$currentId",
+                                    seriesUrl = "$resolvedBaseUrl/sequencebooks/$currentId",
                                     bookCount = count,
                                 )
                             )
@@ -874,7 +630,7 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
     //  Parse OPDS — single book info
     // ═══════════════════════════════════════════════════════════════
 
-    private fun parseOpdsBookInfo(xml: String, bookId: Int): BookInfo? {
+    fun parseOpdsBookInfo(xml: String, bookId: Int): BookInfo? {
         val parser = XmlUtils.createParser(xml)
         var eventType = parser.eventType
 
@@ -883,33 +639,62 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
         var description = ""
         val genres = mutableListOf<BookGenre>()
         var coverUrl: String? = null
+        var inEntry = false
 
         while (eventType != XmlPullParser.END_DOCUMENT) {
             val name = parser.name
             when (eventType) {
                 XmlPullParser.START_TAG -> {
                     when (name) {
-                        "title" -> title = parser.nextText()
+                        "entry" -> { inEntry = true }
+                        "title" -> if (inEntry) title = parser.nextText()
                         "name" -> {
-                            val authorName = parser.nextText().trim()
-                            if (authorName.isNotBlank()) authorList.add(authorName)
+                            if (inEntry) {
+                                val authorName = parser.nextText().trim()
+                                if (authorName.isNotBlank()) authorList.add(authorName)
+                            }
                         }
-                        "content" -> {
-                            description = parser.nextText().trim()
+                        "content", "summary" -> {
+                            if (inEntry) {
+                                description = parser.nextText().trim()
+                                    .let { decodeXml(it) }
+                                    .replace(Regex("<[^>]+>"), " ")
+                                    .replace(Regex("\\s+"), " ")
+                                    .trim()
+                            }
                         }
                         "category" -> {
-                            val term = parser.getAttributeValue(null, "term") ?: ""
-                            val label = parser.getAttributeValue(null, "label") ?: term
-                            if (label.isNotBlank()) {
-                                genres.add(BookGenre(id = term, title = label))
+                            if (inEntry) {
+                                val term = parser.getAttributeValue(null, "term") ?: ""
+                                val label = parser.getAttributeValue(null, "label") ?: term
+                                if (label.isNotBlank()) {
+                                    genres.add(BookGenre(id = term, title = label))
+                                }
                             }
                         }
                         "link" -> {
-                            val rel = parser.getAttributeValue(null, "rel")
-                            val href = parser.getAttributeValue(null, "href")
-                            if (rel == "http://opds-spec.org/image" && href != null) {
-                                coverUrl = if (href.startsWith("http")) href else "$baseUrl$href"
+                            if (inEntry) {
+                                val rel = parser.getAttributeValue(null, "rel")
+                                val href = parser.getAttributeValue(null, "href")
+                                if (rel == "http://opds-spec.org/image" && href != null) {
+                                    coverUrl = if (href.startsWith("http")) href else "$resolvedBaseUrl$href"
+                                }
                             }
+                        }
+                    }
+                }
+                XmlPullParser.END_TAG -> {
+                    if (name == "entry" && inEntry) {
+                        val finalTitle = title
+                        if (finalTitle != null) {
+                            return BookInfo(
+                                id = bookId,
+                                title = finalTitle,
+                                author = authorList.joinToString(", ").ifBlank { "Unknown Author" },
+                                description = description,
+                                genres = genres,
+                                coverUrl = coverUrl ?: ""
+                            )
                         }
                     }
                 }
@@ -917,185 +702,15 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
             eventType = parser.next()
         }
 
-        val finalTitle = title
-        return if (finalTitle != null) {
-            BookInfo(
-                id = bookId,
-                title = finalTitle,
-                author = authorList.joinToString(", ").ifBlank { "Unknown Author" },
-                description = description,
-                genres = genres,
-                coverUrl = coverUrl ?: ""
-            )
-        } else null
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    //  HTML book info parsing (fallback when OPDS fails)
-    // ═══════════════════════════════════════════════════════════════
-
-    private fun parseHtmlBookInfo(html: String, bookId: Int): BookInfo? {
-        val doc = Jsoup.parse(html, baseUrl)
-
-        // ── Title ──
-        val rawTitle = doc.selectFirst("h1")?.text()?.trim()
-            ?: doc.selectFirst("h2")?.text()?.trim()
-            ?: doc.selectFirst("meta[property=og:title]")?.attr("content")?.trim()
-            ?: return null
-
-        // ── Author: prefer <article>, then /a/\d+, then /author/id, then h1 prefix ──
-        val article = doc.selectFirst("article")
-        val authorScope = article ?: doc
-        val authorFromLink = authorScope.select("a[href]").firstOrNull { a ->
-            val href = a.attr("href")
-            Regex("""/a/(\d+)""").containsMatchIn(href) && a.text().trim().lowercase() != "все"
-        }?.text()?.trim()
-            ?: doc.select("a[href*=/author/id]").firstOrNull { a ->
-                Regex("""/author/id(\d+)""").find(a.attr("href")) != null
-            }?.text()?.trim()
-
-        val authorFromTitle = if (authorFromLink == null) {
-            val dash = rawTitle.indexOf(" — ")
-            if (dash > 0) rawTitle.substring(0, dash).trim()
-            else rawTitle.indexOf(" - ").let { if (it > 0) rawTitle.substring(0, it).trim() else null }
-        } else null
-
-        val author = authorFromLink ?: authorFromTitle ?: "Unknown Author"
-
-        // Clean title: strip author prefix if present
-        val title = rawTitle
-            .let { t -> val d = t.indexOf(" — "); if (d > 0) t.substring(d + 3).trim() else t }
-            .let { t -> val d = t.indexOf(" - "); if (d > 0 && authorFromTitle != null) t.substring(d + 3).trim() else t }
-
-        // ── Cover: prefer /ib/ or /i/{num}/{num}/, exclude icons, then og:image ──
-        val coverFromImg = doc.select("img[src]").firstOrNull { img ->
-            val src = img.attr("src")
-            src.contains("/ib/") ||
-                (Regex("""/i/\d+/\d+""").containsMatchIn(src) && !src.endsWith(".gif")) ||
-                src.contains("/img/preview/")
-        }?.attr("src")
-
-        val coverFromMeta = doc.selectFirst("meta[property=og:image]")?.attr("content")
-
-        val coverUrl = (coverFromImg ?: coverFromMeta)?.let { src ->
-            if (src.startsWith("http")) src else "$baseUrl$src"
-        } ?: ""
-
-        // ── Description ──
-        val description = buildString {
-            // Try <h2>Аннотация</h2> (Flibusta style)
-            val annotationH2 = doc.selectFirst("h2:contains(Аннотация)")
-            if (annotationH2 != null) {
-                val node = annotationH2.nextSibling()
-                val parts = mutableListOf<String>()
-                var current = node
-                while (current != null) {
-                    if (current is org.jsoup.nodes.Element && current.tagName() == "h2") break
-                    val text = current.toString().trim()
-                    if (text.isNotBlank()) parts.add(text)
-                    current = current.nextSibling()
-                }
-                val raw = parts.joinToString(" ")
-                    .replace(Regex("<[^>]+>"), " ")
-                    .replace(Regex("\\s+"), " ")
-                    .trim()
-                    .take(500)
-                if (raw.isNotBlank() && !raw.startsWith("отсутствует")) {
-                    append(raw.take(500))
-                }
-            }
-            // Fallback: <meta property="og:description"> (FantasyWorlds)
-            if (isEmpty()) {
-                doc.selectFirst("meta[property=og:description]")?.attr("content")?.trim()
-                    ?.takeIf { it.isNotBlank() }
-                    ?.let { append(it.take(500)) }
-            }
-            // Fallback: <meta name="description">
-            if (isEmpty()) {
-                doc.selectFirst("meta[name=description]")?.attr("content")?.trim()
-                    ?.takeIf { it.isNotBlank() }
-                    ?.let { append(it.take(500)) }
-            }
-            // Fallback: first meaningful paragraph
-            if (isEmpty()) {
-                for (p in doc.select("p")) {
-                    val text = p.text().trim()
-                    if (text.length > 30 && text.length < 2000 &&
-                        !text.contains("Оценки") && !text.contains("Рекомендации")) {
-                        append(text)
-                        break
-                    }
-                }
-            }
-        }
-
-        // ── Genres ──
-        val genres = mutableListOf<BookGenre>()
-        val genreLinks = doc.select("a[href^=/g/]")
-        for (genreLink in genreLinks) {
-            val genreId = genreLink.attr("href").removePrefix("/g/")
-            val genreTitle = genreLink.text().trim()
-            if (genreTitle.isNotBlank()) {
-                genres.add(BookGenre(id = genreId, title = genreTitle))
-            }
-        }
-
-        // ── Available formats: ищем ссылки скачивания на странице книги ──
-        val formatExtensions = listOf("epub", "fb2", "mobi", "txt", "pdf")
-        val availableFormats = doc.select("a[href]").mapNotNull { link ->
-            val href = link.attr("href")
-            formatExtensions.firstOrNull { ext ->
-                (href.endsWith("/$ext") || href.endsWith(".$ext")) &&
-                (href.contains("/b/$bookId/") || href.contains("/lib/id${bookId}/download/") || href.contains("$bookId.$ext"))
-            }
-        }.distinct()
-
-        return BookInfo(
-            id = bookId,
-            title = title,
-            author = author,
-            description = description,
-            genres = genres,
-            coverUrl = coverUrl,
-            availableFormats = availableFormats
-        )
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    //  Network helpers
-    // ═══════════════════════════════════════════════════════════════
-
-
-    private fun stripHtmlAndTruncate(html: String): String {
-        val clean = html
-            .let { decodeXml(it) }
-            .replace(Regex("<[^>]+>"), " ")
-            .replace(Regex("\\s+"), " ")
-            .trim()
-            .replace(Regex("^[Гг]од издани[яе].*$"), "")
-            .trim()
-        if (clean.isBlank()) return ""
-        return if (clean.length > 200) clean.take(200) + "\u2026" else clean
-    }
-
-    private fun decodeXml(text: String): String {
-        return text
-            .replace("&amp;", "&")
-            .replace("&lt;", "<")
-            .replace("&gt;", ">")
-            .replace("&quot;", "\"")
-            .replace("&apos;", "'")
-            .replace("&#39;", "'")
-    }
-
-    private fun parseBookId(idText: String): Int? {
-        Regex("""/b/(\d+)""").find(idText)?.let { return it.groupValues[1].toIntOrNull() }
-        Regex("""/book/(\d+)""").find(idText)?.let { return it.groupValues[1].toIntOrNull() }
-        Regex("""[:/](\d{3,})$""").find(idText)?.let { return it.groupValues[1].toIntOrNull() }
         return null
     }
 
-    private fun parseOpdsSeriesFromBooks(xml: String, limit: Int): List<Series> {
+    // ═══════════════════════════════════════════════════════════════
+    //  Parse series entries from book OPDS feed
+    //  (looks for <link> with /opds/sequencebooks/ and rel="related")
+    // ═══════════════════════════════════════════════════════════════
+
+    fun parseOpdsSeriesFromBooks(xml: String, limit: Int): List<Series> {
         val seriesList = mutableListOf<Series>()
         val parser = XmlUtils.createParser(xml)
         var eventType = parser.eventType
@@ -1110,21 +725,26 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
                     if (name == "link" && inEntry) {
                         val href = parser.getAttributeValue(null, "href") ?: ""
                         val linkRel = parser.getAttributeValue(null, "rel") ?: ""
-                        if (href.contains("/opds/sequencebooks/") && linkRel == "related") {
-                            val idMatch = Regex("""/opds/sequencebooks/(\d+)""").find(href)
+                        // Flibusta: /opds/sequencebooks/{NUM}  |  Fantasy-worlds: /opds/series/id{NUM}
+                        val isSeriesLink = linkRel == "related" &&
+                            (href.contains("/opds/sequencebooks/") || href.contains("/opds/series/"))
+                        if (isSeriesLink) {
+                            val flibustaMatch = Regex("""/opds/sequencebooks/(\d+)""").find(href)
+                            val fantasyMatch = Regex("""/opds/series/id(\d+)""").find(href)
+                            val idMatch = flibustaMatch ?: fantasyMatch
                             if (idMatch != null) {
                                 val seriesId = idMatch.groupValues[1]
                                 if (seriesId !in seenIds) {
                                     seenIds.add(seriesId)
-                                    var rawTitle = parser.getAttributeValue(null, "title") ?: ""
+                                    val rawTitle = parser.getAttributeValue(null, "title") ?: ""
                                     val title = rawTitle
                                         .replace(Regex("""^Все книги серии[ :]+"""), "")
-                                        .trim(' ', '"', '\u00ab', '\u00bb', '\u201c', '\u201d')
+                                        .trim(' ', '"', '«', '»', '“', '”')
                                     seriesList.add(
                                         Series(
                                             seriesId = seriesId,
                                             seriesTitle = title,
-                                            seriesUrl = "$baseUrl/opds/sequencebooks/$seriesId",
+                                            seriesUrl = if (href.startsWith("http")) href else "$resolvedBaseUrl$href",
                                         )
                                     )
                                 }
@@ -1141,11 +761,44 @@ override suspend fun getNewBooks(limit: Int): List<Book> = withContext(Dispatche
         return seriesList
     }
 
-    private fun fetchHtml(url: String): String {
-        return networkClient.fetchWithMirrorRetry(url, client)
+    // ═══════════════════════════════════════════════════════════════
+    //  Network helpers
+    // ═══════════════════════════════════════════════════════════════
+
+    fun fetchHtml(url: String): String = fetchFn(url)
+
+    fun fetchXml(url: String): String = fetchFn(url)
+
+    // ═══════════════════════════════════════════════════════════════
+    //  Text helpers
+    // ═══════════════════════════════════════════════════════════════
+
+    fun stripHtmlAndTruncate(html: String): String {
+        val clean = html
+            .let { decodeXml(it) }
+            .replace(Regex("<[^>]+>"), " ")
+            .replace(Regex("\\s+"), " ")
+            .trim()
+            .replace(Regex("^[Гг]од издани[яе].*$"), "")
+            .trim()
+        if (clean.isBlank()) return ""
+        return if (clean.length > 200) clean.take(200) + "…" else clean
     }
 
-    private fun fetchXml(url: String): String {
-        return networkClient.fetchWithMirrorRetry(url, client)
+    fun decodeXml(text: String): String {
+        return text
+            .replace("&amp;", "&")
+            .replace("&lt;", "<")
+            .replace("&gt;", ">")
+            .replace("&quot;", "\"")
+            .replace("&apos;", "'")
+            .replace("&#39;", "'")
+    }
+
+    fun parseBookId(idText: String): Int? {
+        Regex("""/b/(\d+)""").find(idText)?.let { return it.groupValues[1].toIntOrNull() }
+        Regex("""/book/(\d+)""").find(idText)?.let { return it.groupValues[1].toIntOrNull() }
+        Regex("""[:/](\d{3,})$""").find(idText)?.let { return it.groupValues[1].toIntOrNull() }
+        return null
     }
 }

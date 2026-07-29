@@ -4,7 +4,7 @@ package com.foxybook.app.core.reader
  * Parsed content block for native Compose rendering.
  * Each block is one visual unit (paragraph, heading, quote, etc.).
  */
-sealed class ContentBlock(val isSplitAtBottom: Boolean = false, var originalIndex: Int = -1) {
+sealed class ContentBlock(val isSplitAtBottom: Boolean = false, @Volatile var originalIndex: Int = -1) {
     data class Heading(val text: String, val level: Int) : ContentBlock()
     
     data class Paragraph(

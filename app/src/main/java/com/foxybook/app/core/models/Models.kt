@@ -133,9 +133,23 @@ data class Bookmark(
 
 // ─── Reader Models ───
 
-enum class ReaderMode { HORIZONTAL, VERTICAL }
+enum class ReaderMode { HORIZONTAL, VERTICAL;
 
-enum class ReaderTheme { LIGHT, DARK, SYSTEM, AMOLED }
+    companion object {
+        fun safeValueOf(name: String): ReaderMode {
+            return entries.firstOrNull { it.name == name } ?: HORIZONTAL
+        }
+    }
+}
+
+enum class ReaderTheme { LIGHT, DARK, SYSTEM, AMOLED;
+
+    companion object {
+        fun safeValueOf(name: String): ReaderTheme {
+            return entries.firstOrNull { it.name == name } ?: SYSTEM
+        }
+    }
+}
 
 @Serializable
 data class ReaderSettings(

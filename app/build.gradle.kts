@@ -32,8 +32,8 @@ android {
         applicationId = "com.foxybook.app"
         minSdk = 28
         targetSdk = 36
-        versionCode = 9
-        versionName = "1.7"
+        versionCode = 10
+        versionName = "1.8"
 
         // ABI splits: only ARM devices (covers 99%+ of Android)
         ndk {

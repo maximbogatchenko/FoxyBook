@@ -1,26 +1,50 @@
 package com.foxybook.app.navigation
 
+import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.WifiOff
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.foxybook.app.R
+import com.foxybook.app.core.utils.ConnectivityObserver
 import com.foxybook.app.features.newbooks.NewBooksScreen
 import com.foxybook.app.features.newbooks.NewBooksViewModel
 import com.foxybook.app.features.splash.SplashScreen
@@ -47,274 +71,348 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.foxybook.app.R
 import java.net.URLDecoder
 
 @Composable
 fun MainApp() {
     val navController = rememberNavController()
     val updateChecker: UpdateChecker = koinInject()
+    val connectivityObserver: ConnectivityObserver = koinInject()
+    val isOnline by connectivityObserver.isOnline.collectAsState()
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val showBottomBar = currentRoute in listOf(Routes.NEW_BOOKS, Routes.SEARCH, Routes.LIBRARY, Routes.SETTINGS)
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        bottomBar = {
+    if (isLandscape) {
+        Row(modifier = Modifier.fillMaxSize()) {
             if (showBottomBar) {
-                BottomNav(navController)
+                NavigationRailSide(navController)
             }
-        },
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = Routes.SPLASH,
-            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
+            Box(modifier = Modifier.fillMaxSize()) {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                ) { innerPadding ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = Routes.SPLASH,
+                        modifier = Modifier.padding(innerPadding),
+                    ) {
+                        buildNavGraph(navController, updateChecker)
+                    }
+                }
+                OfflineBanner(isOnline = isOnline, modifier = Modifier.align(Alignment.TopCenter))
+            }
+        }
+    } else {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            bottomBar = {
+                if (showBottomBar) {
+                    BottomNav(navController)
+                }
+            },
+        ) { innerPadding ->
+            Box(modifier = Modifier.fillMaxSize()) {
+                NavHost(
+                    navController = navController,
+                    startDestination = Routes.SPLASH,
+                    modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
+                ) {
+                    buildNavGraph(navController, updateChecker)
+                }
+                OfflineBanner(isOnline = isOnline, modifier = Modifier.align(Alignment.TopCenter))
+            }
+        }
+    }
+}
+
+@Composable
+private fun OfflineBanner(isOnline: Boolean, modifier: Modifier = Modifier) {
+    AnimatedVisibility(
+        visible = !isOnline,
+        enter = expandVertically(tween(300)),
+        exit = shrinkVertically(tween(300)),
+        modifier = modifier
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.errorContainer)
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            contentAlignment = Alignment.Center
         ) {
-            composable(
-                route = Routes.SPLASH,
-                enterTransition = { fadeIn(tween(300)) },
-                exitTransition = { fadeOut(tween(300)) }
+            androidx.compose.foundation.layout.Row(
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                SplashScreen(
-                    updateChecker = updateChecker,
-                    onLoadingComplete = {
-                        navController.navigate(Routes.NEW_BOOKS) {
-                            popUpTo(Routes.SPLASH) { inclusive = true }
-                        }
-                    }
+                Icon(
+                    Icons.Default.WifiOff,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 4.dp),
+                    tint = MaterialTheme.colorScheme.onErrorContainer
                 )
-            }
-
-            composable(
-                route = Routes.NEW_BOOKS,
-                enterTransition = {
-                    slideInHorizontally(tween(300)) { it / 4 } + fadeIn(tween(300))
-                },
-                exitTransition = {
-                    slideOutHorizontally(tween(250)) { -it / 4 } + fadeOut(tween(200))
-                },
-                popEnterTransition = {
-                    slideInHorizontally(tween(250)) { -it / 4 } + fadeIn(tween(250))
-                },
-                popExitTransition = {
-                    slideOutHorizontally(tween(300)) { it / 4 } + fadeOut(tween(200))
-                }
-            ) {
-                val vm: NewBooksViewModel = koinViewModel()
-                NewBooksScreen(
-                    viewModel = vm,
-                    onBookClick = { book ->
-                        BookCache.put(book)
-                        navController.navigate(Routes.bookDetails(book.id))
-                    }
-                )
-            }
-
-            composable(
-                route = Routes.SEARCH,
-                enterTransition = {
-                    slideInVertically(tween(300)) { it / 6 } + fadeIn(tween(300))
-                },
-                exitTransition = {
-                    slideOutVertically(tween(250)) { -it / 6 } + fadeOut(tween(200))
-                },
-                popEnterTransition = {
-                    slideInVertically(tween(250)) { -it / 6 } + fadeIn(tween(250))
-                },
-                popExitTransition = {
-                    slideOutVertically(tween(300)) { it / 6 } + fadeOut(tween(200))
-                }
-            ) {
-                val vm: SearchViewModel = koinViewModel()
-                SearchScreen(
-                    viewModel = vm,
-                    onBookClick = { book ->
-                        BookCache.put(book)
-                        navController.navigate(Routes.bookDetails(book.id))
-                    },
-                    onSeriesClick = { seriesId, seriesTitle, authorId ->
-                        navController.navigate(Routes.seriesDetails(seriesId, seriesTitle, authorId))
-                    },
-                    onAuthorClick = { authorId, authorName ->
-                        navController.navigate(Routes.authorBooks(authorId, authorName))
-                    }
-                )
-            }
-
-            composable(
-                route = Routes.LIBRARY,
-                enterTransition = {
-                    slideInHorizontally(tween(300)) { -it / 4 } + fadeIn(tween(300))
-                },
-                exitTransition = {
-                    slideOutHorizontally(tween(250)) { it / 4 } + fadeOut(tween(200))
-                },
-                popEnterTransition = {
-                    slideInHorizontally(tween(250)) { it / 4 } + fadeIn(tween(250))
-                },
-                popExitTransition = {
-                    slideOutHorizontally(tween(300)) { -it / 4 } + fadeOut(tween(200))
-                }
-            ) {
-                val vm: LibraryViewModel = koinViewModel()
-                val context = LocalContext.current
-                LibraryScreen(
-                    viewModel = vm,
-                    onBookClick = { filePath, bookId, format ->
-                        val bookFormat = BookFormat.fromExtension(format)
-                        if (bookFormat != null && bookFormat.isNativelySupported()) {
-                            navController.navigate(Routes.reader(bookId, format, filePath))
-                        } else {
-                            openBookExternally(context, filePath, bookFormat?.mimeType ?: "application/octet-stream")
-                        }
-                    }
-                )
-            }
-
-            composable(
-                route = Routes.SETTINGS,
-                enterTransition = {
-                    slideInVertically(tween(300)) { it / 6 } + fadeIn(tween(300))
-                },
-                exitTransition = {
-                    slideOutVertically(tween(250)) { -it / 6 } + fadeOut(tween(200))
-                },
-                popEnterTransition = {
-                    slideInVertically(tween(250)) { -it / 6 } + fadeIn(tween(250))
-                },
-                popExitTransition = {
-                    slideOutVertically(tween(300)) { it / 6 } + fadeOut(tween(200))
-                }
-            ) {
-                val vm: SettingsViewModel = koinViewModel()
-                SettingsScreen(viewModel = vm)
-            }
-
-            composable(
-                route = Routes.BOOK_DETAILS,
-                arguments = listOf(
-                    navArgument("bookId") { type = NavType.IntType }
-                ),
-                enterTransition = { slideInHorizontally(tween(300)) { it } + fadeIn(tween(300)) },
-                exitTransition = { slideOutHorizontally(tween(300)) { -it / 3 } + fadeOut(tween(200)) },
-                popEnterTransition = { slideInHorizontally(tween(300)) { -it / 3 } + fadeIn(tween(300)) },
-                popExitTransition = { slideOutHorizontally(tween(300)) { it } + fadeOut(tween(200)) }
-            ) { backStackEntry ->
-                val bookId = backStackEntry.arguments?.getInt("bookId")
-                if (bookId == null) {
-                    androidx.compose.material3.Text(stringResource(R.string.book_details_loading_error))
-                    return@composable
-                }
-                val initialBook = com.foxybook.app.core.models.BookCache.get(bookId)
-
-                val vm: BookDetailsViewModel = koinViewModel()
-                val context = LocalContext.current
-                LaunchedEffect(bookId) {
-                    vm.onEvent(BookDetailsEvent.LoadBook(bookId, initialBook))
-                }
-
-                BookDetailsScreen(
-                    bookId = bookId,
-                    viewModel = vm,
-                    onBackClick = { navController.popBackStack() },
-                    onReadBook = { filePath, format ->
-                        val bookFormat = BookFormat.fromExtension(format)
-                        if (bookFormat != null && !bookFormat.isNativelySupported()) {
-                            openBookExternally(context, filePath, bookFormat.mimeType)
-                        } else {
-                            navController.navigate(Routes.reader(bookId, format, filePath))
-                        }
-                    },
-                    onGoToSettings = { navController.navigate(Routes.SETTINGS) },
-                    onGenreSearch = { genre ->
-                        com.foxybook.app.core.models.PendingSearchQuery.query = genre
-                        // Пересоздаём SearchScreen, чтобы запрос подхватился
-                        navController.navigate(Routes.SEARCH) {
-                            popUpTo(Routes.SEARCH) { inclusive = true }
-                        }
-                    }
-                )
-            }
-
-            composable(
-                route = Routes.SERIES_DETAILS,
-                arguments = listOf(
-                    navArgument("seriesId") { type = NavType.StringType },
-                    navArgument("seriesTitle") { type = NavType.StringType },
-                    navArgument("authorId") { type = NavType.StringType; defaultValue = "" }
-                )
-            ) { backStackEntry ->
-                val seriesId = backStackEntry.arguments?.getString("seriesId") ?: return@composable
-                val rawTitle = backStackEntry.arguments?.getString("seriesTitle") ?: return@composable
-                val seriesTitle = try { URLDecoder.decode(rawTitle, "UTF-8") } catch (_: Exception) { rawTitle.replace("+", " ") }
-                val authorId = backStackEntry.arguments?.getString("authorId") ?: ""
-
-                val vm: SeriesDetailsViewModel = koinViewModel()
-                SeriesDetailsScreen(
-                    seriesId = seriesId,
-                    seriesTitle = seriesTitle,
-                    authorId = authorId,
-                    viewModel = vm,
-                    onBackClick = { navController.popBackStack() },
-                    onBookClick = { book ->
-                        BookCache.put(book)
-                        navController.navigate(Routes.bookDetails(book.id))
-                    }
-                )
-            }
-
-            composable(
-                route = Routes.AUTHOR_BOOKS,
-                arguments = listOf(
-                    navArgument("authorId") { type = NavType.StringType },
-                    navArgument("authorName") { type = NavType.StringType }
-                )
-            ) { backStackEntry ->
-                val authorId = backStackEntry.arguments?.getString("authorId") ?: return@composable
-                val rawName = backStackEntry.arguments?.getString("authorName") ?: return@composable
-                val authorName = try { URLDecoder.decode(rawName, "UTF-8") } catch (_: Exception) { rawName.replace("+", " ") }
-
-                val vm: AuthorBooksViewModel = koinViewModel()
-                AuthorBooksScreen(
-                    authorId = authorId,
-                    authorName = authorName,
-                    viewModel = vm,
-                    onBackClick = { navController.popBackStack() },
-                    onBookClick = { book ->
-                        BookCache.put(book)
-                        navController.navigate(Routes.bookDetails(book.id))
-                    }
-                )
-            }
-
-            composable(
-                route = Routes.READER,
-                arguments = listOf(
-                    navArgument("bookId") { type = NavType.IntType },
-                    navArgument("bookFormat") { type = NavType.StringType },
-                    navArgument("filePath") { type = NavType.StringType }
-                ),
-                enterTransition = { slideInHorizontally(tween(350)) { it } + fadeIn(tween(350)) },
-                exitTransition = { fadeOut(tween(200)) },
-                popExitTransition = { slideOutHorizontally(tween(350)) { it } + fadeOut(tween(250)) }
-            ) { backStackEntry ->
-                val bookId = backStackEntry.arguments?.getInt("bookId") ?: return@composable
-                val bookFormat = backStackEntry.arguments?.getString("bookFormat") ?: return@composable
-                val rawFilePath = backStackEntry.arguments?.getString("filePath") ?: return@composable
-                val filePath = try { URLDecoder.decode(rawFilePath, "UTF-8") } catch (_: Exception) { rawFilePath }
-
-                val vm: ReaderViewModel = koinViewModel()
-                ReaderScreen(
-                    filePath = filePath,
-                    bookId = bookId,
-                    bookFormat = bookFormat,
-                    viewModel = vm,
-                    onBackClick = { navController.popBackStack() }
+                Text(
+                    text = stringResource(R.string.offline_banner),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onErrorContainer
                 )
             }
         }
+    }
+}
+
+private fun NavGraphBuilder.buildNavGraph(
+    navController: androidx.navigation.NavHostController,
+    updateChecker: UpdateChecker
+) {
+    composable(
+        route = Routes.SPLASH,
+        enterTransition = { fadeIn(tween(300)) },
+        exitTransition = { fadeOut(tween(300)) }
+    ) {
+        SplashScreen(
+            updateChecker = updateChecker,
+            onLoadingComplete = {
+                navController.navigate(Routes.NEW_BOOKS) {
+                    popUpTo(Routes.SPLASH) { inclusive = true }
+                }
+            }
+        )
+    }
+
+    composable(
+        route = Routes.NEW_BOOKS,
+        enterTransition = {
+            slideInHorizontally(tween(300)) { it / 4 } + fadeIn(tween(300))
+        },
+        exitTransition = {
+            slideOutHorizontally(tween(250)) { -it / 4 } + fadeOut(tween(200))
+        },
+        popEnterTransition = {
+            slideInHorizontally(tween(250)) { -it / 4 } + fadeIn(tween(250))
+        },
+        popExitTransition = {
+            slideOutHorizontally(tween(300)) { it / 4 } + fadeOut(tween(200))
+        }
+    ) {
+        val vm: NewBooksViewModel = koinViewModel()
+        NewBooksScreen(
+            viewModel = vm,
+            onBookClick = { book ->
+                BookCache.put(book)
+                navController.navigate(Routes.bookDetails(book.id))
+            }
+        )
+    }
+
+    composable(
+        route = Routes.SEARCH,
+        enterTransition = {
+            slideInVertically(tween(300)) { it / 6 } + fadeIn(tween(300))
+        },
+        exitTransition = {
+            slideOutVertically(tween(250)) { -it / 6 } + fadeOut(tween(200))
+        },
+        popEnterTransition = {
+            slideInVertically(tween(250)) { -it / 6 } + fadeIn(tween(250))
+        },
+        popExitTransition = {
+            slideOutVertically(tween(300)) { it / 6 } + fadeOut(tween(200))
+        }
+    ) {
+        val vm: SearchViewModel = koinViewModel()
+        SearchScreen(
+            viewModel = vm,
+            onBookClick = { book ->
+                BookCache.put(book)
+                navController.navigate(Routes.bookDetails(book.id))
+            },
+            onSeriesClick = { seriesId, seriesTitle, authorId ->
+                navController.navigate(Routes.seriesDetails(seriesId, seriesTitle, authorId))
+            },
+            onAuthorClick = { authorId, authorName ->
+                navController.navigate(Routes.authorBooks(authorId, authorName))
+            }
+        )
+    }
+
+    composable(
+        route = Routes.LIBRARY,
+        enterTransition = {
+            slideInHorizontally(tween(300)) { -it / 4 } + fadeIn(tween(300))
+        },
+        exitTransition = {
+            slideOutHorizontally(tween(250)) { it / 4 } + fadeOut(tween(200))
+        },
+        popEnterTransition = {
+            slideInHorizontally(tween(250)) { it / 4 } + fadeIn(tween(250))
+        },
+        popExitTransition = {
+            slideOutHorizontally(tween(300)) { -it / 4 } + fadeOut(tween(200))
+        }
+    ) {
+        val vm: LibraryViewModel = koinViewModel()
+        val context = LocalContext.current
+        LibraryScreen(
+            viewModel = vm,
+            onBookClick = { filePath, bookId, format ->
+                val bookFormat = BookFormat.fromExtension(format)
+                if (bookFormat != null && bookFormat.isNativelySupported()) {
+                    navController.navigate(Routes.reader(bookId, format, filePath))
+                } else {
+                    openBookExternally(context, filePath, bookFormat?.mimeType ?: "application/octet-stream")
+                }
+            }
+        )
+    }
+
+    composable(
+        route = Routes.SETTINGS,
+        enterTransition = {
+            slideInVertically(tween(300)) { it / 6 } + fadeIn(tween(300))
+        },
+        exitTransition = {
+            slideOutVertically(tween(250)) { -it / 6 } + fadeOut(tween(200))
+        },
+        popEnterTransition = {
+            slideInVertically(tween(250)) { -it / 6 } + fadeIn(tween(250))
+        },
+        popExitTransition = {
+            slideOutVertically(tween(300)) { it / 6 } + fadeOut(tween(200))
+        }
+    ) {
+        val vm: SettingsViewModel = koinViewModel()
+        SettingsScreen(viewModel = vm)
+    }
+
+    composable(
+        route = Routes.BOOK_DETAILS,
+        arguments = listOf(
+            navArgument("bookId") { type = NavType.IntType }
+        ),
+        enterTransition = { slideInHorizontally(tween(300)) { it } + fadeIn(tween(300)) },
+        exitTransition = { slideOutHorizontally(tween(300)) { -it / 3 } + fadeOut(tween(200)) },
+        popEnterTransition = { slideInHorizontally(tween(300)) { -it / 3 } + fadeIn(tween(300)) },
+        popExitTransition = { slideOutHorizontally(tween(300)) { it } + fadeOut(tween(200)) }
+    ) { backStackEntry ->
+        val bookId = backStackEntry.arguments?.getInt("bookId")
+        if (bookId == null) {
+            androidx.compose.material3.Text(stringResource(R.string.book_details_loading_error))
+            return@composable
+        }
+        val initialBook = BookCache.get(bookId)
+
+        val vm: BookDetailsViewModel = koinViewModel()
+        val context = LocalContext.current
+        LaunchedEffect(bookId) {
+            vm.onEvent(BookDetailsEvent.LoadBook(bookId, initialBook))
+        }
+
+        BookDetailsScreen(
+            bookId = bookId,
+            viewModel = vm,
+            onBackClick = { navController.popBackStack() },
+            onReadBook = { filePath, format ->
+                val bookFormat = BookFormat.fromExtension(format)
+                if (bookFormat != null && !bookFormat.isNativelySupported()) {
+                    openBookExternally(context, filePath, bookFormat.mimeType)
+                } else {
+                    navController.navigate(Routes.reader(bookId, format, filePath))
+                }
+            },
+            onGoToSettings = { navController.navigate(Routes.SETTINGS) },
+            onGenreSearch = { genre ->
+                com.foxybook.app.core.models.PendingSearchQuery.query = genre
+                navController.navigate(Routes.SEARCH) {
+                    popUpTo(Routes.SEARCH) { inclusive = true }
+                }
+            }
+        )
+    }
+
+    composable(
+        route = Routes.SERIES_DETAILS,
+        arguments = listOf(
+            navArgument("seriesId") { type = NavType.StringType },
+            navArgument("seriesTitle") { type = NavType.StringType },
+            navArgument("authorId") { type = NavType.StringType; defaultValue = "" }
+        )
+    ) { backStackEntry ->
+        val seriesId = backStackEntry.arguments?.getString("seriesId") ?: return@composable
+        val rawTitle = backStackEntry.arguments?.getString("seriesTitle") ?: return@composable
+        val seriesTitle = try { URLDecoder.decode(rawTitle, "UTF-8") } catch (_: Exception) { rawTitle.replace("+", " ") }
+        val authorId = backStackEntry.arguments?.getString("authorId") ?: ""
+
+        val vm: SeriesDetailsViewModel = koinViewModel()
+        SeriesDetailsScreen(
+            seriesId = seriesId,
+            seriesTitle = seriesTitle,
+            authorId = authorId,
+            viewModel = vm,
+            onBackClick = { navController.popBackStack() },
+            onBookClick = { book ->
+                BookCache.put(book)
+                navController.navigate(Routes.bookDetails(book.id))
+            }
+        )
+    }
+
+    composable(
+        route = Routes.AUTHOR_BOOKS,
+        arguments = listOf(
+            navArgument("authorId") { type = NavType.StringType },
+            navArgument("authorName") { type = NavType.StringType }
+        )
+    ) { backStackEntry ->
+        val authorId = backStackEntry.arguments?.getString("authorId") ?: return@composable
+        val rawName = backStackEntry.arguments?.getString("authorName") ?: return@composable
+        val authorName = try { URLDecoder.decode(rawName, "UTF-8") } catch (_: Exception) { rawName.replace("+", " ") }
+
+        val vm: AuthorBooksViewModel = koinViewModel()
+        AuthorBooksScreen(
+            authorId = authorId,
+            authorName = authorName,
+            viewModel = vm,
+            onBackClick = { navController.popBackStack() },
+            onBookClick = { book ->
+                BookCache.put(book)
+                navController.navigate(Routes.bookDetails(book.id))
+            }
+        )
+    }
+
+    composable(
+        route = Routes.READER,
+        arguments = listOf(
+            navArgument("bookId") { type = NavType.IntType },
+            navArgument("bookFormat") { type = NavType.StringType },
+            navArgument("filePath") { type = NavType.StringType }
+        ),
+        enterTransition = { slideInHorizontally(tween(350)) { it } + fadeIn(tween(350)) },
+        exitTransition = { fadeOut(tween(200)) },
+        popExitTransition = { slideOutHorizontally(tween(350)) { it } + fadeOut(tween(250)) }
+    ) { backStackEntry ->
+        val bookId = backStackEntry.arguments?.getInt("bookId") ?: return@composable
+        val bookFormat = backStackEntry.arguments?.getString("bookFormat") ?: return@composable
+        val rawFilePath = backStackEntry.arguments?.getString("filePath") ?: return@composable
+        val filePath = try {
+            String(android.util.Base64.decode(rawFilePath, android.util.Base64.URL_SAFE), Charsets.UTF_8)
+        } catch (_: Exception) { rawFilePath }
+
+        val vm: ReaderViewModel = koinViewModel()
+        ReaderScreen(
+            filePath = filePath,
+            bookId = bookId,
+            bookFormat = bookFormat,
+            viewModel = vm,
+            onBackClick = { navController.popBackStack() }
+        )
     }
 }

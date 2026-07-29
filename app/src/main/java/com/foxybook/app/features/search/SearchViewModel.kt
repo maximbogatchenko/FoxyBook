@@ -11,7 +11,6 @@ import com.foxybook.app.core.models.SearchPage
 import com.foxybook.app.core.models.SearchTab
 import com.foxybook.app.core.models.Series
 import com.foxybook.app.core.network.OkHttpClientProvider
-import com.foxybook.app.domain.usecases.GetBookInfoUseCase
 import com.foxybook.app.domain.usecases.SearchBooksUseCase
 import com.foxybook.app.domain.usecases.SearchByAuthorUseCase
 import com.foxybook.app.domain.usecases.SearchByGenreUseCase
@@ -30,9 +29,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 
 data class SearchState(
     val query: String = "",
@@ -46,6 +42,7 @@ data class SearchState(
     val isSearchingSeries: Boolean = false,
     val isSearchingGenres: Boolean = false,
     val isLoadingMore: Boolean = false,
+    val isRefreshing: Boolean = false,
     val error: String? = null,
     val bookSource: BookSource = BookSource.FLIBUSTA
 ) {
@@ -68,7 +65,6 @@ class SearchViewModel(
     private val searchByAuthorUseCase: SearchByAuthorUseCase,
     private val searchBySeriesUseCase: SearchBySeriesUseCase,
     private val searchByGenreUseCase: SearchByGenreUseCase,
-    private val getBookInfoUseCase: GetBookInfoUseCase,
     private val dataStoreManager: DataStoreManager,
     private val networkProvider: OkHttpClientProvider,
     private val application: Application
@@ -146,7 +142,10 @@ class SearchViewModel(
     fun onEvent(event: SearchEvent) {
         when (event) {
             is SearchEvent.QueryChanged -> onQueryChanged(event.query)
-            is SearchEvent.SearchRequested -> performSearch()
+            is SearchEvent.SearchRequested -> {
+                _state.update { it.copy(isRefreshing = true) }
+                performSearch()
+            }
             is SearchEvent.TabSelected -> _state.update { it.copy(selectedTab = event.tab) }
             is SearchEvent.LoadMore -> loadMore(event.tab)
             is SearchEvent.SourceChanged -> switchSource(event.source)
@@ -184,7 +183,7 @@ class SearchViewModel(
             return
         }
         debounceJob = viewModelScope.launch {
-            delay(250)
+            delay(SEARCH_DEBOUNCE_MS)
             performSearch()
         }
     }
@@ -217,20 +216,19 @@ class SearchViewModel(
             // Books — fast
             val booksDeferred = async {
                 try {
-                    val bookPage = searchBooksUseCase(query)
+                    val bookPage = searchBooksUseCase(query, limit = SEARCH_PAGE_LIMIT)
                     booksNextUrl = bookPage.nextPageUrl
-                    _state.update { it.copy(books = bookPage.items, isSearching = false) }
-                    fetchCovers(bookPage.items)
+                    _state.update { it.copy(books = bookPage.items, isSearching = false, isRefreshing = false) }
                 } catch (e: Exception) {
                     if (e is kotlinx.coroutines.CancellationException) throw e
-                    _state.update { it.copy(isSearching = false) }
+                    _state.update { it.copy(isSearching = false, isRefreshing = false) }
                 }
             }
 
             // Authors — fast
             val authorsDeferred = async {
                 try {
-                    val authorPage = searchByAuthorUseCase(query)
+                    val authorPage = searchByAuthorUseCase(query, limit = SEARCH_PAGE_LIMIT)
                     authorsNextUrl = authorPage.nextPageUrl
                     _state.update { it.copy(authors = authorPage.items, isSearchingAuthors = false) }
                 } catch (e: Exception) {
@@ -242,7 +240,7 @@ class SearchViewModel(
             // Series — slow, background
             val seriesDeferred = async {
                 try {
-                    val seriesPage = searchBySeriesUseCase(query)
+                    val seriesPage = searchBySeriesUseCase(query, limit = SEARCH_PAGE_LIMIT)
                     seriesNextUrl = seriesPage.nextPageUrl
                     _state.update { it.copy(series = seriesPage.items, isSearchingSeries = false) }
                 } catch (e: Exception) {
@@ -254,13 +252,10 @@ class SearchViewModel(
             // Genres — background
             val genreDeferred = async {
                 try {
-                    val genrePage = searchByGenreUseCase(query)
+                    val genrePage = searchByGenreUseCase(query, limit = SEARCH_PAGE_LIMIT)
                     genreNextUrl = genrePage.nextPageUrl
                     android.util.Log.d("SearchGenre", "first page: ${genrePage.items.size} items, nextUrl=${genrePage.nextPageUrl}")
                     _state.update { it.copy(genreBooks = genrePage.items, isSearchingGenres = false) }
-                    if (genrePage.items.isNotEmpty()) {
-                        fetchCovers(genrePage.items)
-                    }
                 } catch (e: Exception) {
                     android.util.Log.e("SearchGenre", "first page error", e)
                     if (e is kotlinx.coroutines.CancellationException) throw e
@@ -323,31 +318,39 @@ class SearchViewModel(
             try {
                 when (tab) {
                     SearchTab.BOOKS -> {
-                        val page = searchBooksUseCase.nextPage(url)
+                        val page = searchBooksUseCase.nextPage(url, limit = SEARCH_PAGE_LIMIT)
                         booksNextUrl = page.nextPageUrl
-                        _state.update { it.copy(books = it.books + page.items) }
-                        fetchCovers(page.items)
+                        val existingIds = _state.value.books.map { it.id }.toSet()
+                        val newItems = page.items.filter { it.id !in existingIds }
+                        if (newItems.isNotEmpty()) {
+                            _state.update { it.copy(books = it.books + newItems) }
+                        } else {
+                            booksNextUrl = null
+                        }
                     }
                     SearchTab.AUTHORS -> {
-                        val page = searchByAuthorUseCase.nextPage(url)
+                        val page = searchByAuthorUseCase.nextPage(url, limit = SEARCH_PAGE_LIMIT)
                         authorsNextUrl = page.nextPageUrl
-                        _state.update { it.copy(authors = it.authors + page.items) }
+                        val existingIds = _state.value.authors.map { it.authorId }.toSet()
+                        val newItems = page.items.filter { it.authorId !in existingIds }
+                        _state.update { it.copy(authors = it.authors + newItems) }
                     }
                     SearchTab.SERIES -> {
-                        val page = searchBySeriesUseCase.nextPage(url)
+                        val page = searchBySeriesUseCase.nextPage(url, limit = SEARCH_PAGE_LIMIT)
                         seriesNextUrl = page.nextPageUrl
-                        _state.update { it.copy(series = it.series + page.items) }
+                        val existingIds = _state.value.series.map { it.seriesId }.toSet()
+                        val newItems = page.items.filter { it.seriesId !in existingIds }
+                        _state.update { it.copy(series = it.series + newItems) }
                     }
                     SearchTab.GENRES -> {
                         var currentUrl: String? = url
                         var skipCount = 0
-                        while (currentUrl != null && skipCount < 5) {
-                            val page = searchByGenreUseCase.nextPage(currentUrl)
+                        while (currentUrl != null && skipCount < MAX_EMPTY_GENRE_PAGES) {
+                            val page = searchByGenreUseCase.nextPage(currentUrl, limit = SEARCH_PAGE_LIMIT)
                             currentUrl = page.nextPageUrl
                             if (page.items.isNotEmpty()) {
                                 genreNextUrl = currentUrl
                                 _state.update { it.copy(genreBooks = it.genreBooks + page.items) }
-                                fetchCovers(page.items)
                                 break
                             }
                             // На странице нет книг нужного жанра — пробуем следующую
@@ -400,36 +403,19 @@ class SearchViewModel(
         SearchTab.ALL -> false
     }
 
-    private suspend fun fetchCovers(books: List<Book>) {
-        val needing = books.filter { it.coverUrl.isBlank() }
-        if (needing.isEmpty()) return
-        // Ограничиваем конкурентные запросы до 4, чтобы не флудить сеть
-        val semaphore = Semaphore(4)
-        val urls = supervisorScope {
-            needing.map { book ->
-                async(Dispatchers.IO) {
-                    semaphore.withPermit {
-                        try {
-                            val info = getBookInfoUseCase(book.id)
-                            if (info != null && info.coverUrl.isNotBlank()) book.id to info.coverUrl else null
-                        } catch (_: Exception) { null }
-                    }
-                }
-            }.awaitAll().filterNotNull().toMap()
-        }
-        if (urls.isEmpty()) return
-        _state.update { s ->
-            s.copy(
-                books = s.books.map { b -> urls[b.id]?.let { b.copy(coverUrl = it) } ?: b },
-                genreBooks = s.genreBooks.map { b -> urls[b.id]?.let { b.copy(coverUrl = it) } ?: b }
-            )
-        }
-    }
-
     override fun onCleared() {
         super.onCleared()
         debounceJob?.cancel()
         searchJob?.cancel()
         loadMoreJob?.cancel()
+    }
+
+    companion object {
+        /** Задержка debounce перед поиском (мс) */
+        const val SEARCH_DEBOUNCE_MS = 250L
+        /** Количество элементов на страницу поиска */
+        const val SEARCH_PAGE_LIMIT = 15
+        /** Сколько пустых страниц жанров пропускать перед остановкой */
+        const val MAX_EMPTY_GENRE_PAGES = 5
     }
 }

@@ -159,7 +159,7 @@ class TtsManager(private val application: Application) {
 
         val voices = service.getVoices()
         val voiceInfos = voices.map { voice ->
-            val lang = voice.locale.getDisplayLanguage(Locale("ru")).replaceFirstChar { it.uppercase() }
+            val lang = voice.locale.getDisplayLanguage(Locale.forLanguageTag("ru")).replaceFirstChar { it.uppercase() }
             VoiceInfo(
                 id = voice.name,
                 language = lang,

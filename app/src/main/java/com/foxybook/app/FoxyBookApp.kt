@@ -45,10 +45,12 @@ class FoxyBookApp : Application(), SingletonImageLoader.Factory {
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             val stackLines = throwable.stackTrace.joinToString("\n") { "    at $it" }
             val cause = throwable.cause?.let { "\nCaused by: ${it}\n${it.stackTrace.joinToString("\n") { "    at $it" }}" } ?: ""
+            @Suppress("DEPRECATION")
+            val threadId = thread.id
             val msg = """
                 |=== FOXYBOOK CRASH ===
                 |Time: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date())}
-                |Thread: ${thread.name} (${thread.id})
+                |Thread: ${thread.name} ($threadId)
                 |${throwable}::${throwable.message}
                 |$stackLines
                 |$cause
@@ -75,7 +77,12 @@ class FoxyBookApp : Application(), SingletonImageLoader.Factory {
     override fun newImageLoader(context: Context): ImageLoader {
         Log.d(TAG, "newImageLoader | creating Coil ImageLoader with shared OkHttp")
 
-        val networkProvider: OkHttpClientProvider = org.koin.java.KoinJavaComponent.get(OkHttpClientProvider::class.java)
+        val networkProvider: OkHttpClientProvider = try {
+            org.koin.java.KoinJavaComponent.get(OkHttpClientProvider::class.java)
+        } catch (e: Exception) {
+            Log.e(TAG, "Koin not initialized yet, creating fallback OkHttpClientProvider")
+            OkHttpClientProvider(context)
+        }
         val sharedClient = networkProvider.createClient(
             withCache = true,
             extraHeaders = mapOf(
@@ -102,7 +109,7 @@ class FoxyBookApp : Application(), SingletonImageLoader.Factory {
             }
             .memoryCache {
                 coil3.memory.MemoryCache.Builder()
-                    .maxSizePercent(context, 0.20)
+                    .maxSizePercent(context, 0.30)
                     .build()
             }
             .diskCache {

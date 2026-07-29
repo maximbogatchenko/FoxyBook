@@ -38,7 +38,7 @@ import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Swipe
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.ViewAgenda
-import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -104,13 +104,13 @@ fun SettingsSheet(settings: com.foxybook.app.core.models.ReaderSettings, viewMod
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                             ThemeChip(
-                                selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.LIGHT,
+                                selected = ReaderTheme.safeValueOf(settings.readerTheme) == ReaderTheme.LIGHT,
                                 onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.LIGHT)) },
                                 label = stringResource(R.string.reader_settings_theme_light), icon = Icons.Default.LightMode,
                                 modifier = Modifier.weight(1f)
                             )
                             ThemeChip(
-                                selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.DARK,
+                                selected = ReaderTheme.safeValueOf(settings.readerTheme) == ReaderTheme.DARK,
                                 onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.DARK)) },
                                 label = stringResource(R.string.reader_settings_theme_dark), icon = Icons.Default.DarkMode,
                                 modifier = Modifier.weight(1f)
@@ -118,13 +118,13 @@ fun SettingsSheet(settings: com.foxybook.app.core.models.ReaderSettings, viewMod
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                             ThemeChip(
-                                selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.SYSTEM,
+                                selected = ReaderTheme.safeValueOf(settings.readerTheme) == ReaderTheme.SYSTEM,
                                 onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.SYSTEM)) },
                                 label = stringResource(R.string.reader_settings_theme_system), icon = Icons.Default.Smartphone,
                                 modifier = Modifier.weight(1f)
                             )
                             ThemeChip(
-                                selected = ReaderTheme.valueOf(settings.readerTheme) == ReaderTheme.AMOLED,
+                                selected = ReaderTheme.safeValueOf(settings.readerTheme) == ReaderTheme.AMOLED,
                                 onClick = { viewModel.onEvent(ReaderEvent.ReaderThemeChanged(ReaderTheme.AMOLED)) },
                                 label = "AMOLED", icon = Icons.Default.DarkMode,
                                 modifier = Modifier.weight(1f)
@@ -137,7 +137,7 @@ fun SettingsSheet(settings: com.foxybook.app.core.models.ReaderSettings, viewMod
                         modifier = Modifier.fillMaxWidth().clickable { viewModel.onEvent(ReaderEvent.ToggleTtsControls) }.padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.VolumeUp, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.AutoMirrored.Filled.VolumeUp, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(stringResource(R.string.reader_settings_tts), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                         Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -210,8 +210,8 @@ fun SettingsSheet(settings: com.foxybook.app.core.models.ReaderSettings, viewMod
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(stringResource(R.string.reader_settings_mode), fontWeight = FontWeight.Medium)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilterChip(selected = ReaderMode.valueOf(settings.readerMode) == ReaderMode.VERTICAL, onClick = { viewModel.onEvent(ReaderEvent.ReaderModeChanged(ReaderMode.VERTICAL)) }, label = { Text(stringResource(R.string.reader_settings_mode_scroll)) }, leadingIcon = { Icon(Icons.Default.ViewAgenda, null, modifier = Modifier.size(18.dp)) })
-                        FilterChip(selected = ReaderMode.valueOf(settings.readerMode) == ReaderMode.HORIZONTAL, onClick = { viewModel.onEvent(ReaderEvent.ReaderModeChanged(ReaderMode.HORIZONTAL)) }, label = { Text(stringResource(R.string.reader_settings_mode_pages)) }, leadingIcon = { Icon(Icons.Default.Swipe, null, modifier = Modifier.size(18.dp)) })
+                        FilterChip(selected = ReaderMode.safeValueOf(settings.readerMode) == ReaderMode.VERTICAL, onClick = { viewModel.onEvent(ReaderEvent.ReaderModeChanged(ReaderMode.VERTICAL)) }, label = { Text(stringResource(R.string.reader_settings_mode_scroll)) }, leadingIcon = { Icon(Icons.Default.ViewAgenda, null, modifier = Modifier.size(18.dp)) })
+                        FilterChip(selected = ReaderMode.safeValueOf(settings.readerMode) == ReaderMode.HORIZONTAL, onClick = { viewModel.onEvent(ReaderEvent.ReaderModeChanged(ReaderMode.HORIZONTAL)) }, label = { Text(stringResource(R.string.reader_settings_mode_pages)) }, leadingIcon = { Icon(Icons.Default.Swipe, null, modifier = Modifier.size(18.dp)) })
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(stringResource(R.string.reader_settings_progress), fontWeight = FontWeight.Medium)

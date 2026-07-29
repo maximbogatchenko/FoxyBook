@@ -25,7 +25,7 @@ object LocaleHelper {
      * На API < 33 возвращает изменённый контекст для attachBaseContext().
      */
     fun applyLocale(context: Context, languageCode: String): Context {
-        val locale = Locale(languageCode)
+        val locale = Locale.forLanguageTag(languageCode)
         Locale.setDefault(locale)
         currentLanguage = languageCode
 
@@ -51,7 +51,7 @@ object LocaleHelper {
     fun wrapContext(base: Context): Context {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) return base
 
-        val locale = Locale(currentLanguage)
+        val locale = Locale.forLanguageTag(currentLanguage)
         Locale.setDefault(locale)
         @Suppress("DEPRECATION")
         val config = Configuration(base.resources.configuration)

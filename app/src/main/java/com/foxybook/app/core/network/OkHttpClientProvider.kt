@@ -18,7 +18,7 @@ class OkHttpClientProvider(context: Context) {
         "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36"
 
     private val flibustaMirrors = listOf(
-        "https://flibusta.is", "https://flibusta.site", "https://flibusta.su"
+        "https://flibusta.is", "https://flibusta.site"
     )
 
     private val coollibMirrors = listOf(
@@ -82,7 +82,7 @@ class OkHttpClientProvider(context: Context) {
     fun fetchWithMirrorRetry(
         url: String,
         client: OkHttpClient = this.client,
-        maxRetries: Int = 3
+        maxRetries: Int = MAX_MIRROR_RETRIES
     ): String {
         var currentUrl = url
         var lastError: String = "Неизвестная ошибка"
@@ -120,13 +120,13 @@ class OkHttpClientProvider(context: Context) {
     // HTTP cache: 20 MB
     private val httpCache = Cache(
         directory = File(context.cacheDir, "http_cache"),
-        maxSize = 20L * 1024L * 1024L
+        maxSize = HTTP_CACHE_SIZE
     )
 
     // Shared connection pool — all clients reuse the same TCP connections
     private val connectionPool = ConnectionPool(
-        maxIdleConnections = 10,
-        keepAliveDuration = 5,
+        maxIdleConnections = MAX_IDLE_CONNECTIONS,
+        keepAliveDuration = KEEP_ALIVE_DURATION,
         timeUnit = TimeUnit.MINUTES
     )
 
@@ -139,9 +139,9 @@ class OkHttpClientProvider(context: Context) {
     }
 
     fun createClient(
-        connectSeconds: Long = 30,
-        readSeconds: Long = 30,
-        writeSeconds: Long = 30,
+        connectSeconds: Long = DEFAULT_CONNECT_TIMEOUT,
+        readSeconds: Long = DEFAULT_READ_TIMEOUT,
+        writeSeconds: Long = DEFAULT_WRITE_TIMEOUT,
         withCache: Boolean = false,
         extraHeaders: Map<String, String> = emptyMap()
     ): OkHttpClient {
@@ -168,6 +168,29 @@ class OkHttpClientProvider(context: Context) {
     }
 
     fun createDownloadClient(): OkHttpClient {
-        return createClient(connectSeconds = 60, readSeconds = 120, writeSeconds = 60)
+        return createClient(connectSeconds = DOWNLOAD_CONNECT_TIMEOUT, readSeconds = DOWNLOAD_READ_TIMEOUT, writeSeconds = DOWNLOAD_WRITE_TIMEOUT)
+    }
+
+    companion object {
+        /** Размер HTTP-кеша */
+        const val HTTP_CACHE_SIZE = 20L * 1024L * 1024L
+        /** Таймаут подключения по умолчанию (с) */
+        const val DEFAULT_CONNECT_TIMEOUT = 30L
+        /** Таймаут чтения по умолчанию (с) */
+        const val DEFAULT_READ_TIMEOUT = 30L
+        /** Таймаут записи по умолчанию (с) */
+        const val DEFAULT_WRITE_TIMEOUT = 30L
+        /** Таймаут подключения для скачивания (с) */
+        const val DOWNLOAD_CONNECT_TIMEOUT = 60L
+        /** Таймаут чтения для скачивания (с) */
+        const val DOWNLOAD_READ_TIMEOUT = 120L
+        /** Таймаут записи для скачивания (с) */
+        const val DOWNLOAD_WRITE_TIMEOUT = 60L
+        /** Максимальное количество ретраев при ошибке зеркала */
+        const val MAX_MIRROR_RETRIES = 3
+        /** Максимальное количество idle соединений */
+        const val MAX_IDLE_CONNECTIONS = 10
+        /** Время жизни idle соединения (мин) */
+        const val KEEP_ALIVE_DURATION = 5L
     }
 }

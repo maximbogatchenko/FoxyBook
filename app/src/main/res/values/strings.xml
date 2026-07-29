@@ -3,6 +3,7 @@
     <!-- App -->
     <string name="app_name">FoxyBook</string>
     <string name="loading">Загрузка…</string>
+    <string name="offline_banner">Нет подключения к интернету</string>
     <string name="error_loading">Ошибка загрузки</string>
     <string name="retry">Повторить</string>
     <string name="cancel">Отмена</string>
@@ -53,6 +54,7 @@
     <string name="search_source_label">Применяется к Новинкам и Поиску</string>
     <string name="search_ing">Поиск…</string>
     <string name="search_loading_more">Загрузка…</string>
+    <string name="search_load_more">Загрузить ещё</string>
 
     <!-- Source selection -->
     <string name="source_book_source">Источник книг</string>
@@ -161,6 +163,12 @@
     <string name="reader_bookmark_position">Позиция: %1$d глава, %2$d символ</string>
     <string name="reader_content_description_book">Книга</string>
     <string name="reader_chapters">Главы</string>
+    <string name="reader_search_by_book">Поиск по книге</string>
+    <string name="reader_search_no_results">Ничего не найдено</string>
+    <string name="reader_search_results">Результаты: %1$d</string>
+    <string name="reader_search_prev">Пред.</string>
+    <string name="reader_search_next">След.</string>
+    <string name="reader_search_of">%1$d из %2$d</string>
 
     <!-- Reader Settings Panel -->
     <string name="reader_settings_title">Настройки чтения</string>

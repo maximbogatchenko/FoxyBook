@@ -3,6 +3,7 @@
     <!-- App -->
     <string name="app_name">FoxyBook</string>
     <string name="loading">Loading…</string>
+    <string name="offline_banner">No internet connection</string>
     <string name="error_loading">Error loading</string>
     <string name="retry">Retry</string>
     <string name="cancel">Cancel</string>
@@ -52,6 +53,7 @@
     <string name="fantasy_worlds">Fantasy</string>
     <string name="search_source_label">Applies to New Books and Search</string>
     <string name="search_ing">Searching…</string>
+    <string name="search_load_more">Load more</string>
 
     <!-- Source selection -->
     <string name="source_book_source">Book source</string>
@@ -160,6 +162,12 @@
     <string name="reader_bookmark_position">Position: chapter %1$d, offset %2$d</string>
     <string name="reader_content_description_book">Book</string>
     <string name="reader_chapters">Chapters</string>
+    <string name="reader_search_by_book">Search in book</string>
+    <string name="reader_search_no_results">No results found</string>
+    <string name="reader_search_results">Results: %1$d</string>
+    <string name="reader_search_prev">Prev</string>
+    <string name="reader_search_next">Next</string>
+    <string name="reader_search_of">%1$d of %2$d</string>
 
     <!-- Reader Settings Panel -->
     <string name="reader_settings_title">Reading settings</string>

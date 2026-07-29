@@ -133,13 +133,14 @@ class BookDetailsViewModel(
                     info.copy(
                         title = initialData?.title ?: info.title,
                         author = initialData?.author ?: info.author,
-                        coverUrl = initialData?.coverUrl ?: info.coverUrl
+                        coverUrl = initialData?.coverUrl ?: info.coverUrl,
+                        description = info.description.ifBlank { initialData?.description ?: "" }
                     )
                 } else {
                     initialData?.let { d ->
                         BookInfo(
                             id = d.id, title = d.title, author = d.author,
-                            description = "", genres = emptyList(),
+                            description = d.description, genres = emptyList(),
                             coverUrl = d.coverUrl, availableFormats = d.formats
                         )
                     }
@@ -156,11 +157,11 @@ class BookDetailsViewModel(
                 }
             } catch (e: TimeoutCancellationException) {
                 Log.w(TAG, "loadBookInfo | timeout for book $id")
-                // Показываем хотя бы то, что есть
+                // Показываем хотя бы то, что есть — с описанием из результатов поиска
                 initialData?.let { d ->
                     val fallback = BookInfo(
                         id = d.id, title = d.title, author = d.author,
-                        description = "", genres = emptyList(),
+                        description = d.description, genres = emptyList(),
                         coverUrl = d.coverUrl, availableFormats = d.formats
                     )
                     _state.update { it.copy(uiState = BookDetailsUiState.Success(fallback)) }
@@ -171,7 +172,7 @@ class BookDetailsViewModel(
                 initialData?.let { d ->
                     val fallback = BookInfo(
                         id = d.id, title = d.title, author = d.author,
-                        description = "", genres = emptyList(),
+                        description = d.description, genres = emptyList(),
                         coverUrl = d.coverUrl, availableFormats = d.formats
                     )
                     _state.update { it.copy(uiState = BookDetailsUiState.Success(fallback)) }

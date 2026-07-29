@@ -46,8 +46,6 @@ val appModule = module {
     single { OkHttpClientProvider(androidContext()) }
 
     // ─── API ───
-    // DelegatingFlibustaApi инициализируется лениво — runBlocking не нужен.
-    // Источник (FLIBUSTA/CooLib/Fantasy) переключается асинхронно в ViewModel'ах.
     single<FlibustaApi> {
         val networkProvider: OkHttpClientProvider = get()
         DelegatingFlibustaApi(networkProvider)
@@ -76,13 +74,76 @@ val appModule = module {
     factory { GetLibraryBooksUseCase(get()) }
     factory { RemoveBookUseCase(get()) }
 
-    // ─── ViewModels ───
-    viewModel { SearchViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
-    viewModel { NewBooksViewModel(get(), get(), get(), get(), get()) }
-    viewModel { LibraryViewModel(get(), get(), get(), get()) }
-    viewModel { SettingsViewModel(androidContext() as android.app.Application, get(), get(), get()) }
-    viewModel { BookDetailsViewModel(get(), get(), get(), get(), get()) }
-    viewModel { ReaderViewModel(get(), get(), get(), get()) }
-    viewModel { SeriesDetailsViewModel(get(), get()) }
-    viewModel { AuthorBooksViewModel(get(), get()) }
+    // ─── ViewModels (named parameters for clarity) ───
+
+    viewModel {
+        SearchViewModel(
+            searchBooksUseCase = get(),
+            searchByAuthorUseCase = get(),
+            searchBySeriesUseCase = get(),
+            searchByGenreUseCase = get(),
+            dataStoreManager = get(),
+            networkProvider = get(),
+            application = get()
+        )
+    }
+
+    viewModel {
+        NewBooksViewModel(
+            getNewBooksUseCase = get(),
+            networkProvider = get(),
+            dataStoreManager = get(),
+            application = get(),
+            connectivityObserver = get()
+        )
+    }
+
+    viewModel {
+        LibraryViewModel(
+            bookDataRepository = get(),
+            bookParser = get(),
+            fileDownloader = get(),
+            dataStoreManager = get()
+        )
+    }
+
+    viewModel {
+        SettingsViewModel(
+            application = get(),
+            dataStoreManager = get(),
+            updateChecker = get(),
+            networkProvider = get()
+        )
+    }
+
+    viewModel {
+        BookDetailsViewModel(
+            getBookInfoUseCase = get(),
+            downloadBookUseCase = get(),
+            dataStoreManager = get(),
+            bookDataRepository = get(),
+            networkProvider = get()
+        )
+    }
+
+    viewModel {
+        ReaderViewModel(
+            bookParser = get(),
+            dataStoreManager = get(),
+            bookDataRepository = get(),
+            application = get()
+        )
+    }
+
+    viewModel {
+        SeriesDetailsViewModel(
+            getSeriesBooksUseCase = get()
+        )
+    }
+
+    viewModel {
+        AuthorBooksViewModel(
+            getAuthorBooksUseCase = get()
+        )
+    }
 }

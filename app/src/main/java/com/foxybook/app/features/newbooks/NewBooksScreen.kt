@@ -1,6 +1,8 @@
 package com.foxybook.app.features.newbooks
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -42,6 +44,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Whatshot
@@ -55,7 +58,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,6 +72,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
 import com.foxybook.app.R
 import com.foxybook.app.ui.components.BookCover
 import com.foxybook.app.ui.components.PulsingBookLoader
@@ -83,72 +90,116 @@ fun NewBooksScreen(
     val state by viewModel.state.collectAsState()
     val bookSource by viewModel.bookSource.collectAsState()
     val isGridMode by viewModel.isGridMode.collectAsState()
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    // ── Scroll state for auto-hide header ──
+    val listState = rememberLazyListState()
+    val gridState = rememberLazyGridState()
+    val wasAtTop = remember { mutableStateOf(true) }
+
+    // Track first visible item offset for both list and grid
+    val firstVisibleIndex = if (isGridMode) gridState.firstVisibleItemIndex else listState.firstVisibleItemIndex
+    val firstVisibleOffset = if (isGridMode) gridState.firstVisibleItemScrollOffset else listState.firstVisibleItemScrollOffset
+
+    val showHeader by remember {
+        derivedStateOf {
+            val idx = if (isGridMode) gridState.firstVisibleItemIndex else listState.firstVisibleItemIndex
+            val offset = if (isGridMode) gridState.firstVisibleItemScrollOffset else listState.firstVisibleItemScrollOffset
+            val atTop = idx == 0 && offset == 0
+            if (atTop) true else wasAtTop.value
+        }
+    }
+    LaunchedEffect(firstVisibleIndex, firstVisibleOffset) {
+        val atTop = firstVisibleIndex == 0 && firstVisibleOffset == 0
+        wasAtTop.value = atTop
+    }
+
+    val sourceEntries = remember {
+        listOf(
+            BookSource.FLIBUSTA to "Flibusta",
+            BookSource.COOLLIB to "CoolLib",
+            BookSource.FANTASY_WORLDS to "Fantasy"
+        )
+    }
 
     Column(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
-        // ── Header ──
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(start = 20.dp, end = 4.dp, top = 16.dp, bottom = 12.dp)
+        // ── Header (auto-hide in landscape) ──
+        AnimatedVisibility(
+            visible = showHeader || !isLandscape,
+            enter = expandVertically(tween(200)),
+            exit = shrinkVertically(tween(200))
         ) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text(stringResource(R.string.new_books_title), style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                    Text(stringResource(R.string.new_books_fresh_arrivals), style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 4.dp, top = if (isLandscape) 6.dp else 16.dp, bottom = if (isLandscape) 2.dp else 12.dp)
+                ) {
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        if (isLandscape) {
+                            Text(
+                                stringResource(R.string.new_books_title) + " · " + stringResource(R.string.new_books_fresh_arrivals),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.weight(1f)
+                            )
+                        } else {
+                            Column(Modifier.weight(1f)) {
+                                Text(stringResource(R.string.new_books_title), style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                                Text(stringResource(R.string.new_books_fresh_arrivals), style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }
+                        IconButton(onClick = { viewModel.toggleViewMode() }) {
+                            Icon(
+                                if (isGridMode) Icons.AutoMirrored.Filled.ViewList else Icons.Default.GridView,
+                                contentDescription = if (isGridMode) stringResource(R.string.new_books_list) else stringResource(R.string.new_books_grid)
+                            )
+                        }
+                    }
                 }
-                IconButton(onClick = { viewModel.toggleViewMode() }) {
-                    Icon(
-                        if (isGridMode) Icons.Default.ViewList else Icons.Default.GridView,
-                        contentDescription = if (isGridMode) stringResource(R.string.new_books_list) else stringResource(R.string.new_books_grid)
-                    )
+
+                // ── Source Selector ──
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = if (isLandscape) 4.dp else 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    sourceEntries.forEach { (source, label) ->
+                        val selected = bookSource == source
+                        FilterChip(
+                            selected = selected,
+                            onClick = { viewModel.switchSource(source) },
+                            label = {
+                                Text(label, style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal)
+                            },
+                            modifier = Modifier.weight(1f),
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                labelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            ),
+                            border = FilterChipDefaults.filterChipBorder(
+                                borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f),
+                                selectedBorderColor = MaterialTheme.colorScheme.primary,
+                                borderWidth = 0.5.dp,
+                                selectedBorderWidth = 1.dp,
+                                enabled = true,
+                                selected = selected
+                            )
+                        )
+                    }
                 }
             }
         }
 
-        // ── Source Selector ──
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(horizontal = 20.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            listOf(
-                BookSource.FLIBUSTA to "Flibusta",
-                BookSource.COOLLIB to "CoolLib",
-                BookSource.FANTASY_WORLDS to "Fantasy"
-            ).forEach { (source, label) ->
-                val selected = bookSource == source
-                FilterChip(
-                    selected = selected,
-                    onClick = { viewModel.switchSource(source) },
-                    label = {
-                        Text(label, style = MaterialTheme.typography.labelMedium,
-                            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal)
-                    },
-                    modifier = Modifier.weight(1f),
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        labelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
-                    border = FilterChipDefaults.filterChipBorder(
-                        borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f),
-                        selectedBorderColor = MaterialTheme.colorScheme.primary,
-                        borderWidth = 0.5.dp,
-                        selectedBorderWidth = 1.dp,
-                        enabled = true,
-                        selected = selected
-                    )
-                )
-            }
-        }
-
-        // ── Content (PullToRefreshBox оборачивает всё, включая Loading/Error) ──
+        // ── Content ──
         val isRefreshing by viewModel.isRefreshing.collectAsState()
         PullToRefreshBox(
             isRefreshing = isRefreshing,
@@ -228,7 +279,9 @@ fun NewBooksScreen(
                             onBookClick = onBookClick,
                             loadMore = { viewModel.loadMore() },
                             isLoadingMore = isLoadingMore,
-                            canLoadMore = { viewModel.canLoadMore() }
+                            canLoadMore = { viewModel.canLoadMore() },
+                            gridState = gridState,
+                            isLandscape = isLandscape
                         )
                     } else {
                         NewBooksList(
@@ -236,7 +289,8 @@ fun NewBooksScreen(
                             onBookClick = onBookClick,
                             loadMore = { viewModel.loadMore() },
                             isLoadingMore = isLoadingMore,
-                            canLoadMore = { viewModel.canLoadMore() }
+                            canLoadMore = { viewModel.canLoadMore() },
+                            listState = listState
                         )
                     }
                 }
@@ -313,10 +367,9 @@ private fun NewBooksList(
     onBookClick: (Book) -> Unit,
     loadMore: () -> Unit,
     isLoadingMore: Boolean,
-    canLoadMore: () -> Boolean
+    canLoadMore: () -> Boolean,
+    listState: androidx.compose.foundation.lazy.LazyListState = rememberLazyListState()
 ) {
-    val listState = rememberLazyListState()
-
     val nearEnd by remember {
         derivedStateOf {
             val last = listState.layoutInfo.visibleItemsInfo.lastOrNull() ?: return@derivedStateOf false
@@ -351,10 +404,10 @@ private fun NewBooksGrid(
     onBookClick: (Book) -> Unit,
     loadMore: () -> Unit,
     isLoadingMore: Boolean,
-    canLoadMore: () -> Boolean
+    canLoadMore: () -> Boolean,
+    gridState: androidx.compose.foundation.lazy.grid.LazyGridState = rememberLazyGridState(),
+    isLandscape: Boolean = false
 ) {
-    val gridState = rememberLazyGridState()
-
     val nearEnd by remember {
         derivedStateOf {
             val last = gridState.layoutInfo.visibleItemsInfo.lastOrNull() ?: return@derivedStateOf false
@@ -368,15 +421,17 @@ private fun NewBooksGrid(
             .collect { loadMore() }
     }
 
+    val columns = if (isLandscape) GridCells.Fixed(5) else GridCells.Fixed(3)
+
     LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
+        columns = columns,
         state = gridState,
         contentPadding = PaddingValues(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         gridItems(books, key = { "ng_${it.id}" }) { book ->
-            NewBookGridCard(book = book, onClick = { onBookClick(book) })
+            NewBookGridCard(book = book, onClick = { onBookClick(book) }, isLandscape = isLandscape)
         }
         item(key = "loading_footer") {
             LoadingFooter(isLoadingMore)
@@ -441,7 +496,7 @@ private fun NewBookCard(book: Book, onClick: () -> Unit) {
 // ═══════════════════════════════════════════════════════════════
 
 @Composable
-private fun NewBookGridCard(book: Book, onClick: () -> Unit) {
+private fun NewBookGridCard(book: Book, onClick: () -> Unit, isLandscape: Boolean = false) {
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
@@ -455,13 +510,13 @@ private fun NewBookGridCard(book: Book, onClick: () -> Unit) {
                 title = book.title,
                 author = book.author,
                 contentDescription = book.title,
-                width = 140.dp,
-                height = 180.dp
+                width = if (isLandscape) 100.dp else 140.dp,
+                height = if (isLandscape) 140.dp else 180.dp
             )
-            Column(Modifier.padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 10.dp)) {
-                Text(book.title, style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                Spacer(Modifier.height(3.dp))
+            Column(Modifier.padding(start = if (isLandscape) 6.dp else 10.dp, end = if (isLandscape) 6.dp else 10.dp, top = if (isLandscape) 4.dp else 8.dp, bottom = if (isLandscape) 6.dp else 10.dp)) {
+                Text(book.title, style = if (isLandscape) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold, maxLines = if (isLandscape) 1 else 2, overflow = TextOverflow.Ellipsis)
+                Spacer(Modifier.height(2.dp))
                 Text(book.author, style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1,
                     overflow = TextOverflow.Ellipsis)

@@ -189,6 +189,7 @@ fun SplashScreen(
                             context.startActivity(intent)
                         } catch (e: Exception) {
                             try {
+                                @Suppress("DEPRECATION")
                                 val intent = Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
                                     setData(state.uri)
                                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
