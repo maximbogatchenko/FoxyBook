@@ -8,6 +8,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.foxybook.app.core.models.BookSource
 import com.foxybook.app.core.models.ReaderSettings
+import com.foxybook.app.core.models.LibrarySortSpec
+import com.foxybook.app.core.models.SearchHistory
+import com.foxybook.app.core.models.StartScreen
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
@@ -31,6 +34,9 @@ class DataStoreManager(private val context: Context) {
         private val NEW_BOOKS_VIEW_MODE_KEY = stringPreferencesKey("new_books_view_mode")
         private val BOOK_SOURCE_KEY = stringPreferencesKey("book_source")
         private val LANGUAGE_KEY = stringPreferencesKey("app_language")
+        private val START_SCREEN_KEY = stringPreferencesKey("start_screen")
+        private val LIB_SORT_KEY = stringPreferencesKey("library_sort_spec")
+        private val SEARCH_HISTORY_KEY = stringPreferencesKey("search_history")
     }
 
     // ─── Book Source ───
@@ -90,6 +96,16 @@ class DataStoreManager(private val context: Context) {
         context.dataStore.edit { prefs -> prefs[VIEW_MODE_KEY] = mode }
     }
 
+    // ─── Library Sort ───
+
+    val librarySortSpec: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[LIB_SORT_KEY] ?: LibrarySortSpec.DEFAULT.encode()
+    }
+
+    suspend fun setLibrarySortSpec(spec: LibrarySortSpec) {
+        context.dataStore.edit { prefs -> prefs[LIB_SORT_KEY] = spec.encode() }
+    }
+
     // ─── New Books View Mode ───
 
     val newBooksViewMode: Flow<String> = context.dataStore.data.map { prefs ->
@@ -98,6 +114,40 @@ class DataStoreManager(private val context: Context) {
 
     suspend fun setNewBooksViewMode(mode: String) {
         context.dataStore.edit { prefs -> prefs[NEW_BOOKS_VIEW_MODE_KEY] = mode }
+    }
+
+    // ─── Search History ───
+    //
+    // Хранится JSON-массивом, а не множеством строк: порядок важен —
+    // первым идёт самый свежий запрос.
+
+    val searchHistory: Flow<List<String>> = context.dataStore.data.map { prefs ->
+        decodeHistory(prefs[SEARCH_HISTORY_KEY])
+    }
+
+    /**
+     * Добавляет запрос в начало истории. Повтор (в т.ч. другого регистра)
+     * не дублируется — он просто переносится наверх, как в браузере.
+     */
+    suspend fun addSearchHistoryItem(query: String) {
+        if (query.isBlank()) return
+        context.dataStore.edit { prefs ->
+            val updated = SearchHistory.add(decodeHistory(prefs[SEARCH_HISTORY_KEY]), query)
+            prefs[SEARCH_HISTORY_KEY] = json.encodeToString(updated)
+        }
+    }
+
+    suspend fun clearSearchHistory() {
+        context.dataStore.edit { prefs -> prefs.remove(SEARCH_HISTORY_KEY) }
+    }
+
+    private fun decodeHistory(raw: String?): List<String> {
+        if (raw.isNullOrBlank()) return emptyList()
+        return try {
+            SearchHistory.sanitize(json.decodeFromString<List<String>>(raw))
+        } catch (_: Exception) {
+            emptyList()
+        }
     }
 
     suspend fun setDownloadDirectory(uri: String?) {
@@ -118,5 +168,17 @@ class DataStoreManager(private val context: Context) {
 
     suspend fun setAppLanguage(lang: String) {
         context.dataStore.edit { prefs -> prefs[LANGUAGE_KEY] = lang }
+    }
+
+    // ─── Start Screen ───
+
+    val startScreen: Flow<String> = context.dataStore.data.map { prefs ->
+        StartScreen.normalize(prefs[START_SCREEN_KEY])
+    }
+
+    suspend fun setStartScreen(route: String) {
+        context.dataStore.edit { prefs ->
+            prefs[START_SCREEN_KEY] = StartScreen.normalize(route)
+        }
     }
 }

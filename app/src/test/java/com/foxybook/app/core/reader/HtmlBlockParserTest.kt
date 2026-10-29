@@ -47,10 +47,16 @@ class HtmlBlockParserTest {
     }
 
     @Test
-    fun `parse empty content returns empty paragraph`() {
+    fun `parse empty content returns no blocks`() {
+        // Пустая глава не должна порождать фантомный пустой блок: пагинация
+        // трактует пустой список как «контент не загружен» и не рисует страницу.
         val blocks = HtmlBlockParser.parse("")
-        assertEquals(1, blocks.size)
-        assertEquals(ContentBlock.Paragraph(""), blocks[0])
+        assertTrue(blocks.isEmpty())
+    }
+
+    @Test
+    fun `parse whitespace only content returns no blocks`() {
+        assertTrue(HtmlBlockParser.parse("   \n  \t ").isEmpty())
     }
 
     @Test

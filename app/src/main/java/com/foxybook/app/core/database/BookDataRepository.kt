@@ -1,12 +1,15 @@
 package com.foxybook.app.core.database
 
+import androidx.room.withTransaction
 import com.foxybook.app.core.models.BookCollection
+import com.foxybook.app.core.models.BookReadState
 import com.foxybook.app.core.models.Bookmark
 import com.foxybook.app.core.models.LibraryBook
 import com.foxybook.app.core.models.ReadingPosition
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class BookDataRepository(
@@ -30,7 +33,7 @@ class BookDataRepository(
                 val ids = entriesByBook[entity.id to entity.format]?.map { it.collectionId } ?: emptyList()
                 entity.toDomain(ids)
             }
-        }
+        }.flowOn(Dispatchers.Default)
 
     fun getBooksById(bookId: Int): Flow<List<LibraryBook>> =
         libraryBookDao.getBooksById(bookId).map { entities ->
@@ -39,6 +42,29 @@ class BookDataRepository(
                 entity.toDomain(ids)
             }
         }
+
+    /** Пути всех книг в библиотеке — используются для поиска осиротевших файлов. */
+    suspend fun getAllFilePaths(): List<String> =
+        libraryBookDao.getAllFilePaths()
+
+    /**
+     * Меняет отметку чтения книги.
+     *
+     * FINISHED выравнивает прогресс к 100%, UNREAD обнуляет его — иначе книга
+     * осталась бы с нарисованными 100% в непрочитанной полке. AUTO только
+     * снимает отметку и сохраняет прогресс как есть.
+     */
+    suspend fun setBookReadState(bookId: Int, format: String, readState: String) {
+        when (BookReadState.normalize(readState)) {
+            BookReadState.FINISHED -> libraryBookDao.setReadStateWithProgress(
+                bookId, format, BookReadState.FINISHED, BookReadState.PROGRESS_FINISHED
+            )
+            BookReadState.UNREAD -> libraryBookDao.setReadStateWithProgress(
+                bookId, format, BookReadState.UNREAD, 0
+            )
+            else -> libraryBookDao.setReadStateOnly(bookId, format, BookReadState.AUTO)
+        }
+    }
 
     suspend fun addLibraryBook(book: LibraryBook) {
         libraryBookDao.upsert(book.toEntity())
@@ -51,8 +77,12 @@ class BookDataRepository(
     }
 
     suspend fun removeLibraryBook(bookId: Int, format: String) {
-        bookCollectionEntryDao.deleteByBook(bookId, format)
-        libraryBookDao.delete(bookId, format)
+        db.withTransaction {
+            bookCollectionEntryDao.deleteByBook(bookId, format)
+            bookmarkDao.deleteByBook(bookId)
+            readingPositionDao.deleteByBook(bookId, format)
+            libraryBookDao.delete(bookId, format)
+        }
     }
 
     suspend fun toggleFavorite(bookId: Int, format: String) =
@@ -115,8 +145,10 @@ class BookDataRepository(
         bookCollectionDao.rename(id, name)
 
     suspend fun deleteCollection(id: String) {
-        bookCollectionEntryDao.deleteByCollectionId(id)
-        bookCollectionDao.delete(id)
+        db.withTransaction {
+            bookCollectionEntryDao.deleteByCollectionId(id)
+            bookCollectionDao.delete(id)
+        }
     }
 }
 
@@ -133,7 +165,8 @@ internal fun LibraryBookEntity.toDomain(collectionIds: List<String> = emptyList(
     isFavorite = isFavorite,
     lastReadDate = lastReadDate,
     collectionIds = collectionIds,
-    readingProgress = readingProgress
+    readingProgress = readingProgress,
+    readState = readState
 )
 
 internal fun LibraryBook.toEntity() = LibraryBookEntity(
@@ -146,7 +179,8 @@ internal fun LibraryBook.toEntity() = LibraryBookEntity(
     downloadDate = downloadDate,
     isFavorite = isFavorite,
     lastReadDate = lastReadDate,
-    readingProgress = readingProgress
+    readingProgress = readingProgress,
+    readState = readState
 )
 
 internal fun BookmarkEntity.toDomain() = Bookmark(

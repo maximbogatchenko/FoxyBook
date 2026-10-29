@@ -83,8 +83,12 @@
 }
 
 # ─── Remove logging in release ───
+# Логи полностью вырезаются из release: в сообщениях исключений OkHttp
+# фигурируют URL, а в них — поисковые запросы и имена авторов.
 -assumenosideeffects class android.util.Log {
     public static int v(...);
     public static int d(...);
     public static int i(...);
+    public static int w(...);
+    public static int e(...);
 }

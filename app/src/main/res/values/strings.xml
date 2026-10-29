@@ -39,6 +39,9 @@
     <string name="search_error">Ошибка поиска</string>
     <string name="search_idle_title">FoxyBook</string>
     <string name="search_idle_subtitle">Введите запрос для поиска</string>
+    <string name="search_history_title">История поиска</string>
+    <string name="search_history_clear">Очистить</string>
+    <string name="search_history_empty">Здесь появятся ваши запросы</string>
     <string name="search_section_books">Книги</string>
     <string name="search_section_authors">Авторы</string>
     <string name="search_section_series">Серии</string>
@@ -68,6 +71,8 @@
     <string name="settings_theme_dark">Тёмная</string>
     <string name="settings_theme_amoled">AMOLED</string>
     <string name="settings_default_format">Формат по умолчанию</string>
+    <string name="settings_start_screen">Главный экран</string>
+    <string name="settings_start_screen_hint">Экран, который будет открываться при запуске приложения</string>
     <string name="settings_language">Язык</string>
     <string name="settings_language_ru">Русский</string>
     <string name="settings_language_en">English</string>
@@ -96,6 +101,7 @@
     <string name="settings_about">О приложении</string>
     <string name="settings_author">Created by ßoлк</string>
     <string name="settings_author_contact">Написать автору</string>
+    <string name="settings_author_telegram">Telegram-канал</string>
     <string name="settings_author_support">Поддержать автора</string>
     <string name="settings_whats_new">Что нового</string>
     <string name="settings_no_changelog">Автор не указал список изменений</string>
@@ -143,6 +149,27 @@
     <string name="library_delete_batch_title">Удалить %d книг?</string>
     <string name="library_delete_batch_body">Выбранные книги будут удалены из библиотеки.</string>
     <string name="library_delete_batch_from_device">Удалить файлы с устройства</string>
+
+    <!-- Library sorting -->
+    <string name="library_sort">Сортировка</string>
+    <string name="library_sort_desc">По убыванию</string>
+    <string name="library_sort_asc">По возрастанию</string>
+    <string name="library_sort_group_status">Группировать по статусу чтения</string>
+    <string name="library_sort_date_added">Дата добавления</string>
+    <string name="library_sort_last_read">Последнее чтение</string>
+    <string name="library_sort_title">Название</string>
+    <string name="library_sort_author">Автор</string>
+    <string name="library_sort_progress">Прогресс</string>
+
+    <!-- Read status -->
+    <string name="library_shelf_reading">Читаю</string>
+    <string name="library_shelf_unread">Не прочитано</string>
+    <string name="library_shelf_finished">Прочитано</string>
+    <string name="library_shelf_count">· %d</string>
+    <string name="library_read_mark_read">Отметить прочитанным</string>
+    <string name="library_read_mark_unread">Отметить непрочитанным</string>
+    <string name="library_read_badge">Прочитано</string>
+    <string name="library_read_auto">Авто</string>
 
     <!-- Reader -->
     <string name="reader_title">Чтение</string>

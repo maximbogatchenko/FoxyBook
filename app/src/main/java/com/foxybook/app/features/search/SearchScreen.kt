@@ -8,15 +8,22 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.ExpandMore
+<<<<<<< HEAD
+=======
+import androidx.compose.material.icons.filled.History
+>>>>>>> d24a20e (FoxyBook v1.9)
 import androidx.compose.material.icons.filled.PersonSearch
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Style
 import androidx.compose.material3.*
@@ -153,7 +160,15 @@ fun SearchScreen(
             modifier = Modifier.weight(1f).fillMaxWidth()
         ) {
             when {
+<<<<<<< HEAD
                 !state.hasQuery -> IdleContent()
+=======
+                !state.hasQuery -> IdleContent(
+                    history = state.searchHistory,
+                    onHistoryClick = { viewModel.onEvent(SearchEvent.HistorySelected(it)) },
+                    onClearHistory = { viewModel.onEvent(SearchEvent.ClearHistory) }
+                )
+>>>>>>> d24a20e (FoxyBook v1.9)
                 state.isSearching && state.books.isEmpty() && state.authors.isEmpty() &&
                     state.series.isEmpty() && state.genreBooks.isEmpty() -> LoadingContent()
                 state.error != null -> ErrorContent(state.error!!) { viewModel.onEvent(SearchEvent.SearchRequested) }
@@ -358,10 +373,23 @@ private fun SearchTabRow(
 // ═══════════════════════════════════════════════════════════════
 
 @Composable
+<<<<<<< HEAD
 private fun IdleContent() {
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { delay(100); visible = true }
 
+=======
+private fun IdleContent(
+    history: List<String>,
+    onHistoryClick: (String) -> Unit,
+    onClearHistory: () -> Unit
+) {
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { delay(100); visible = true }
+
+    val hasHistory = history.isNotEmpty()
+
+>>>>>>> d24a20e (FoxyBook v1.9)
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn(animationSpec = tween(500)) + scaleIn(initialScale = 0.9f, animationSpec = tween(500))
@@ -369,6 +397,7 @@ private fun IdleContent() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+<<<<<<< HEAD
                 .padding(vertical = 64.dp, horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -376,6 +405,22 @@ private fun IdleContent() {
             Box(
                 modifier = Modifier
                     .size(120.dp)
+=======
+                .verticalScroll(rememberScrollState())
+                .padding(
+                    start = 20.dp,
+                    end = 20.dp,
+                    top = if (hasHistory) 32.dp else 64.dp,
+                    bottom = 32.dp
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Decorative circle with icon. Уменьшаем, когда есть история,
+            // чтобы список запросов помещался на первом экране.
+            Box(
+                modifier = Modifier
+                    .size(if (hasHistory) 84.dp else 120.dp)
+>>>>>>> d24a20e (FoxyBook v1.9)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)),
                 contentAlignment = Alignment.Center
@@ -383,12 +428,20 @@ private fun IdleContent() {
                 Icon(
                     Icons.AutoMirrored.Filled.MenuBook,
                     contentDescription = null,
+<<<<<<< HEAD
                     modifier = Modifier.size(56.dp),
+=======
+                    modifier = Modifier.size(if (hasHistory) 38.dp else 56.dp),
+>>>>>>> d24a20e (FoxyBook v1.9)
                     tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
                 )
             }
 
+<<<<<<< HEAD
             Spacer(Modifier.height(28.dp))
+=======
+            Spacer(Modifier.height(if (hasHistory) 20.dp else 28.dp))
+>>>>>>> d24a20e (FoxyBook v1.9)
 
             Text(
                 "FoxyBook",
@@ -406,6 +459,7 @@ private fun IdleContent() {
                 textAlign = TextAlign.Center
             )
 
+<<<<<<< HEAD
             Spacer(Modifier.height(32.dp))
 
             // Hint chips
@@ -426,6 +480,126 @@ private fun IdleContent() {
                 }
             }
         }
+=======
+            if (hasHistory) {
+                Spacer(Modifier.height(28.dp))
+                SearchHistoryBlock(
+                    history = history,
+                    onHistoryClick = onHistoryClick,
+                    onClearHistory = onClearHistory
+                )
+            } else {
+                Spacer(Modifier.height(32.dp))
+
+                // Hint chips
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf("Книги", "Авторы", "Серии").forEach { hint ->
+                        SuggestionChip(
+                            onClick = { },
+                            label = {
+                                Text(hint, style = MaterialTheme.typography.labelSmall)
+                            },
+                            shape = RoundedCornerShape(16.dp),
+                            colors = SuggestionChipDefaults.suggestionChipColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** Блок «История поиска»: заголовок, кнопка очистки и запросы плиткой. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SearchHistoryBlock(
+    history: List<String>,
+    onHistoryClick: (String) -> Unit,
+    onClearHistory: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        )
+    ) {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Default.History,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    stringResource(R.string.search_history_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
+                )
+                TextButton(onClick = onClearHistory) {
+                    Text(
+                        stringResource(R.string.search_history_clear),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, end = 12.dp, top = 2.dp, bottom = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                history.forEach { query ->
+                    HistoryChip(query = query, onClick = { onHistoryClick(query) })
+                }
+            }
+        }
+    }
+}
+
+/** Плитка одного запроса в истории. */
+@Composable
+private fun HistoryChip(query: String, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surface
+    ) {
+        Row(
+            modifier = Modifier.padding(start = 10.dp, end = 14.dp, top = 8.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Default.Schedule,
+                contentDescription = null,
+                modifier = Modifier.size(14.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(
+                query,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.widthIn(max = 220.dp)
+            )
+        }
+>>>>>>> d24a20e (FoxyBook v1.9)
     }
 }
 

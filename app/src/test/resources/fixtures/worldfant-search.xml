@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <feed xmlns="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/terms/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/" xmlns:opds="http://opds-spec.org/2010/catalog" xmlns:calibre="http://calibre.kovidgoyal.net/2009/metadata">
+  <id>search:books::</id>
+  <title>Миры фэнтези::Поиск</title>
+  <updated>2026-10-05T17:26:11Z</updated>
+  <icon>/favicon.ico</icon>
+  <link href="/opensearch.xml" rel="search" type="application/opensearchdescription+xml" />
+  <link href="/searchopds?q={searchTerms}" rel="search" type="application/atom+xml" />
+  <link rel="start" href="/opds" type="application/atom+xml;profile=opds-catalog;kind=navigation" />
+  <link rel="self" href="/opds" type="application/atom+xml;profile=opds-catalog;kind=navigation" />
+
+<entry>
+	<id>books:13503</id>
+	<title>Пуля-квант</title>
+	<author>
+		<name>Алексей  Бобл</name>
+		<uri>/author/id2462/</uri>
+	</author>
+	<dc:language>ru</dc:language>
+  <calibre:series>S.T.A.L.K.E.R.</calibre:series>
+  <calibre:series_index></calibre:series_index>
+  <link href='/opds/author/id2462' rel='related' type='application/atom+xml' title='Все книги автора Алексей  Бобл' />
+  <link href="/opds/series/id160" rel="related" type="application/atom+xml" title="Все книги серии «S.T.A.L.K.E.R.»" />
+	<dc:format>fb2+zip</dc:format>
+	<content type="text/html"> 	В Зоне проходит спецоперация, задействованы отряды военных сталкеров, артиллерия, авиация и бронетехника. С объектов внутри Периметра проведена полная эвакуация персонала, вывезено оборудование. В круговорот событий попадает молодой ученый - Кирилл Войтковский, недавно прибывший в научный лагерь на озере Янтарь. По непонятным причинам он частично потерял память. Кто поможет ему вспомнить все? Как остаться живым в незнакомом и полном смертельных опасностей мире и выбраться за Периметр Зоны? Пытаясь найти ответы, Кирилл понимает, что он - ключ к важному эксперименту. Теперь могущественные враждебные силы охотятся на него... </content>
+	<link href="/lib/id13503/download/" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+	<link href="/img/preview/135/13503.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+	<link href="/lib/id13503/" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+
+
+</feed>

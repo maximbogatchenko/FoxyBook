@@ -112,7 +112,12 @@ val appModule = module {
             application = get(),
             dataStoreManager = get(),
             updateChecker = get(),
+<<<<<<< HEAD
             networkProvider = get()
+=======
+            networkProvider = get(),
+            bookDataRepository = get()
+>>>>>>> d24a20e (FoxyBook v1.9)
         )
     }
 

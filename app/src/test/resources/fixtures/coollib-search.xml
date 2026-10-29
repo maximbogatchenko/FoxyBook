@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <feed xmlns="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/terms/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/" xmlns:opds="http://opds-spec.org/2010/catalog"> <id>tag:search:books:квант:</id>
+ <title>Результат поиска</title>
+ <updated>2026-10-05T17:26:08+03:00</updated>
+ <icon>https://coollib.net/favicon.ico</icon>
+ <link href="https://coollib.net/opds-opensearch.xml" rel="search" type="application/opensearchdescription+xml" />
+ <link href="https://coollib.net/opds/search?searchTerm={searchTerms}" rel="search" type="application/atom+xml" />
+ <link href="https://coollib.net/opds" rel="start" type="application/atom+xml;profile=opds-catalog" />
+ <link href="https://coollib.net/opds/search?searchTerm=%D0%BA%D0%B2%D0%B0%D0%BD%D1%82" rel="up" type="application/atom+xml;profile=opds-catalog" />
+ <link href="https://coollib.net/opds/search?searchType=books&amp;searchTerm=%D0%BA%D0%B2%D0%B0%D0%BD%D1%82&amp;pageNumber=1" rel="next" type="application/atom+xml;profile=opds-catalog" />
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:357260</id>
+ <title>3. Излучение. Волны. Кванты</title>
+ <author> <name>Фейнман Ричард Филлипс</name>
+ <uri>https://coollib.net/a/4588</uri>
+</author>
+ <link href="https://coollib.net/opds/author/4588" rel="related" type="application/atom+xml" title="Все книги автора Фейнман Ричард Филлипс" />
+ <category term="Физика" label="Физика" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <link href="https://coollib.net/opds/sequencebooks/23164" rel="related" type="application/atom+xml" title="Все книги серии &quot;Фейнмановские лекции по физике&quot;" />
+ <content type="text/html">3. Излучение. Волны. Кванты&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;&lt;i&gt;Глава 26&lt;/i&gt;&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;ОПТИКА. ПРИНЦИП НАИМЕНЬШЕГО ВРЕМЕНИ&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;§ 1. Свет&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 2. Отражение и преломление&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 3. Принцип наименьшего времени Ферма&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 4. Применения принципа Ферма&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 5. Более точная формулировка принципа Ферма&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 6, Квантовый механизм&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;§ 1. Свет&lt;/b&gt; ...&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 1445 Kb&lt;br&gt;Скачиваний: 4120&lt;br&gt;Серия: Фейнмановские лекции по физике #3&lt;br&gt;</content>
+ <link href="https://coollib.net/b/357260/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/357260/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/357260/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/357260/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/357260/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/357260/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/357260" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:357261</id>
+ <title>3a. Излучение. Волны. Кванты</title>
+ <author> <name>Фейнман Ричард Филлипс</name>
+ <uri>https://coollib.net/a/4588</uri>
+</author>
+ <link href="https://coollib.net/opds/author/4588" rel="related" type="application/atom+xml" title="Все книги автора Фейнман Ричард Филлипс" />
+ <category term="Физика" label="Физика" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <link href="https://coollib.net/opds/sequencebooks/23164" rel="related" type="application/atom+xml" title="Все книги серии &quot;Фейнмановские лекции по физике&quot;" />
+ <content type="text/html">3a. Излучение. Волны. Кванты&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;&lt;i&gt;Глава 33 &lt;/i&gt;&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;ПОЛЯРИЗАЦИЯ&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;§ 1. Вектор электрического поля световой волны&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 2. Поляризация рассеянного света&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 3. Двойное лучепрелом­ление&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 4. Поляриза­торы&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 5. Оптическая активность&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 6, Интенсив­ность отраженного света&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 7. Аномальное преломление&lt;i&gt;&lt;/i&gt;&lt;/b&gt;&lt;br&gt; ...&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 1609 Kb&lt;br&gt;Скачиваний: 3551&lt;br&gt;Серия: Фейнмановские лекции по физике #3&lt;br&gt;</content>
+ <link href="https://coollib.net/b/357261/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/357261/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/357261/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/357261/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/357261/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/357261/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/357261" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:357270</id>
+ <title>8. Квантовая механика I</title>
+ <author> <name>Фейнман Ричард Филлипс</name>
+ <uri>https://coollib.net/a/4588</uri>
+</author>
+ <link href="https://coollib.net/opds/author/4588" rel="related" type="application/atom+xml" title="Все книги автора Фейнман Ричард Филлипс" />
+ <category term="Физика" label="Физика" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <link href="https://coollib.net/opds/sequencebooks/23164" rel="related" type="application/atom+xml" title="Все книги серии &quot;Фейнмановские лекции по физике&quot;" />
+ <content type="text/html">8. Квантовая механика I&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;&lt;i&gt;Глава 1 &lt;/i&gt;&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;АМПЛИТУДЫ ВЕРОЯТНОСТИ&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;§ 1.Законы композиции амплитуд&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 2.Картина интерференции от двух щелей&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ З. Рассеяние на кристалле&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 4. Тождественные частицы&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;i&gt;Повторить&lt;/i&gt;:гл. 37 (вып. 3) «Кван­товое поведение» ; гл. 38 (вып. 3) « Соотношение между волновой и корпускулярной точками зрения»&lt;br&gt;&lt;br&gt;&lt;b&gt;§ 1. Законы композиции амплитуд&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+Когда Шредингер впервые открыл правиль­ные законы квантовой механики, он написал уравнение, которое описывало амплитуду ве­роятности обнаружения частицы в различ­ных местах. Это уравнение было очень похоже на уравнения, которые были уже изве­стны классическим физикам, они ими пользо­вались, чтобы описать движение воздуха в звуковой волне, распространение света и т. д. Так что в начале развития квантовой механики большую часть времени люди занимались ре­шением этого уравнени ...&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 2594 Kb&lt;br&gt;Скачиваний: 3861&lt;br&gt;Серия: Фейнмановские лекции по физике #8&lt;br&gt;</content>
+ <link href="https://coollib.net/b/357270/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/357270/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/357270/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/357270/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/357270/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/357270/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/357270" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:357271</id>
+ <title>8a. Квантовая механика I</title>
+ <author> <name>Фейнман Ричард Филлипс</name>
+ <uri>https://coollib.net/a/4588</uri>
+</author>
+ <link href="https://coollib.net/opds/author/4588" rel="related" type="application/atom+xml" title="Все книги автора Фейнман Ричард Филлипс" />
+ <category term="Физика" label="Физика" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <link href="https://coollib.net/opds/sequencebooks/23164" rel="related" type="application/atom+xml" title="Все книги серии &quot;Фейнмановские лекции по физике&quot;" />
+ <content type="text/html">8a. Квантовая механика I&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;&lt;i&gt;Глава 7&lt;/i&gt;&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;АММИАЧНЫЙ МАЗЕР&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;§ 1. Состояния моле­кулы аммиака&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 2. Молекула в стати­ческом электриче­ском поле&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ З. Переходы в поле, зависящем от вре­мени&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 4. Переходы при резонансе&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 5. Переходы вне резонанса&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 6. Поглощение света&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;§ 1. Состояния молекулы аммиака&lt;/b&gt; ...&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 2459 Kb&lt;br&gt;Скачиваний: 4124&lt;br&gt;Серия: Фейнмановские лекции по физике #8&lt;br&gt;</content>
+ <link href="https://coollib.net/b/357271/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/357271/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/357271/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/357271/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/357271/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/357271/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/357271" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:357272</id>
+ <title>9. Квантовая механика II</title>
+ <author> <name>Фейнман Ричард Филлипс</name>
+ <uri>https://coollib.net/a/4588</uri>
+</author>
+ <link href="https://coollib.net/opds/author/4588" rel="related" type="application/atom+xml" title="Все книги автора Фейнман Ричард Филлипс" />
+ <category term="Физика" label="Физика" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <link href="https://coollib.net/opds/sequencebooks/23164" rel="related" type="application/atom+xml" title="Все книги серии &quot;Фейнмановские лекции по физике&quot;" />
+ <content type="text/html">9. Квантовая механика II&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;&lt;i&gt;Глава 11&lt;/i&gt;&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;РАСПРОСТРАНЕНИЕ В КРИСТАЛЛИЧЕСКОЙ РЕШЕТКЕ&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;§ 1. Состояния электрона в одномерной решетке&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 2. Состояния определенной энергии&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 3. Состояния, зависящие от времени&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 4. Электрон в трехмерной решетке&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 5. Другие состояния в решетке&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 6. Рассеяние на нерегулярностях решетки&lt;/b&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;b&gt;§ 7. Захват нерегулярностями решетки&lt;/b&gt; ...&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 4795 Kb&lt;br&gt;Скачиваний: 4494&lt;br&gt;Серия: Фейнмановские лекции по физике #9&lt;br&gt;</content>
+ <link href="https://coollib.net/b/357272/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/357272/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/357272/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/357272/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/357272/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/357272/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/357272" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:670182</id>
+ <title>PRO квантовые чудеса</title>
+ <author> <name>Фейгин Олег Орестович</name>
+ <uri>https://coollib.net/a/62941</uri>
+</author>
+ <link href="https://coollib.net/opds/author/62941" rel="related" type="application/atom+xml" title="Все книги автора Фейгин Олег Орестович" />
+ <category term="Научно-популярная и научно-познавательная литература" label="Научно-популярная и научно-познавательная литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>epub+zip</dc:format>
+ <link href="https://coollib.net/opds/sequencebooks/40078" rel="related" type="application/atom+xml" title="Все книги серии &quot;Просто… (Страта)&quot;" />
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;В книге рассказывается об истории возникновения и ключевых проблемах современной квантовой науки, пытающейся проникнуть в невообразимые глубины материи и найти пути в иные миры, пространства и времена.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Обсуждаются чудеса строения микромира, в котором перестают действовать привычные нам законы обыденной реальности, а частицы проявляют &quot;корпускулярный дуализм&quot;, становясь чем-то средним между волнами и частицами, приобретая фантастические возможности проникать сквозь барьеры, образовывать удивительные пары, движущиеся без электросопротивления, и вообще &quot;растворяться&quot; в окружающей среде, оставляя после себя лишь &quot;всплески&quot; электромагнитного поля.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Книга рассчитана на самый широкий круг читателей, интересующихся успехами современной физики и научными представлениями о строении окружающей квантовой реальности.&lt;/p&gt;&lt;br&gt;Формат: epub&lt;br&gt;Язык: ru&lt;br&gt;Размер: 2854 Kb&lt;br&gt;Скачиваний: 61&lt;br&gt;Серия: Просто… (Страта)&lt;br&gt;</content>
+ <link href="https://coollib.net/i/82/670182/cover.webp" rel="http://opds-spec.org/image" type="image/webp" />
+ <link href="https://coollib.net/i/82/670182/cover.webp" rel="x-stanza-cover-image" type="image/webp" />
+ <link href="https://coollib.net/i/82/670182/cover.webp" rel="http://opds-spec.org/thumbnail" type="image/webp" />
+ <link href="https://coollib.net/i/82/670182/cover.webp" rel="x-stanza-cover-image-thumbnail" type="image/webp" />
+ <rights>Заблокировано! Скачивание невозможно :(</rights>
+ <link href="https://coollib.net/b/670182" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:469579</id>
+ <title>Super Jump. Квантовый прыжок к мечте</title>
+ <author> <name>Довгань Владимир Викторович</name>
+ <uri>https://coollib.net/a/74481</uri>
+</author>
+ <link href="https://coollib.net/opds/author/74481" rel="related" type="application/atom+xml" title="Все книги автора Довгань Владимир Викторович" />
+ <category term="Самосовершенствование" label="Самосовершенствование" />
+ <category term="О бизнесе популярно" label="О бизнесе популярно" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <content type="text/html">Посвящается Интеллект-тренерам, первопроходцам, энтузиастам, героям, которые своими знаниями останавливают уничтожение природы и спасают человечество от самоуничтожения.&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 843 Kb&lt;br&gt;Скачиваний: 75&lt;br&gt;</content>
+ <link href="https://coollib.net/i/79/469579/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/79/469579/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/79/469579/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/79/469579/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <rights>Заблокировано! Скачивание невозможно :(</rights>
+ <link href="https://coollib.net/b/469579" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:333228</id>
+ <title>Абсолютный минимум. Как квантовая теория объясняет наш мир</title>
+ <author> <name>Файер Майкл</name>
+ <uri>https://coollib.net/a/130937</uri>
+</author>
+ <link href="https://coollib.net/opds/author/130937" rel="related" type="application/atom+xml" title="Все книги автора Файер Майкл" />
+ <category term="Физика" label="Физика" />
+ <category term="Научно-популярная и научно-познавательная литература" label="Научно-популярная и научно-познавательная литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2015</dc:issued>
+ <content type="text/html">Физика - это сложнейшая комплексная наука, она насколько сложна, настолько и увлекательна. Если отбросить математическую составляющую, физика сразу становится доступной любому человеку, обладающему любопытством и воображением. Мы легко поймем концепцию теории гравитации, обойдясь без сложных математических уравнений. Поэтому всем, кто задумывается о том, что делает ягоды черники синими, а клубники - красными; кто сомневается, что звук распространяется в виде волн; кто интересуется, почему поведение света так отличается от любого другого явления во Вселенной, нужно понять, что все дело - в квантовой физике.
+Эта книга презентует (и демистифицирует) для обычных людей волшебный мир квантовой науки, как ни одна другая книга. Она рассказывает о базовых научных понятиях, от световых частиц до состояний материи и причинах негативного влияния парниковых газов, раскрывая каждую тему без использования специфической научной терминологии - примерами из обычной повседневной жизни. Безусловно, книга по квантовой физике не может обойтись без минимального набора формул и уравнений, но это необходимый минимум, понятный большинству читателей. По мнению автора, книга, популяризирующая науку, должна быть доступной, но не опускаться до уровня читателя, а поднимать и развивать его интеллект и общий культурный уровень.
+Написанная в лучших традициях Стивена Хокинга и Льюиса Томаса, книга популяризирует увлекательные открытия из области квантовой физики и химии, сочетая представления и суждения современных ученых с яркими и наглядными примерами из повседневной жизни.&lt;br&gt;Перевод: Сергеев А Н&lt;br&gt;Год издания: 2015&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 4900 Kb&lt;br&gt;Скачиваний: 9517&lt;br&gt;</content>
+ <link href="https://coollib.net/i/28/333228/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/28/333228/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/28/333228/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/28/333228/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/333228/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/333228/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/333228/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/333228/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/333228/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/333228/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/333228" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:512839</id>
+ <title>Аналитические свойства амплитуд рассеяния в локальной квантовой теории поля</title>
+ <author> <name>Хепп К.</name>
+ <uri>https://coollib.net/a/256533</uri>
+</author>
+ <link href="https://coollib.net/opds/author/256533" rel="related" type="application/atom+xml" title="Все книги автора Хепп К." />
+ <author> <name>Эпштейн А.</name>
+ <uri>https://coollib.net/a/256534</uri>
+</author>
+ <link href="https://coollib.net/opds/author/256534" rel="related" type="application/atom+xml" title="Все книги автора Эпштейн А." />
+ <category term="Физика" label="Физика" />
+ <category term="Математика" label="Математика" />
+ <category term="Литература ХX века (эпоха Социальных революций)" label="Литература ХX века (эпоха Социальных революций)" />
+ <category term="Советские издания" label="Советские издания" />
+ <dc:language>ru</dc:language>
+ <dc:format>djvu+zip</dc:format>
+ <dc:issued>1971</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Книгу составляют лекции, прочитанные авторами на летней школе по теоретической физике Брандейского университета в 1965 году: систематизирование изложена теория рассеяния, доказаны дисперсионные соотношения, изучены аналитические свойства четырехточечных функций.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Монография рассчитана на физиков-теоретиков, специализирующихся в области квантовой теории поля и теории элементарных частиц, студентов и аспирантов этих специальностей, а также математиков, интересующихся приложениями теории аналитических функций одной и многих комплексных переменных в квантовой теории поля.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Книга содержит 186 библиографических наименований и 16 рисунков.&lt;/p&gt;&lt;br&gt;Перевод: Енковский Л.&lt;br&gt;Год издания: 1971&lt;br&gt;Формат: djvu&lt;br&gt;Язык: ru&lt;br&gt;Размер: 2328 Kb&lt;br&gt;Скачиваний: 1668&lt;br&gt;</content>
+ <link href="https://coollib.net/i/djvu/512839.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/djvu/512839.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/djvu/512839.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/djvu/512839.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/512839/download" rel="http://opds-spec.org/acquisition/open-access" type="application/djvu+zip" />
+ <link href="https://coollib.net/b/512839" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:341430</id>
+ <title>Бизнес и Трансерфинг. Нейро-квантовый метод успеха</title>
+ <author> <name>Массело Оливье</name>
+ <uri>https://coollib.net/a/134576</uri>
+</author>
+ <link href="https://coollib.net/opds/author/134576" rel="related" type="application/atom+xml" title="Все книги автора Массело Оливье" />
+ <category term="Деловая литература: прочее" label="Деловая литература: прочее" />
+ <category term="Эзотерика, мистицизм, оккультизм" label="Эзотерика, мистицизм, оккультизм" />
+ <category term="Самосовершенствование" label="Самосовершенствование" />
+ <category term="Религия и духовность: прочее" label="Религия и духовность: прочее" />
+ <category term="Дом и семья: прочее" label="Дом и семья: прочее" />
+ <category term="О бизнесе популярно" label="О бизнесе популярно" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2015</dc:issued>
+ <link href="https://coollib.net/opds/sequencebooks/22369" rel="related" type="application/atom+xml" title="Все книги серии &quot;Вадим Зеланд&quot;" />
+ <content type="text/html">&lt;p class=&#039;book&#039;&gt;Авторский метод «Нейроквант», сочетающий в себе достижения нейробиологии, квантовой физики и Трансерфинга, сверхпопулярной техники управления реальностью, помогает увеличить эффективность бизнеса и позволяет всем – от босса до нового сотрудника – улучшить самочувствие, сделать гармоничными отношения внутри организации, а также повысить личные показатели. Как пишет в предисловии Вадим Зеланд, автор бестселлеров, переведенных на 20 языков мира, который лично знает автора: «Перед вами книга, которая может стать поворотной в вашей судьбе».&lt;/p&gt;
+&lt;p class=&#039;book&#039;&gt;Оливье Массело (Olivier Masselot) – бизнесмен, писатель, переводчик книг Вадима Зеланда, представляющий Трансерфинг во всех франкоговорящих странах. Оливье – основатель и руководитель «Института NeuroQuantis», оказывающего консалтинговые и обучающие услуги организациям и частным специалистам. Он также пишет музыку, занимается общественной и благотворительной деятельностью.&lt;/p&gt;
+&lt;br&gt;Перевод: Мкртычева М С&lt;br&gt;Год издания: 2015&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 2296 Kb&lt;br&gt;Скачиваний: 73&lt;br&gt;Серия: Вадим Зеланд&lt;br&gt;</content>
+ <link href="https://coollib.net/i/30/341430/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/30/341430/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/30/341430/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/30/341430/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <rights>Заблокировано! Скачивание невозможно :(</rights>
+ <link href="https://coollib.net/b/341430" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:268796</id>
+ <title>Битва при черной дыре. Мое сражение со Стивеном Хокингом за мир, безопасный для квантовой механики</title>
+ <author> <name>Сасскинд Леонард</name>
+ <uri>https://coollib.net/a/104911</uri>
+</author>
+ <link href="https://coollib.net/opds/author/104911" rel="related" type="application/atom+xml" title="Все книги автора Сасскинд Леонард" />
+ <category term="Научная литература" label="Научная литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2013</dc:issued>
+ <content type="text/html">
+    &lt;p class=&#039;book&#039;&gt;Что происходит, когда объект падает в черную дыру? Исчезает ли он бесследно?&lt;/p&gt;
+    &lt;p class=&#039;book&#039;&gt;Около тридцати лет назад один из ведущих исследователей феномена черных дыр, ныне знаменитый британский физик Стивен Хокинг заявил, что именно так и происходит. Но оказывается, такой ответ ставит под угрозу все, что мы знаем о физике и фундаментальных законах Вселенной. Автор этой книги, выдающийся американский физик Леонард Сасскинд много лет полемизировал со Стивеном Хокингом о природе черных дыр, пока, наконец, в 2004 году, тот не признал свою ошибку.&lt;/p&gt;
+    &lt;p class=&#039;book&#039;&gt;Блестящая и на редкость легко читаемая книга рассказывает захватывающую историю этого многолетнего научного противостояния, радикально изменившего взгляд физиков на природу реальности. Новая парадигма привела к ошеломляющему выводу о том, что все в нашем мире — эта книга, ваш дом, вы сами — лишь своеобразная голограмма, проецирующаяся с краев Вселенной.&lt;/p&gt;
+    &lt;p class=&#039;book&#039;&gt;Книга включена в «Библиотеку Фонда «Династия».&lt;/p&gt;
+    &lt;p class=&#039;book&#039;&gt;Фонд некоммерческих программ «Династия» основан в 2001 году Дмитрием Борисовичем Зиминым, почетным президентом компании «Вымпелком». Приоритетные направления деятельности Фонда — поддержка фундаментальной науки и образования в России, популяризация науки и просвещение. «Библиотека Фонда «Династия» — проект Фонда по изданию современных научно-популярных книг, отобранных экспертами-учеными.&lt;/p&gt;
+    &lt;p class=&#039;book&#039;&gt;Книга, которую вы держите в руках, выпущена под эгидой этого проекта.&lt;/p&gt;
+    &lt;p class=&#039;book&#039;&gt;Более подробную информацию о Фонде «Династия» вы найдете по адресу www.dynastyfdn.com&lt;/p&gt;
+   &lt;br&gt;Перевод: Сергеев Андрей Яковлевич&lt;br&gt;Год издания: 2013&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 4359 Kb&lt;br&gt;Скачиваний: 22262&lt;br&gt;</content>
+ <link href="https://coollib.net/i/96/268796/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/96/268796/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/96/268796/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/96/268796/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/268796/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/268796/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/268796/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/268796/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/268796/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/268796/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/268796" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:546646</id>
+ <title>В поисках кота Шредингера. Квантовая физика и реальность</title>
+ <author> <name>Гриббин Джон</name>
+ <uri>https://coollib.net/a/70451</uri>
+</author>
+ <link href="https://coollib.net/opds/author/70451" rel="related" type="application/atom+xml" title="Все книги автора Гриббин Джон" />
+ <category term="Физика" label="Физика" />
+ <category term="Научно-популярная и научно-познавательная литература" label="Научно-популярная и научно-познавательная литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2016</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Книга знаменитого британского автора Джона Гриббина «В поисках кота Шредингера», принесшая ему известность, считается одной из лучших популяризаций современной физики.&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Без квантовой теории невозможно существование современной науки, без нее не было бы атомного оружия, телевидения, компьютеров, молекулярной биологии, современной генетики и многих других неотъемлемых компонентов современной жизни. Джон Гриббин рассказывает историю всей квантовой механики, повествует об атоме, радиации, путешествиях во времени и рождении Вселенной. Книга ставит вопрос: «Что есть реальность?» – и приходит к самым неожиданным выводам. Показывается вся удивительность, странность и парадоксальность следствий, которые вытекают из применения квантовой теории.&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Предназначено для широкого круга читателей, интересующихся современной наукой.&lt;/p&gt;&lt;br&gt;Перевод: Фоменко Евгения, Мамедьяров Заур Аязович&lt;br&gt;Год издания: 2016&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 2412 Kb&lt;br&gt;Скачиваний: 185&lt;br&gt;</content>
+ <link href="https://coollib.net/i/46/546646/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/46/546646/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/46/546646/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/46/546646/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <rights>Заблокировано! Скачивание невозможно :(</rights>
+ <link href="https://coollib.net/b/546646" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:741251</id>
+ <title>В ритмах танца квантовой музы</title>
+ <author> <name>Пибб Иван</name>
+ <uri>https://coollib.net/a/332837</uri>
+</author>
+ <link href="https://coollib.net/opds/author/332837" rel="related" type="application/atom+xml" title="Все книги автора Пибб Иван" />
+ <category term="в стихах" label="в стихах" />
+ <category term="Экспериментальная поэзия" label="Экспериментальная поэзия" />
+ <category term="Самиздат, сетевая литература" label="Самиздат, сетевая литература" />
+ <category term="Паранаука, псевдонаука, альтернативные теории" label="Паранаука, псевдонаука, альтернативные теории" />
+ <category term="Современная русская поэзия" label="Современная русская поэзия" />
+ <category term="Для старшего школьного возраста 16+" label="Для старшего школьного возраста 16+" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf+_-_Samizdat_2_s-pdf</dc:format>
+ <dc:issued>2024</dc:issued>
+ <content type="text/html">В стихотворении &quot;В ритмах танца квантовой музы&quot; исследуется связь между временем, энергией и квантовыми колебаниями. Через гармоничные образы и математические формулы поэт создает уникальный синтез науки и искусства, демонстрируя, как квантовые принципы пронизывают нашу реальность. В каждой строке звучит мелодия существования, раскрывающая тайны бесконечного мира.&lt;br&gt;Год издания: 2024&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 598 Kb&lt;br&gt;Скачиваний: 715&lt;br&gt;</content>
+ <link href="https://coollib.net/i/pdf/741251.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/pdf/741251.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/pdf/741251.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/pdf/741251.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/741251/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf+_-_Samizdat_2_s-pdf" />
+ <link href="https://coollib.net/b/741251" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:670178</id>
+ <title>Великая квантовая революция</title>
+ <author> <name>Фейгин Олег Орестович</name>
+ <uri>https://coollib.net/a/62941</uri>
+</author>
+ <link href="https://coollib.net/opds/author/62941" rel="related" type="application/atom+xml" title="Все книги автора Фейгин Олег Орестович" />
+ <category term="Научно-популярная и научно-познавательная литература" label="Научно-популярная и научно-познавательная литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf+zip</dc:format>
+ <link href="https://coollib.net/opds/sequencebooks/10566" rel="related" type="application/atom+xml" title="Все книги серии &quot;Открытия, которые потрясли мир&quot;" />
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Наступившее третье тысячелетие нашей эры подводит итог целой плеяде величайших научно-технических достижений, определивших гигантский прогресс, который достигнут наукой и техникой за последнее время. Давно ли использование внутриатомной энергии вызывало &quot;Чернобыльский синдром&quot; и казалось делом далекого будущего? Теперь строительство термоядерных реакторов уже вошло в реальные планы международного научного сообщества. На воде и под водой энергия покоренного атома уже давно служит человеку, теперь ее очередь осваивать космическое пространство.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Быстро развиваются нанотехнологии, обещая произвести переворот в радиоэлектронике, продвинуть далеко вперед гелиоэнергетику, приборостроение, автоматику. Настоящим научным чудом кажутся уверенные шажки человекообразного робота, везде сопровождающего японского премьер-министра, а на очереди уже создание совершенно фантастических квантовых компьютеров. Эти сверхбыстродействующие электронные вычислительные машины смогут производить сложнейшие расчеты за ничтожно малое время.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Удивительны достижения наук, которые изучают вещество и помогают переделывать его, и здесь уже столетие уверенно лидирует одна из самых фундаментальных наук - квантовая физика, открывая все новые элементарные частицы и все глубже проникая в сокровенные тайники материи. В научных проектах завтрашнего дня все чаще мелькают системы квантовой телепортации, машины времени и &quot;антигравилеты&quot;, причем все эти чудеса будущего имеют вполне солидную научную основу. Так какие же перспективы откроются, например, в первой четверти двадцать первого века? Что сулит науке грядущее, какие победы ждут человека впереди? Что можно увидеть, если попытаться проникнуть мысленным взором в даль времен?&lt;/p&gt;&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 8937 Kb&lt;br&gt;Скачиваний: 1697&lt;br&gt;Серия: Открытия, которые потрясли мир&lt;br&gt;</content>
+ <link href="https://coollib.net/i/78/670178/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/78/670178/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/78/670178/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/78/670178/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/670178/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf+zip" />
+ <link href="https://coollib.net/b/670178" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:835581</id>
+ <title>Великие законы Вселенной: от гравитации к квантовым частицам. Визуальный гид</title>
+ <author> <name>Руссель Алессандро</name>
+ <uri>https://coollib.net/a/365297</uri>
+</author>
+ <link href="https://coollib.net/opds/author/365297" rel="related" type="application/atom+xml" title="Все книги автора Руссель Алессандро" />
+ <category term="Физика" label="Физика" />
+ <category term="Математика" label="Математика" />
+ <category term="Научно-популярная и научно-познавательная литература" label="Научно-популярная и научно-познавательная литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf+zip</dc:format>
+ <dc:issued>2024</dc:issued>
+ <link href="https://coollib.net/opds/sequencebooks/95981" rel="related" type="application/atom+xml" title="Все книги серии &quot;Подарочные издания. Миссия «Космос»&quot;" />
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Автор книги Алессандро Руссель, создатель известного научно-популярного канала ScienceClic. Физик и математик по образованию, он обладает особым талантом – просто и интересно рассказывать о сложных теориях.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Вместе с ним мы отправимся в увлекательное научное путешествие от Галилея и Ньютона до вездесущего Эйнштейна, Шредингера и Хокинга.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Особое достоинство книги – точные и нескучные рисунки!&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;С ними вам станут понятнее:&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;– общая теория относительности и квантовая физика;&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;– что представляют собой черные дыры и гравитационные волны;&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;– как изучают крупнейшие галактики и структуру атомов.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Наука – это интересно. Именно поэтому более 800 тысяч подписчиков приходят за знаниями к Алессандро Русселю!&lt;/p&gt;&lt;br&gt;Перевод: Попов Роман Сергеевич&lt;br&gt;Год издания: 2024&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 11591 Kb&lt;br&gt;Скачиваний: 38&lt;br&gt;Серия: Подарочные издания. Миссия «Космос»&lt;br&gt;</content>
+ <link href="https://coollib.net/i/81/835581/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/81/835581/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/81/835581/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/81/835581/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <rights>Заблокировано! Скачивание невозможно :(</rights>
+ <link href="https://coollib.net/b/835581" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:623855</id>
+ <title>Взламывая квантовую физику</title>
+ <author> <name>Клегг Брайан</name>
+ <uri>https://coollib.net/a/128076</uri>
+</author>
+ <link href="https://coollib.net/opds/author/128076" rel="related" type="application/atom+xml" title="Все книги автора Клегг Брайан" />
+ <category term="Физика" label="Физика" />
+ <category term="Научно-популярная и научно-познавательная литература" label="Научно-популярная и научно-познавательная литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>djvu+zip</dc:format>
+ <link href="https://coollib.net/opds/sequencebooks/51455" rel="related" type="application/atom+xml" title="Все книги серии &quot;Взламывая науку&quot;" />
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Квантовая физика по праву считается сложной наукой: в ее уравнениях и вправду трудно разобраться. Вместе с тем основные квантовомеханические принципы легко понять. А поняв их, можно разгадать устройство и принцип работы смартфонов, лазеров, телевидения и МРТ-сканеров, осмыслить молекулярную биологию, современную генетику и многие другие области знания. Эта книга — проводник в удивительный мир субатомной физики, который познакомит с основами одной из самых таинственных наук современности.&lt;/p&gt;&lt;br&gt;Перевод: Уткин Н.&lt;br&gt;Формат: djvu&lt;br&gt;Язык: ru&lt;br&gt;Размер: 8190 Kb&lt;br&gt;Скачиваний: 1183&lt;br&gt;Серия: Взламывая науку&lt;br&gt;</content>
+ <link href="https://coollib.net/i/55/623855/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/55/623855/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/55/623855/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/55/623855/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/623855/download" rel="http://opds-spec.org/acquisition/open-access" type="application/djvu+zip" />
+ <link href="https://coollib.net/b/623855" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:574977</id>
+ <title>Временные кванты</title>
+ <author> <name>Сер Севан</name>
+ <uri>https://coollib.net/a/277654</uri>
+</author>
+ <link href="https://coollib.net/opds/author/277654" rel="related" type="application/atom+xml" title="Все книги автора Сер Севан" />
+ <category term="Фантастика: прочее" label="Фантастика: прочее" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2021</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Мы живем в удивительном мире, в котором время реально может физически ускорятся и замедлятся, и эта книга рассказывает, как все будет при этом выглядеть с точки зрения физики, какие эффекты мы будем наблюдать. Но самое главное – какие перспективы открываются у человечества. Пока они самые радужные, и последняя информация с условных полей экспериментов ученых это подтверждает. Как обычно, у нас есть прогноз, что нас ждет в будущем, некоторые детали, на которые мы не обращали внимания.&lt;/p&gt;&lt;br&gt;Год издания: 2021&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 1501 Kb&lt;br&gt;Скачиваний: 705&lt;br&gt;</content>
+ <link href="https://coollib.net/i/77/574977/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/77/574977/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/77/574977/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/77/574977/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/574977/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/574977/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/574977/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/574977/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/574977/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/574977/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/574977" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:245965</id>
+ <title>Время — это кванты света</title>
+ <author> <name>Колпаков Александр Лаврентьевич</name>
+ <uri>https://coollib.net/a/5447</uri>
+</author>
+ <link href="https://coollib.net/opds/author/5447" rel="related" type="application/atom+xml" title="Все книги автора Колпаков Александр Лаврентьевич" />
+ <category term="Научная Фантастика" label="Научная Фантастика" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <content type="text/html">
+    &lt;p class=book&gt;Малоизвестный рассказ А.Колпакова, изданный в одном из республиканских журналов.&lt;/p&gt;
+   &lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 52 Kb&lt;br&gt;Скачиваний: 2403&lt;br&gt;</content>
+ <link href="https://coollib.net/b/245965/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/245965/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/245965/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/245965/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/245965/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/245965/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/245965" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:792284</id>
+ <title>Время. хаос. квант. К решению парадокса времени</title>
+ <author> <name>Пригожин Илья Романович</name>
+ <uri>https://coollib.net/a/252520</uri>
+</author>
+ <link href="https://coollib.net/opds/author/252520" rel="related" type="application/atom+xml" title="Все книги автора Пригожин Илья Романович" />
+ <author> <name>Стенгерс Изабелла</name>
+ <uri>https://coollib.net/a/252521</uri>
+</author>
+ <link href="https://coollib.net/opds/author/252521" rel="related" type="application/atom+xml" title="Все книги автора Стенгерс Изабелла" />
+ <category term="Философия" label="Философия" />
+ <category term="Для широкого круга читателей" label="Для широкого круга читателей" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>2003</dc:issued>
+ <link href="https://coollib.net/opds/sequencebooks/63924" rel="related" type="application/atom+xml" title="Все книги серии &quot;Синергетика: от прошлого к будущему&quot;" />
+ <content type="text/html">Книга лауреата Нобелевской премии Ильи Пригожина и его соавтора Изабеллы Стенгере посвящена широкому кругу проблем, интенсивно изучаемых под руководством И. Пригожина в Международном институте физики и химии Э. Сольвэ в Брюсселе и Научно-исследовательском центре по статистической механике и термодинамике в Остине (штат Техас). Это проблемы времени, случайности и хаоса, индетерминизма и необратимости («стрелы времени»), самоорганизации и возникновения диссипативных структур. Кроме того, в книге также обсуждаются различные аспекты и перспективы новой парадигмы современной науки, охватывающей не только естествознание, но и общественные и социальные дисциплины.
+Для широкого круга читателей, интересующихся проблемами современной науки.&lt;br&gt;Год издания: 2003&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 64222 Kb&lt;br&gt;Скачиваний: 442&lt;br&gt;Серия: Синергетика: от прошлого к будущему&lt;br&gt;</content>
+ <link href="https://coollib.net/i/84/792284/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/84/792284/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/84/792284/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/84/792284/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/792284/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="https://coollib.net/b/792284" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:26:11+03:00</updated>
+ <id>tag:book:187606</id>
+ <title>Вселенная Метро 2033. Квантовый скачок</title>
+ <author> <name>Бенев Константин</name>
+ <uri>https://coollib.net/a/68028</uri>
+</author>
+ <link href="https://coollib.net/opds/author/68028" rel="related" type="application/atom+xml" title="Все книги автора Бенев Константин" />
+ <category term="Альтернативная история" label="Альтернативная история" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <content type="text/html">&lt;b&gt;Бенев Константин-Вселенная Метро 2033 Квантовый Скачок&lt;/b&gt;&lt;br&gt;&lt;br&gt;Глава 1&lt;br&gt;&lt;br&gt;Шёл ноябрь сорок первого…  В полумраке кабинета за письменным столом полусидел-полулежал человек в военной форме.&lt;br&gt;&lt;br&gt;Третьи сутки не могу уснуть… То одно, то другое. Когда, наконец, позвонят из Москвы насчёт сбора на эвакопункте? Дома бардак, месяц уже живём на чемоданах готовые в любую минуту сорваться с места. &lt;br&gt;
+   Клонило в сон, глаза слипались. Подвинув ближе к уху телефонный аппарат, он прилёг на стол и сразу отключился.&lt;br&gt;
+   Ему снился хороший сон… Летний день в Сосновке, на даче, на берегу озера. Они всей семьёй на отдыхе, что удавалось так редко в это лето. Варя сидела в тени деревьев за мольбертом и рисовала, а мы с сыном готовили к спуску огромный фрегат, который мастерили всю зиму и весну. Сын Сашка натягивал паруса, а я подкрашивал наши недоделки.  ...&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 571 Kb&lt;br&gt;Скачиваний: 4046&lt;br&gt;</content>
+ <rights>Заблокировано! Скачивание невозможно :(</rights>
+ <link href="https://coollib.net/b/187606" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+</feed>

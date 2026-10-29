@@ -39,9 +39,11 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.InstallMobile
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.Style
 import androidx.compose.material.icons.filled.SystemUpdate
@@ -73,6 +75,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -83,9 +86,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import com.foxybook.app.R
 import com.foxybook.app.core.models.BookSource
+import com.foxybook.app.core.models.StartScreen
 import com.foxybook.app.core.utils.StorageHelper
 import android.content.res.Configuration
 import androidx.compose.ui.platform.LocalConfiguration
+<<<<<<< HEAD
+=======
+
+/** Фирменный синий Telegram — https://t.me/BrandAssets */
+private val TelegramBlue = Color(0xFF229ED9)
+>>>>>>> d24a20e (FoxyBook v1.9)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -244,6 +254,67 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                         }
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // ─── Главный экран ───
+            SettingsSection(
+                icon = Icons.Default.Home,
+                title = stringResource(R.string.settings_start_screen)
+            ) {
+                Spacer(Modifier.height(4.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    listOf(
+                        StartScreen.NEW_BOOKS to stringResource(R.string.nav_new_books),
+                        StartScreen.LIBRARY to stringResource(R.string.nav_library),
+                        StartScreen.SEARCH to stringResource(R.string.nav_search)
+                    ).forEach { (value, label) ->
+                        val selected = state.startScreen == value
+                        Card(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { viewModel.setStartScreen(value) },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (selected)
+                                    MaterialTheme.colorScheme.primaryContainer
+                                else
+                                    MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            shape = RoundedCornerShape(10.dp),
+                            border = if (selected)
+                                BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
+                            else
+                                null,
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = if (selected) 2.dp else 0.dp
+                            )
+                        ) {
+                            Text(
+                                label,
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                                color = if (selected)
+                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.settings_start_screen_hint),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -415,8 +486,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
 
                 Button(
                     onClick = {
-                        val msg = com.foxybook.app.core.utils.StorageHelper.clearTempCaches(context)
-                        cacheMessage = msg
+                        viewModel.clearCaches { msg -> cacheMessage = msg }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
@@ -694,6 +764,28 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                         Icon(Icons.Default.Email, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp))
                         Text(stringResource(R.string.settings_author_contact))
+                    }
+                    Spacer(Modifier.height(10.dp))
+                    Button(
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/foxybook_app"))
+                            context.startActivity(intent)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        // Фирменный синий Telegram, значок белый — как в официальном логотипе.
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = TelegramBlue,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Icon(
+                            Icons.Default.Send,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = Color.White
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.settings_author_telegram))
                     }
                     Spacer(Modifier.height(10.dp))
                     Button(

@@ -14,6 +14,17 @@ interface LibraryBookDao {
     @Query("SELECT * FROM library_books WHERE id = :bookId")
     fun getBooksById(bookId: Int): Flow<List<LibraryBookEntity>>
 
+    @Query("SELECT filePath FROM library_books")
+    suspend fun getAllFilePaths(): List<String>
+
+    /** Явная отметка чтения вместе с выравниванием прогресса под неё. */
+    @Query("UPDATE library_books SET readState = :readState, readingProgress = :progress WHERE id = :id AND format = :format")
+    suspend fun setReadStateWithProgress(id: Int, format: String, readState: String, progress: Int)
+
+    /** Сброс отметки к автоматическому определению: прогресс не трогаем. */
+    @Query("UPDATE library_books SET readState = :readState WHERE id = :id AND format = :format")
+    suspend fun setReadStateOnly(id: Int, format: String, readState: String)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(book: LibraryBookEntity)
 
@@ -46,6 +57,9 @@ interface BookmarkDao {
 
     @Query("DELETE FROM bookmarks WHERE id = :id")
     suspend fun delete(id: String)
+
+    @Query("DELETE FROM bookmarks WHERE bookId = :bookId")
+    suspend fun deleteByBook(bookId: Int)
 }
 
 @Dao
@@ -55,6 +69,9 @@ interface ReadingPositionDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(position: ReadingPositionEntity)
+
+    @Query("DELETE FROM reading_positions WHERE bookId = :bookId AND format = :format")
+    suspend fun deleteByBook(bookId: Int, format: String)
 }
 
 @Dao

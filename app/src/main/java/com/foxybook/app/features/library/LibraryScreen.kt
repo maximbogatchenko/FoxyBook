@@ -5,6 +5,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+<<<<<<< HEAD
+=======
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+>>>>>>> d24a20e (FoxyBook v1.9)
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -29,6 +34,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.Delete
@@ -37,12 +45,21 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+<<<<<<< HEAD
 import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.material.icons.filled.ViewHeadline
+=======
+import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.material.icons.filled.ViewAgenda
+import androidx.compose.material.icons.filled.ViewHeadline
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
+>>>>>>> d24a20e (FoxyBook v1.9)
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -71,6 +88,11 @@ import androidx.compose.ui.unit.dp
 import android.content.res.Configuration
 import androidx.compose.ui.platform.LocalConfiguration
 import com.foxybook.app.core.models.LibraryTab
+<<<<<<< HEAD
+=======
+import com.foxybook.app.core.models.LibrarySortField
+import com.foxybook.app.core.models.LibrarySortSpec
+>>>>>>> d24a20e (FoxyBook v1.9)
 import com.foxybook.app.ui.components.CoverViewer
 
 import androidx.compose.ui.res.stringResource
@@ -81,6 +103,21 @@ import com.foxybook.app.core.models.LibraryBook
 // ─────────────────────────────────────────────────────────────────
 //  Main Library Screen
 // ─────────────────────────────────────────────────────────────────
+<<<<<<< HEAD
+=======
+
+/**
+ * Ключ содержимого библиотеки. Включает настройку сортировки, чтобы смена
+ * поля/направления/группировки гарантированно перестраивала список.
+ */
+private data class ContentKey(
+    val tab: LibraryTab,
+    val collectionId: String?,
+    val sortSpec: LibrarySortSpec
+)
+
+private fun ContentKey(state: LibraryState) = ContentKey(state.currentTab, state.selectedCollectionId, state.sortSpec)
+>>>>>>> d24a20e (FoxyBook v1.9)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,6 +129,7 @@ fun LibraryScreen(
     var coverViewerUrl by remember { mutableStateOf<String?>(null) }
     var selectedBookForDetails by remember { mutableStateOf<LibraryBook?>(null) }
     var showViewModeMenu by remember { mutableStateOf(false) }
+    var showSortMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val configuration = LocalConfiguration.current
@@ -120,10 +158,23 @@ fun LibraryScreen(
                 isSelectionMode = state.isSelectionMode,
                 selectedCount = state.selectedBookIds.size,
                 viewMode = state.viewMode,
+<<<<<<< HEAD
+=======
+                sortSpec = state.sortSpec,
+>>>>>>> d24a20e (FoxyBook v1.9)
                 showViewModeMenu = showViewModeMenu,
                 onToggleViewModeMenu = { showViewModeMenu = !showViewModeMenu },
                 onDismissViewModeMenu = { showViewModeMenu = false },
                 onChangeViewMode = { viewModel.onEvent(LibraryEvent.ChangeViewMode(it)) },
+<<<<<<< HEAD
+=======
+                showSortMenu = showSortMenu,
+                onToggleSortMenu = { showSortMenu = !showSortMenu },
+                onDismissSortMenu = { showSortMenu = false },
+                onChangeSortField = { viewModel.onEvent(LibraryEvent.ChangeSort(it)) },
+                onToggleSortDirection = { viewModel.onEvent(LibraryEvent.ToggleSortDirection) },
+                onToggleGroupByStatus = { viewModel.onEvent(LibraryEvent.ToggleGroupByStatus) },
+>>>>>>> d24a20e (FoxyBook v1.9)
                 onClearSelection = { viewModel.onEvent(LibraryEvent.ClearSelection) },
                 onSelectAll = { viewModel.onEvent(LibraryEvent.SelectAll) },
                 onBatchFavorite = { viewModel.onEvent(LibraryEvent.BatchToggleFavorite) },
@@ -154,6 +205,7 @@ fun LibraryScreen(
                     onHorizontalDrag = { _, dragAmount -> swipeOffset += dragAmount }
                 )
             }) {
+<<<<<<< HEAD
                 AnimatedContent(targetState = state.currentTab to state.selectedCollectionId, transitionSpec = {
                     val dir = if (targetState.first.ordinal > initialState.first.ordinal) 1 else -1
                     (slideInHorizontally(tween(250)) { it * dir } + fadeIn(tween(250))).togetherWith(slideOutHorizontally(tween(250)) { -it * dir } + fadeOut(tween(200)))
@@ -161,6 +213,24 @@ fun LibraryScreen(
                     when (tab) {
                         LibraryTab.ALL, LibraryTab.FAVORITES, LibraryTab.HISTORY -> BookListContent(
                             books = when (tab) { LibraryTab.FAVORITES -> state.favoriteBooks; LibraryTab.HISTORY -> state.historyBooks; else -> state.allBooks },
+=======
+                // Настройку сортировки обязательно включаем в targetState: AnimatedContent
+                // пересобирает содержимое только при смене targetState, иначе новая
+                // сортировка осталась бы незамеченной и список не перестроился бы.
+                AnimatedContent(targetState = ContentKey(state), transitionSpec = {
+                    if (initialState.tab == targetState.tab) {
+                        // Вкладка та же — перестроили только порядок книг: без анимации.
+                        EnterTransition.None togetherWith ExitTransition.None
+                    } else {
+                        val dir = if (targetState.tab.ordinal > initialState.tab.ordinal) 1 else -1
+                        (slideInHorizontally(tween(250)) { it * dir } + fadeIn(tween(250))).togetherWith(slideOutHorizontally(tween(250)) { -it * dir } + fadeOut(tween(200)))
+                    }
+                }, label = "library_content") { key ->
+                    val (tab, collectionId) = key
+                    when (tab) {
+                        LibraryTab.ALL, LibraryTab.FAVORITES, LibraryTab.HISTORY -> BookListContent(
+                            groups = state.groupsForTab(tab),
+>>>>>>> d24a20e (FoxyBook v1.9)
                             viewMode = state.viewMode,
                             emptyTitle = stringResource(when (tab) { LibraryTab.FAVORITES -> R.string.library_empty_favorites_title; LibraryTab.HISTORY -> R.string.library_empty_history_title; else -> R.string.library_empty_title }),
                             emptySubtitle = stringResource(when (tab) { LibraryTab.FAVORITES -> R.string.library_empty_favorites_subtitle; LibraryTab.HISTORY -> R.string.library_empty_history_subtitle; else -> R.string.library_empty_subtitle }),
@@ -171,12 +241,17 @@ fun LibraryScreen(
                             onDeleteBook = { id, fmt -> viewModel.onEvent(LibraryEvent.DeleteBook(id, fmt)) },
                             onCoverClick = { url -> coverViewerUrl = url },
                             onBookDetails = { book -> selectedBookForDetails = book },
+                            onSetReadState = { id, fmt, readState -> viewModel.onEvent(LibraryEvent.SetReadState(id, fmt, readState)) },
                             onLongPressBook = { id, fmt -> viewModel.onEvent(LibraryEvent.LongPressBook(id, fmt)) },
                             onToggleSelection = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleBookSelection(id, fmt)) }
                         )
                         LibraryTab.COLLECTIONS -> CollectionsContent(
                             collections = state.collections, selectedCollectionId = state.selectedCollectionId,
                             books = state.allBooks, viewMode = state.viewMode,
+<<<<<<< HEAD
+=======
+                            groups = state.groupsForCollection(collectionId),
+>>>>>>> d24a20e (FoxyBook v1.9)
                             selectedBookIds = state.selectedBookIds, isSelectionMode = state.isSelectionMode,
                             onCollectionClick = { viewModel.onEvent(LibraryEvent.CollectionSelected(it)) },
                             onRenameCollection = { viewModel.onEvent(LibraryEvent.RenameCollectionClicked(it)) },
@@ -188,6 +263,10 @@ fun LibraryScreen(
                             onCoverClick = { url -> coverViewerUrl = url },
                             onBookDetails = { book -> selectedBookForDetails = book },
                             onCreateCollection = { viewModel.onEvent(LibraryEvent.CreateCollectionClicked) },
+<<<<<<< HEAD
+=======
+                            onSetReadState = { id, fmt, readState -> viewModel.onEvent(LibraryEvent.SetReadState(id, fmt, readState)) },
+>>>>>>> d24a20e (FoxyBook v1.9)
                             onLongPressBook = { id, fmt -> viewModel.onEvent(LibraryEvent.LongPressBook(id, fmt)) },
                             onToggleSelection = { id, fmt -> viewModel.onEvent(LibraryEvent.ToggleBookSelection(id, fmt)) }
                         )
@@ -231,10 +310,20 @@ private fun ImportingOverlay() {
 @Composable
 private fun LibraryTopBar(
     isSelectionMode: Boolean, selectedCount: Int, viewMode: LibraryViewMode,
+<<<<<<< HEAD
+=======
+    sortSpec: LibrarySortSpec = LibrarySortSpec.DEFAULT,
+>>>>>>> d24a20e (FoxyBook v1.9)
     showViewModeMenu: Boolean, onToggleViewModeMenu: () -> Unit, onDismissViewModeMenu: () -> Unit,
     onChangeViewMode: (LibraryViewMode) -> Unit, onClearSelection: () -> Unit, onSelectAll: () -> Unit,
     onBatchFavorite: () -> Unit, onBatchCollection: () -> Unit, onBatchDelete: () -> Unit,
     onImportBook: () -> Unit, onCreateCollection: () -> Unit, currentTab: LibraryTab,
+<<<<<<< HEAD
+=======
+    showSortMenu: Boolean = false, onToggleSortMenu: () -> Unit = {}, onDismissSortMenu: () -> Unit = {},
+    onChangeSortField: (LibrarySortField) -> Unit = {}, onToggleSortDirection: () -> Unit = {},
+    onToggleGroupByStatus: () -> Unit = {},
+>>>>>>> d24a20e (FoxyBook v1.9)
     isLandscape: Boolean = false
 ) {
     if (isSelectionMode) {
@@ -261,6 +350,29 @@ private fun LibraryTopBar(
             },
             actions = {
                 Box {
+<<<<<<< HEAD
+=======
+                    IconButton(onClick = onToggleSortMenu) {
+                        Icon(
+                            Icons.Default.SwapVert,
+                            stringResource(R.string.library_sort),
+                            tint = if (sortSpec.groupByStatus || sortSpec.field != LibrarySortSpec.DEFAULT.field)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    LibrarySortMenu(
+                        expanded = showSortMenu,
+                        spec = sortSpec,
+                        onDismiss = onDismissSortMenu,
+                        onChangeField = onChangeSortField,
+                        onToggleDirection = onToggleSortDirection,
+                        onToggleGroupByStatus = onToggleGroupByStatus
+                    )
+                }
+                Box {
+>>>>>>> d24a20e (FoxyBook v1.9)
                     IconButton(onClick = onToggleViewModeMenu) {
                         Icon(when (viewMode) { LibraryViewMode.LIST -> Icons.Default.ViewHeadline; LibraryViewMode.COMPACT -> Icons.Default.ViewAgenda; LibraryViewMode.GRID -> Icons.Default.GridView }, stringResource(R.string.cd_view_mode))
                     }
@@ -284,10 +396,93 @@ private fun LibraryTopBar(
 }
 
 // ─────────────────────────────────────────────────────────────────
+<<<<<<< HEAD
 //  Tab Row
 // ─────────────────────────────────────────────────────────────────
 
 @Composable
+=======
+//  Sort menu
+// ─────────────────────────────────────────────────────────────────
+
+@Composable
+private fun LibrarySortMenu(
+    expanded: Boolean,
+    spec: LibrarySortSpec,
+    onDismiss: () -> Unit,
+    onChangeField: (LibrarySortField) -> Unit,
+    onToggleDirection: () -> Unit,
+    onToggleGroupByStatus: () -> Unit
+) {
+    DropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
+        Text(
+            stringResource(R.string.library_sort),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+        LibrarySortField.entries.forEach { field ->
+            val selected = spec.field == field
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(sortFieldLabel(field)),
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+                    )
+                },
+                // Меню закрываем сразу: иначе попап перекрывает пересортированный
+                // список и пользователь не видит результат выбора.
+                onClick = { onDismiss(); onChangeField(field) },
+                leadingIcon = if (selected) {
+                    { Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp)) }
+                } else null
+            )
+        }
+        HorizontalDivider()
+        DropdownMenuItem(
+            text = {
+                Text(
+                    if (spec.descending) stringResource(R.string.library_sort_desc)
+                    else stringResource(R.string.library_sort_asc)
+                )
+            },
+            onClick = { onDismiss(); onToggleDirection() },
+            leadingIcon = {
+                Icon(
+                    if (spec.descending) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
+                    null,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        )
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.library_sort_group_status)) },
+            onClick = { onDismiss(); onToggleGroupByStatus() },
+            leadingIcon = {
+                Icon(
+                    if (spec.groupByStatus) Icons.Default.CheckBox else Icons.Default.CheckBoxOutlineBlank,
+                    null,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        )
+    }
+}
+
+private fun sortFieldLabel(field: LibrarySortField): Int = when (field) {
+    LibrarySortField.DATE_ADDED -> R.string.library_sort_date_added
+    LibrarySortField.LAST_READ -> R.string.library_sort_last_read
+    LibrarySortField.TITLE -> R.string.library_sort_title
+    LibrarySortField.AUTHOR -> R.string.library_sort_author
+    LibrarySortField.PROGRESS -> R.string.library_sort_progress
+}
+
+// ─────────────────────────────────────────────────────────────────
+//  Tab Row
+// ─────────────────────────────────────────────────────────────────
+
+@Composable
+>>>>>>> d24a20e (FoxyBook v1.9)
 private fun LibraryTabRow(selectedTab: LibraryTab, onTabSelected: (LibraryTab) -> Unit) {
     PrimaryTabRow(selectedTabIndex = selectedTab.ordinal, containerColor = MaterialTheme.colorScheme.surface, contentColor = MaterialTheme.colorScheme.primary) {
         LibraryTab.entries.forEach { tab ->

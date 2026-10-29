@@ -213,7 +213,7 @@ class Fb2Parser(private val context: Context? = null) {
                     while (entry != null) {
                         if (entry.name.endsWith(".fb2")) {
                             Log.d(TAG, "readFb2Xml: Found .fb2 entry in zip: ${entry.name}")
-                            return z.bufferedReader().readText()
+                            return TextEncodingDetector.decodeXml(z.readBytes())
                         }
                         entry = z.nextEntry
                     }
@@ -222,7 +222,7 @@ class Fb2Parser(private val context: Context? = null) {
                 return null
             }
 
-            val text = bytes.toString(Charsets.UTF_8)
+            val text = TextEncodingDetector.decodeXml(bytes)
             Log.d(TAG, "readFb2Xml: Read ${text.length} chars from XML")
             text
         } catch (e: Exception) {

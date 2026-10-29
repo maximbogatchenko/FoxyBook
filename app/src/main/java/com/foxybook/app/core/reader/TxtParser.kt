@@ -22,8 +22,8 @@ class TxtParser(private val context: Context) {
                 }
             }
 
-            val text = getInputStream()?.bufferedReader()?.use { it.readText() }
-                ?: return null
+            val bytes = getInputStream()?.use { it.readBytes() } ?: return null
+            val text = TextEncodingDetector.decodePlainText(bytes)
             
             val fileName = com.foxybook.app.core.utils.UriUtils.getFileName(context, uri) ?: "Document.txt"
             

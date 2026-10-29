@@ -1,10 +1,12 @@
 package com.foxybook.app.navigation
 
+import com.foxybook.app.core.models.StartScreen
+
 object Routes {
     const val SPLASH = "splash"
-    const val NEW_BOOKS = "new_books"
-    const val SEARCH = "search"
-    const val LIBRARY = "library"
+    const val NEW_BOOKS = StartScreen.NEW_BOOKS
+    const val SEARCH = StartScreen.SEARCH
+    const val LIBRARY = StartScreen.LIBRARY
     const val SETTINGS = "settings"
     const val BOOK_DETAILS = "book_details/{bookId}"
     const val AUTHOR_BOOKS = "author_books/{authorId}/{authorName}"

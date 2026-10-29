@@ -47,6 +47,7 @@ import com.foxybook.app.core.updater.UpdateInfo
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 // ─── Цветовая схема сплэша ───
 private val Orange = Color(0xFFFF8C42)
@@ -127,12 +128,16 @@ fun SplashScreen(
             } catch (_: Exception) { null }
         }
 
-        delay(2500) // минимум 2.5 сек сплэша
+        delay(1200) // минимум 1.2 сек сплэша
 
-        val updateInfo = updateJob.await()
+        // Проверка обновления не должна задерживать запуск: сеть может быть
+        // недоступна (captive portal, DNS), а await() без таймаута висел бы до
+        // connectTimeout + readTimeout UpdateChecker'а.
+        val updateInfo = withTimeoutOrNull(2500) { updateJob.await() }
         if (updateInfo != null) {
             updateState = SplashUpdateState.Available(updateInfo)
         } else {
+            updateJob.cancel()
             onLoadingComplete()
         }
     }
@@ -161,9 +166,10 @@ fun SplashScreen(
                             updateState = SplashUpdateState.Downloading
                             downloadProgress = 0f
                             try {
-                                val uri = updateChecker.downloadApk(state.info.downloadUrl) { p ->
-                                    downloadProgress = p
-                                }
+                                val uri = updateChecker.withExpectedSize(state.info.size)
+                                    .downloadApk(state.info.downloadUrl) { p ->
+                                        downloadProgress = p
+                                    }
                                 updateState = SplashUpdateState.Downloaded(uri)
                             } catch (e: Exception) {
                                 updateState = SplashUpdateState.Error(e.message ?: downloadErrorStr)

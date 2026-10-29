@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <feed xmlns="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/terms/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/" xmlns:opds="http://opds-spec.org/2010/catalog"> <id>tag:root:sequences</id>
+ <title>Книги по сериям</title>
+ <updated>2026-10-05T17:24:43+03:00</updated>
+ <icon>https://coollib.net/favicon.ico</icon>
+ <link href="https://coollib.net/opds-opensearch.xml" rel="search" type="application/opensearchdescription+xml" />
+ <link href="https://coollib.net/opds/search?searchTerm={searchTerms}" rel="search" type="application/atom+xml" />
+ <link href="https://coollib.net/opds" rel="start" type="application/atom+xml;profile=opds-catalog" />
+ <link href="https://coollib.net/opds/sequences/%252F1" rel="next" type="application/atom+xml;profile=opds-catalog" />
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:80958</id>
+ <title>_Писательство</title>
+ <content type="text">3 книги в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/80958" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:80956</id>
+ <title>_Психология</title>
+ <content type="text">7 книг в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/80956" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:80957</id>
+ <title>_Соционика</title>
+ <content type="text">17 книг в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/80957" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:86939</id>
+ <title>— Провал во  времени —</title>
+ <content type="text">1 книга в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/86939" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:65840</id>
+ <title>: НеДетские игры (Книги читаются ОТДЕЛЬНО)</title>
+ <content type="text">1 книга в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/65840" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:81500</id>
+ <title>:А:Н:Т:И:М:И:Р:</title>
+ <content type="text">1 книга в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/81500" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:85233</id>
+ <title>¡No pasaran!</title>
+ <content type="text">4 книги в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/85233" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:74389</id>
+ <title>… по прозвищу Кобра</title>
+ <content type="text">8 книг в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/74389" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:76925</id>
+ <title>…Белый Грузовик-кун меня развоплотит</title>
+ <content type="text">5 книг в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/76925" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:268</id>
+ <title>...Будь проще...</title>
+ <content type="text">6 книг в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/268" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:21994</id>
+ <title>...И никаких секретов</title>
+ <content type="text">1 книга в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/21994" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:71447</id>
+ <title>…из Габена</title>
+ <content type="text">18 книг в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/71447" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:3618</id>
+ <title>…Как цветок на заре</title>
+ <content type="text">26 книг в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/3618" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:47134</id>
+ <title>...на игру</title>
+ <content type="text">1 книга в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/47134" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:7741</id>
+ <title>…на компьютере</title>
+ <content type="text">1 книга в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/7741" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:88332</id>
+ <title>…Не будь ко мне жестоко</title>
+ <content type="text">2 книги в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/88332" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:91741</id>
+ <title>…не считая домового</title>
+ <content type="text">2 книги в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/91741" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:5126</id>
+ <title>...про барона и дракона</title>
+ <content type="text">6 книг в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/5126" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:44437</id>
+ <title>...Сказал кот</title>
+ <content type="text">3 книги в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/44437" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:45+03:00</updated>
+ <id>tag:sequence:35782</id>
+ <title>.ru_Современная проза русского зарубежья</title>
+ <content type="text">5 книг в серии</content>
+ <link href="https://coollib.net/opds/sequencebooks/35782" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+</feed>

@@ -102,7 +102,7 @@ class EpubParser(private val context: Context? = null) {
             val html = zip.readEntry(href) ?: return ""
 
             val chapterDir = href.substringBeforeLast("/", "")
-            val imageMap = preloadImagesForBook(zip, bookId)
+            val imageMap = buildImageMapForChapter(zip, html, chapterDir, bookId)
 
             val processedHtml = replaceImageSrc(html, imageMap, chapterDir)
             val cleanHtml = cleanChapterHtml(processedHtml)
@@ -133,38 +133,71 @@ class EpubParser(private val context: Context? = null) {
         cachedBookUri = null
     }
 
-    private fun preloadImagesForBook(zip: ZipFile, bookId: Int): Map<String, String> {
+    /**
+     * Собирает карту изображений только для тех файлов, на которые ссылается
+     * конкретная глава. Раньше здесь перебирались все элементы архива книги, из-за
+     * чего на каждой главе книги с сотнями иллюстраций читался весь архив.
+     */
+    private fun buildImageMapForChapter(
+        zip: ZipFile,
+        html: String,
+        chapterDir: String,
+        bookId: Int
+    ): Map<String, String> {
         val imageMap = mutableMapOf<String, String>()
-        val allEntries = zip.entries().toList()
-        for (entry in allEntries) {
-            if (!entry.isDirectory && BookImageCache.isImageName(entry.name)) {
-                val fileName = entry.name.substringAfterLast("/")
-                if (context != null && bookId > 0) {
-                    val cachedFile = BookImageCache.getImageFile(context, bookId, fileName)
-                    if (cachedFile.exists()) {
-                        imageMap[entry.name] = "file://${cachedFile.absolutePath}"
-                        imageMap[fileName] = "file://${cachedFile.absolutePath}"
-                        continue
-                    }
-                    // If not in cache, extract it
-                    try {
-                        val bytes = zip.getInputStream(entry).readBytes()
-                        val savedFile = BookImageCache.saveImage(context, bookId, fileName, bytes)
-                        imageMap[entry.name] = "file://${savedFile.absolutePath}"
-                        imageMap[fileName] = "file://${savedFile.absolutePath}"
-                    } catch (_: Exception) {}
+
+        for ((resolved, rawSrc) in referencedImages(html, chapterDir)) {
+            val entry = try {
+                zip.getEntry(resolved)
+            } catch (_: Exception) {
+                null
+            } ?: continue
+
+            val fileName = resolved.substringAfterLast("/")
+            if (context != null && bookId > 0) {
+                val cachedFile = BookImageCache.getImageFile(context, bookId, fileName)
+                val target = if (cachedFile.exists()) {
+                    "file://${cachedFile.absolutePath}"
                 } else {
-                    // Fallback to data URI if context missing (though it shouldn't be for cached books)
                     try {
-                        val bytes = zip.getInputStream(entry).readBytes()
-                        val mime = BookImageCache.getMimeType(entry.name)
-                        val b64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
-                        imageMap[entry.name] = "data:$mime;base64,$b64"
-                    } catch (_: Exception) {}
+                        "file://${BookImageCache.saveImage(context, bookId, fileName, zip.getInputStream(entry).readBytes()).absolutePath}"
+                    } catch (_: Exception) {
+                        null
+                    }
                 }
+                if (target != null) {
+                    imageMap[resolved] = target
+                    imageMap[rawSrc] = target
+                    imageMap[fileName] = target
+                }
+            } else {
+                try {
+                    val bytes = zip.getInputStream(entry).readBytes()
+                    val mime = BookImageCache.getMimeType(fileName)
+                    val target = "data:$mime;base64,${Base64.encodeToString(bytes, Base64.NO_WRAP)}"
+                    imageMap[resolved] = target
+                    imageMap[rawSrc] = target
+                    imageMap[fileName] = target
+                } catch (_: Exception) {}
             }
         }
         return imageMap
+    }
+
+    /** Пары (путь внутри архива, исходный src) для всех img/image главы. */
+    private fun referencedImages(html: String, chapterDir: String): Set<Pair<String, String>> {
+        val refs = mutableSetOf<Pair<String, String>>()
+        val doc = Jsoup.parse(html, "", Parser.xmlParser())
+        for (img in doc.select("img, image")) {
+            val src = if (img.tagName() == "img") {
+                img.attr("src")
+            } else {
+                img.attr("xlink:href").ifBlank { img.attr("href") }
+            }
+            if (src.isBlank() || src.startsWith("data:")) continue
+            refs += resolveImagePath(src, chapterDir) to src
+        }
+        return refs
     }
 
     private fun findOpfPath(zip: ZipFile): String? {
@@ -210,7 +243,7 @@ class EpubParser(private val context: Context? = null) {
         for (part in path.split("/")) {
             when {
                 part.isEmpty() || part == "." -> {}
-                part == ".." -> if (result.isNotEmpty()) result.removeLast()
+                part == ".." -> if (result.isNotEmpty()) result.removeAt(result.size - 1)
                 else -> result.add(part)
             }
         }

@@ -78,6 +78,32 @@ import com.foxybook.app.core.models.ReaderMode
 import com.foxybook.app.core.models.ReaderTheme
 import kotlinx.coroutines.launch
 
+<<<<<<< HEAD
+=======
+/**
+ * Прячет или показывает системные панели без анимации окна.
+ *
+ * По умолчанию панели уезжают ~200-300 мс, и на первом переключении полноэкранного
+ * режима это воспринимается как задержка. Временно обнуляем windowAnimations —
+ * переход становится мгновенным — и сразу возвращаем настройку, чтобы не сломать
+ * анимацию выхода из экрана.
+ */
+private fun applySystemBars(
+    window: android.view.Window,
+    controller: WindowInsetsControllerCompat,
+    hide: Boolean
+) {
+    val previousAnimations = window.attributes.windowAnimations
+    window.attributes = window.attributes.apply { windowAnimations = 0 }
+    if (hide) {
+        controller.hide(WindowInsetsCompat.Type.systemBars())
+    } else {
+        controller.show(WindowInsetsCompat.Type.systemBars())
+    }
+    window.attributes = window.attributes.apply { windowAnimations = previousAnimations }
+}
+
+>>>>>>> d24a20e (FoxyBook v1.9)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReaderScreen(
@@ -130,8 +156,12 @@ fun ReaderScreen(
 
     val rawNavBarHeight = with(density) { WindowInsets.navigationBars.getBottom(this) }
     val rawStatusBarHeight = with(density) { WindowInsets.statusBars.getTop(this) }
+<<<<<<< HEAD
     val topPadPx = with(density) { 16.dp.roundToPx() } + rawStatusBarHeight + with(density) { 12.dp.roundToPx() }
     val topPadDp = with(density) { topPadPx.toDp() }
+=======
+    val rawCutoutTopPx = with(density) { 24.dp.roundToPx() }
+>>>>>>> d24a20e (FoxyBook v1.9)
 
     val view = LocalView.current
     val context = LocalContext.current
@@ -144,6 +174,7 @@ fun ReaderScreen(
             controller.isAppearanceLightStatusBars = !darkTheme
             onDispose { controller.isAppearanceLightStatusBars = prevAppearance }
         } else { onDispose {} }
+<<<<<<< HEAD
     }
 
     DisposableEffect(state.isImmersive, state.isSelectingTtsStartPosition) {
@@ -156,6 +187,36 @@ fun ReaderScreen(
             controller.show(WindowInsetsCompat.Type.systemBars())
         }
         onDispose { controller.show(WindowInsetsCompat.Type.systemBars()) }
+=======
+    }
+
+    DisposableEffect(state.isImmersive, state.isSelectingTtsStartPosition) {
+        val window = (context as? Activity)?.window
+        if (window == null) {
+            onDispose {}
+        } else {
+            val controller = WindowCompat.getInsetsController(window, view)
+            if (state.isImmersive || state.isSelectingTtsStartPosition) {
+                controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                applySystemBars(window, controller, hide = true)
+            } else {
+                applySystemBars(window, controller, hide = false)
+            }
+            // onDispose здесь намеренно НЕ вызывает show(): ключ эффекта меняется
+            // при каждом переключении, и show()+hide() в одном кадре запускали
+            // две анимации панелей подряд — из-за этого первый вход в
+            // полноэкранный режим выглядел с задержкой.
+            onDispose {}
+        }
+    }
+
+    // Панели возвращаются только когда экран покидают.
+    DisposableEffect(Unit) {
+        onDispose {
+            val window = (context as? Activity)?.window ?: return@onDispose
+            WindowCompat.getInsetsController(window, view).show(WindowInsetsCompat.Type.systemBars())
+        }
+>>>>>>> d24a20e (FoxyBook v1.9)
     }
 
     LaunchedEffect(settings.brightness) {
@@ -182,9 +243,19 @@ fun ReaderScreen(
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenHeightPx = constraints.maxHeight
         val screenWidthPx = constraints.maxWidth
+<<<<<<< HEAD
         val pageBottomReservePx = with(density) { 56.dp.roundToPx() }
         val availableHeightPx = remember { screenHeightPx - topPadPx - rawNavBarHeight - pageBottomReservePx }
         val availableWidthPx = screenWidthPx - with(density) { settings.margins.dp.roundToPx() * 2 }
+=======
+        val marginsPx = with(density) { settings.margins.dp.roundToPx() }
+        val availableHeightPx = remember(screenHeightPx, marginsPx, rawCutoutTopPx) {
+            screenHeightPx - marginsPx * 2 - rawCutoutTopPx * 2
+        }
+        val availableWidthPx = remember(screenWidthPx, marginsPx) {
+            screenWidthPx - marginsPx * 2
+        }
+>>>>>>> d24a20e (FoxyBook v1.9)
 
         Box(modifier = Modifier.fillMaxSize().background(colors.background)) {
             Box(
@@ -232,7 +303,11 @@ fun ReaderScreen(
                     state.book != null -> {
                         val mode = ReaderMode.safeValueOf(settings.readerMode)
                         if (mode == ReaderMode.HORIZONTAL) {
+<<<<<<< HEAD
                             PageModeContent(viewModel = viewModel, state = state, settings = settings, colors = colors, contentWidthPx = availableWidthPx, contentHeightPx = availableHeightPx, textMeasurer = textMeasurer, density = density, topPadDp = topPadDp, onToggleImmersive = { viewModel.onEvent(ReaderEvent.ToggleImmersive) })
+=======
+                            PageModeContent(viewModel = viewModel, state = state, settings = settings, colors = colors, contentWidthPx = availableWidthPx, contentHeightPx = availableHeightPx, textMeasurer = textMeasurer, density = density, onToggleImmersive = { viewModel.onEvent(ReaderEvent.ToggleImmersive) })
+>>>>>>> d24a20e (FoxyBook v1.9)
                         } else {
                             ScrollModeContent(viewModel = viewModel, state = state, settings = settings, colors = colors, onToggleImmersive = { viewModel.onEvent(ReaderEvent.ToggleImmersive) })
                         }

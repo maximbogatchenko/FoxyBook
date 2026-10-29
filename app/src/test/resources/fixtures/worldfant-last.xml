@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/terms/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/" xmlns:opds="http://opds-spec.org/2010/catalog" xmlns:calibre="http://calibre.kovidgoyal.net/2009/metadata">
+ <id>page:root</id>
+ <title>Каталог Миров Фэнтези</title>
+ <icon>http://f-w.in/favicon.ico</icon>
+ <link rel="start" href="http://fantasy-worlds.org/opds" type="application/atom+xml;profile=opds-catalog;kind=navigation" />
+ <link rel="self" href="/opds" type="application/atom+xml;profile=opds-catalog;kind=navigation" />
+ <link href="/opdssearch?q={searchTerms}" rel="search" type="application/atom+xml" />
+ 
+<entry>
+	<updated>2026-10-05G15:01:01Z</updated>
+	<id>books:40408</id>
+	<title>Эдемвиль</title>
+	<author>
+		<name>Сэм Ребелейн</name>
+	</author>
+	<link href="/opds/author/id9544" rel="related" type="application/atom+xml" title="Все книги автора Сэм Ребелейн" />
+	<dc:language>ru</dc:language>
+	<calibre:series>Округ Ренфилд</calibre:series>	<calibre:series_index>1</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8852" rel="related" type="application/atom+xml" title="Все книги серии «Округ Ренфилд»" />	<dc:identifier>urn:isbn:9785042542756</dc:identifier>	<content type="text/html">Хоррор в мире университетской элиты: маленький город, колледж, большие тайны и истории, которые начинают воплощаться в реальности!
+После выхода дебютного романа «Человек-из-крови», получившего прохладные отзывы и показавшего скромные продажи, Кэмпбелл П. Мэрион отчаянно пытается найти идею для новой книги. Поэтому приглашение занять должность писателя-резидента в колледже Эдемвиля кажется ему долгожданным шансом изменить свою судьбу.
+Его девушка Квин настроена куда менее оптимистично. Она выросла неподалеку от Эдемвиля и прекрасно знает, что есть причины покинуть это место как можно быстрее. Но Кэм игнорирует ее опасения и принимает предложение, а Квин неохотно отправляется вслед за ним.
+Однако с Эдемвилем что-то не так. За фасадом уютного городка, где по Главной улице прогуливаются приветливые старушки, а вдоль тротуаров цветут подсолнухи, скрывается нечто зловещее. И когда череда странных и пугающих событий начинает набирать обороты, Кэм и Квин оказываются втянуты в темную историю, уходящую корнями далеко в прошлое.
+Сочетая ужас и юмор, «Эдемвиль» исследует городские легенды, питающие наши кошмары, и показывает, как амбиции способны затмить самые благие намерения.
+«О кампусах написано немало романов ужасов, но за &amp;quot;Эдемвиль&amp;quot; хочется поставить высший балл &amp;quot;АААААААААА!&amp;quot;. Сэму Ребелейну впору вручать магистерскую степень по части страха. Перед нами крупный новый талант!» – Р. Л. Стайн
+«Чистейшее космическое безумие. Представьте, что Хантер С. Томпсон написал &amp;quot;Хребты Безумия&amp;quot;, или Джон Уотерс экранизировал Клайва Баркера. Этот роман – прошу прощения, этот роман, от которого падает челюсть, – по праву занимает место рядом с такими современными классиками, как &amp;quot;Библиотека на Обугленной горе&amp;quot; и &amp;quot;Книга несчастных случаев&amp;quot;. Ничего похожего вы не читали. Во всяком случае, не в нашей вселенной». – Клей Маклауд Чепмен
+«Головокружительное путешествие, которое проникает в самое сердце вашего сознания и не отпускает до последней страницы. В этой книге есть и красота, и мерзость, а главное – она приносит огромное удовольствие». – Кристи ДеМистер
+«Никто не пишет о жутком и необъяснимом так, как Сэм Ребелейн. Это захватывающая, телесно ощутимая и тревожная метапроза, которая заманивает читателя во тьму, а затем постепенно открывает ему ужасы, всегда скрывавшиеся рядом. Это Чак Паланик, Клайв Баркер и Стивен Грэм Джонс в одном лице – смешно, трагично и совершенно оригинально». – Ричард Томас
+«Настоящий триумф хоррора. Зловещая атмосфера и нарастающее напряжение не позволят оторваться от книги, а яркие персонажи и кошмарные образы будут преследовать вас до самой последней страницы. Поклонникам Клайва Баркера и Стивена Кинга пропускать нельзя». – Тим Ваггонер
+«Роман заново изобретает страшную историю о маленьком городке, превращая ее в лавину комедии, ужаса и гротеска. Великолепное развлечение, от которого стынет кровь». – Стефани Фелдман
+«&amp;quot;Эдемвиль&amp;quot; великолепен. &amp;quot;Эдемвиль&amp;quot; уморительно смешон. Его обитатели настолько же обаятельны, насколько отвратительны. Это захватывающий роман ужасов с блестящими персонажами и потрясающе созданным миром». – Крис Панатье
+«Восхитительно липкая смесь готического, космического, фолк– и телесного хоррора, взбитая острой критикой академической среды». – Люси А. Снайдер
+«Повседневные ужасы провинциальной жизни и академической среды сталкиваются в &amp;quot;Эдемвиле&amp;quot; с чистым космическим безумием. Со времен &amp;quot;В финале Джон умрет&amp;quot; Джейсона Паргина ни одна книга не вызывала у меня одновременно столько ужаса, отвращения и восторженного &amp;quot;какого черта?!&amp;quot; при переворачивании страниц. Чем меньше вы знаете об этой книге заранее, тем лучше». – Тодд Кайслинг
+«Каждая страница романа пульсирует неудержимой энергией нового таланта. Автор обладает мастерством признанного мэтра, а его дебютный роман поражает воображение». – Эрик ЛаРокка
+«&amp;quot;Эдемвиль&amp;quot; – впечатляющий дебют, который сразу заявляет о Сэме Ребелейне как о заметном новом имени в жанре хоррора… Обязательное чтение для поклонников ужасов, особенно для читателей Грейди Хендрикса и Пола Тремблея. – Booklist
+«Дебют автора – совершенно особенный зверь: дикий, лохматый, часто непредсказуемый и временами откровенно безумный… Надеюсь, мне еще доведется вернуться в округ Ренфилд, и желательно поскорее». – Literary Hub
+«Безумное путешествие от первой до последней страницы с щедрой порцией юмора». – CrimeReads</content>
+	<link type="text/html" href="/lib/id40408/" rel="alternate" title="Эдемвиль на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/404/40408.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40408/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40408/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40408/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-05G14:57:05Z</updated>
+	<id>books:40407</id>
+	<title>Приключение с русалками</title>
+	<author>
+		<name>Софи Кинселла</name>
+	</author>
+	<link href="/opds/author/id9543" rel="related" type="application/atom+xml" title="Все книги автора Софи Кинселла" />
+	<dc:language>ru</dc:language>
+	<calibre:series>Моя мамочка – фея</calibre:series>	<calibre:series_index>4</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8851" rel="related" type="application/atom+xml" title="Все книги серии «Моя мамочка – фея»" />	<dc:identifier>urn:isbn:9785041033392</dc:identifier>	<content type="text/html">У Эллы Брук очень необычная семья… Её мамочка – настоящая фея. У мамы есть современная волшебная палочка – Магопульт, с которым она может наколдовать всё, что угодно. Элла тоже когда-нибудь станет феей, но сейчас, пока ей нельзя пользоваться магией, она мечтает стать… русалкой и, конечно, ждёт новых приключений. Ведь с такой мамой, как у неё, никогда не бывает скучно! Мамочка-фея и печенье к чаю сообразит за пять минут, и вычислит в музее вора, и даже спасёт китёнка, попавшего в беду. Вот только мама часто забывает заклинания… К счастью, Элла всегда придёт ей на помощь, ведь если мама и дочка действуют командой, магия всегда работает как надо!</content>
+	<link type="text/html" href="/lib/id40407/" rel="alternate" title="Приключение с русалками на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/404/40407.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40407/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40407/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40407/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-05G14:53:48Z</updated>
+	<id>books:40406</id>
+	<title>Магия кувырком</title>
+	<author>
+		<name>Софи Кинселла</name>
+	</author>
+	<link href="/opds/author/id9543" rel="related" type="application/atom+xml" title="Все книги автора Софи Кинселла" />
+	<dc:language>ru</dc:language>
+	<calibre:series>Моя мамочка – фея</calibre:series>	<calibre:series_index>2</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8851" rel="related" type="application/atom+xml" title="Все книги серии «Моя мамочка – фея»" />	<dc:identifier>urn:isbn:9785040918379</dc:identifier>	<content type="text/html">У Эллы необычная семья… Её мамочка – фея. У мамы есть современная волшебная палочка – Магопульт. С помощью нужной комбинации цифр и магических заклинаний она может наколдовать всё что угодно. Элла мечтает стать феей, но это будет не скоро, а пока она выручает свою мамочку-фею. Ведь мама очень устаёт на работе и ей трудно всё удержать в голове, поэтому она опять перепутала заклинания! И Элле нужно позаботиться, чтобы мама не осталась в облике озорной мартышки, в которую она сама же себя и превратила, а новый волшебный гардероб перестал бросаться колючими свитерами и творить ерунду. Всё это отнимает слишком много времени и сил, но Элла справится, ведь она – будущая фея!</content>
+	<link type="text/html" href="/lib/id40406/" rel="alternate" title="Магия кувырком на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/404/40406.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40406/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40406/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40406/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-05G14:52:36Z</updated>
+	<id>books:40405</id>
+	<title>День шалостей</title>
+	<author>
+		<name>Софи Кинселла</name>
+	</author>
+	<link href="/opds/author/id9543" rel="related" type="application/atom+xml" title="Все книги автора Софи Кинселла" />
+	<dc:language>ru</dc:language>
+	<calibre:series>Моя мамочка – фея</calibre:series>	<calibre:series_index>1</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8851" rel="related" type="application/atom+xml" title="Все книги серии «Моя мамочка – фея»" />	<dc:identifier>urn:isbn:9785040960729</dc:identifier>	<content type="text/html">У семилетней Эллы есть большой-большой секрет… Её мамочка – фея, у мамы даже есть современная волшебная палочка – Магопульт. С помощью заклинаний и нужной комбинации цифр она легко наколдует молоко к завтраку, сообразит вкусные кексы к чаю за пять минут и ускорит очередь в супермаркете. Только мамочка-фея не всегда подбирает правильные магические коды. Поэтому иногда на кухне может появиться живая корова, а швабра для уборки устроит бунт, не желая подчиняться. Хорошо, что Элла всегда готова прийти на помощь маме и всё исправить.
+«Детская книга Софи Кинселлы напоминает коробку шоколадных конфет ко Дню святого Валентина» – USA Today.</content>
+	<link type="text/html" href="/lib/id40405/" rel="alternate" title="День шалостей на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/404/40405.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40405/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40405/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40405/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-04G09:57:40Z</updated>
+	<id>books:40404</id>
+	<title>Месть Тёмного Волка</title>
+	<author>
+		<name>Чон Ынгён</name>
+	</author>
+	<link href="/opds/author/id8120" rel="related" type="application/atom+xml" title="Все книги автора Чон Ынгён" />
+	<dc:language>ru</dc:language>
+	<calibre:series>Магазин теней «Лунный свет»</calibre:series>	<calibre:series_index>5</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8632" rel="related" type="application/atom+xml" title="Все книги серии «Магазин теней «Лунный свет»»" />	<dc:identifier>urn:isbn:9785389341449</dc:identifier>	<content type="text/html">Тёмный Волк обманом завладевает тенью трости, и уже ничто не помешает ему первым добраться до Джэи и забрать у неё сферу света. Если не остановить его, Хэнмури погрузится во тьму. Теперь Джэо, Сэхи и Стражам нужно во что бы то ни стало предотвратить катастрофу, которая надвигается на город. Они готовятся к финальной битве, но хватит ли им сил, чтобы победить Тёмного Волка? Ведь в опасности уже не только сестра Джэо, но и все жители Хэнмури!</content>
+	<link type="text/html" href="/lib/id40404/" rel="alternate" title="Месть Тёмного Волка на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/404/40404.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40404/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40404/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40404/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-04G09:54:41Z</updated>
+	<id>books:40403</id>
+	<title>Толмач нерчинского воеводы</title>
+	<author>
+		<name>Михаил Логинов</name>
+	</author>
+	<link href="/opds/author/id9351" rel="related" type="application/atom+xml" title="Все книги автора Михаил Логинов" />
+	<dc:language>ru</dc:language>
+	<calibre:series>Хронокомпас мастера Лукьянова</calibre:series>	<calibre:series_index>4</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8796" rel="related" type="application/atom+xml" title="Все книги серии «Хронокомпас мастера Лукьянова»" />	<dc:identifier>urn:isbn:9785042504327</dc:identifier>	<content type="text/html">Внезапный визит дальней родственницы из Саратова спутал Антошке все планы. И выполнение простейшего задания по ботанике обернулось путешествием в Забайкалье времён Петра I. Там Антошка узнал, как Россия Сибирью прирастала: и в ловчей яме сидел, и китайское посольство принимал, и серебряные рудники инспектировал, и с лихими разбойниками сходился в честном бою. А самое главное, саратовскую тётушку ему всё равно пришлось встретить.
+Для среднего школьного возраста.</content>
+	<link type="text/html" href="/lib/id40403/" rel="alternate" title="Толмач нерчинского воеводы на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/404/40403.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40403/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40403/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40403/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-03G23:26:22Z</updated>
+	<id>books:40402</id>
+	<title>Полночный поезд</title>
+	<author>
+		<name>Мэтт Хейг</name>
+	</author>
+	<link href="/opds/author/id3067" rel="related" type="application/atom+xml" title="Все книги автора Мэтт Хейг" />
+	<dc:language>ru</dc:language>
+	<calibre:series>Полночный мир</calibre:series>	<calibre:series_index>2</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8850" rel="related" type="application/atom+xml" title="Все книги серии «Полночный мир»" />	<dc:identifier>urn:isbn:9785907784925</dc:identifier>	<content type="text/html">Когда вся жизнь проносится перед глазами, на каком моменте вы бы захотели остановиться? Пусть никто не может изменить прошлое, но Полночный поезд способен вернуть вас туда. Дать шанс заново пережить самые важные мгновения, увидеть, каким человеком вы были на самом деле.
+Лучшие дни Уилбура были связаны с Мэгги – любовью всей его жизни, с их медовым месяцем в Венеции. Но он все разрушил… Так что сейчас он мечтает вернуться назад и прожить жизнь иначе. Однако такая возможность может стоить ему всего.
+Волшебная история любви и путешествий во времени расширяет знакомую читателям всего мира вселенную «Полночной библиотеки».</content>
+	<link type="text/html" href="/lib/id40402/" rel="alternate" title="Полночный поезд на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/404/40402.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40402/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40402/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40402/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-03G22:24:04Z</updated>
+	<id>books:40401</id>
+	<title>Заброшенный лагерь</title>
+	<author>
+		<name>Влад Райбер</name>
+	</author>
+	<link href="/opds/author/id7912" rel="related" type="application/atom+xml" title="Все книги автора Влад Райбер" />
+	<dc:language>ru</dc:language>
+	<calibre:series>Летний лагерь</calibre:series>	<calibre:series_index>2</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8849" rel="related" type="application/atom+xml" title="Все книги серии «Летний лагерь»" />	<dc:identifier>urn:isbn:9785042548444</dc:identifier>	<content type="text/html">После пережитого кошмара ребята уж точно не хотели бы вновь оказаться в том самом летнем лагере. Но приглашения от Зайки не вручают просто так — их получают только те, кому суждено вернуться. Лагерь «Искра» встречает пятёрку друзей тьмой, в которой мерцает огонь костра. В круге света — испуганные лица девчонок и мальчишек. За пределами круга — непроглядная ночь, полная шорохов, и мрачная фигура в заячьей маске… Правила просты: рассказывай страшные истории, вынимай свои самые тёмные воспоминания и бросай в огонь. Тот, чья история будет самой жуткой, увидит рассвет. Остальные… останутся здесь навсегда. Пока горит костёр — никого не тронут, но пламя стремительно тает… Смогут ли друзья дожить до рассвета?</content>
+	<link type="text/html" href="/lib/id40401/" rel="alternate" title="Заброшенный лагерь на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/404/40401.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40401/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40401/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40401/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-03G19:28:45Z</updated>
+	<id>books:40400</id>
+	<title>Сага о Вечных</title>
+	<author>
+		<name>Лизавета Мягчило</name>
+	</author>
+	<link href="/opds/author/id8303" rel="related" type="application/atom+xml" title="Все книги автора Лизавета Мягчило" />
+	<dc:language>ru</dc:language>
+			<dc:format>fb2+zip</dc:format>
+		<dc:identifier>urn:isbn:9785042512438</dc:identifier>	<content type="text/html">Юная Вигдис угасает, пораженная смертельной болезнью. Ее жизнь утекает сквозь пальцы, пока золотые яблоки Идунн чернеют на ветвях в мире богов.
+Но порой смерть – не самое страшное. Конунг Торстейн, услышав пророчество о деве, способной подарить бессмертие, открыл на нее охоту. Единственный щит между Вигдис и жадностью конунга – Ульв. Воин-волк, которому прочат долю нового провидца. Его любовь опасна, а защита пахнет сталью, кровью и волчьим мехом.
+Чтобы обмануть судьбу, им придется пройти через обсидиановые залы двергов и радужный мост, пылающий под ногами. Когда ветра Рагнарека дуют в спину, а охотник наступает на пятки, остается только одно: стать чудовищем страшнее тех, которые идут по твоему следу.</content>
+	<link type="text/html" href="/lib/id40400/" rel="alternate" title="Сага о Вечных на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/404/40400.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40400/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40400/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40400/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-02G13:03:27Z</updated>
+	<id>books:40399</id>
+	<title>Сага о Школе вождей</title>
+	<author>
+		<name>Дмитрий Емец</name>
+	</author>
+	<link href="/opds/author/id823" rel="related" type="application/atom+xml" title="Все книги автора Дмитрий Емец" />
+	<dc:language>ru</dc:language>
+	<calibre:series>За 1000 лет до Тани Гроттер</calibre:series>	<calibre:series_index>1</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8848" rel="related" type="application/atom+xml" title="Все книги серии «За 1000 лет до Тани Гроттер»" />	<dc:identifier>urn:isbn:9785042521508</dc:identifier>	<content type="text/html">Много веков стоит магическая школа Тибидохс на славном острове Буяне, омываемом волнами бушующего океана. Но тысячу лет назад ни школы, ни привычного нам Буяна не существовало. Там бродили древневидлы – создания опасные, капризные и совершенно непредсказуемые. Там враждовали племена, не знавшие мира. И именно туда отправляли своих отпрысков постигать варяжье дело – в суровую Школу вождей.
+Кузя и Рюрик – два друга и два будущих правителя – с детства знали, что однажды возглавят свои народы. Но судьба распорядилась иначе: племена объединились, и теперь вождём станет только один. Чтобы доказать своё право на власть, юным варягам предстоит пройти испытание, достойное саги, – выкрасть единственную дочь Императора.
+Впереди их ждёт путь, полный опасностей и загадок. Они встретят друзей (не всегда желанных), врагов (не всегда очевидных) и много-МНОГО чудовищ, прекрасных и ужасных. Такое приключение стоит любого риска!</content>
+	<link type="text/html" href="/lib/id40399/" rel="alternate" title="Сага о Школе вождей на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/403/40399.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40399/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40399/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40399/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-02G13:02:30Z</updated>
+	<id>books:40398</id>
+	<title>Охота за короной</title>
+	<author>
+		<name>Дмитрий Емец</name>
+	</author>
+	<link href="/opds/author/id823" rel="related" type="application/atom+xml" title="Все книги автора Дмитрий Емец" />
+	<dc:language>ru</dc:language>
+	<calibre:series>Динозавры против драконов</calibre:series>	<calibre:series_index>1</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8847" rel="related" type="application/atom+xml" title="Все книги серии «Динозавры против драконов»" />	<dc:identifier>urn:isbn:9785002831340</dc:identifier>	<content type="text/html">В Динозаврии правит жестокая королева Зуха. Она отправляет юного принца Велика в Драконию – вернуть фамильную корону, которую когда-то отняли драконы. А в то же самое время коварная повелительница драконов Драконла отправляет свою племянницу принцессу Арлу в Динозаврию с невыполнимым поручением, чтобы избавиться от неё.
+Герои, которые должны быть врагами, встречаются в пути. И вместо того чтобы сражаться, они становятся союзниками. Динозавры и драконы объединяются и придумывают хитроумный план – обмануть королев и вернуть себе свободу. Но для этого им придётся пережить множество опасных приключений: Кошмарное болото, Дикие горы, Пропасть Скелетов и даже… хитроумные узлы королевы Драконлы.</content>
+	<link type="text/html" href="/lib/id40398/" rel="alternate" title="Охота за короной на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/403/40398.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40398/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40398/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40398/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-02G09:45:01Z</updated>
+	<id>books:40397</id>
+	<title>Хлад – 2</title>
+	<author>
+		<name>Алекс Каменев</name>
+	</author>
+	<link href="/opds/author/id5343" rel="related" type="application/atom+xml" title="Все книги автора Алекс Каменев" />
+	<dc:language>ru</dc:language>
+	<calibre:series>Хлад</calibre:series>	<calibre:series_index>2</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8846" rel="related" type="application/atom+xml" title="Все книги серии «Хлад»" />	<dc:identifier>urn:isbn:9785171897437</dc:identifier>	<content type="text/html">Тебе шестнадцать, и ты самый молодой князь среди властителей вольных уделов. Испытание силой позади, источник принял тебя, как и стихия. Хлад стал частью тебя, а ты частью него, и этого не изменить. Впереди война и новые испытания, интриги правящего рода и манипуляции советников, не все хотят видеть на троне бастарда. Но ты уже не прежний, растерянный мальчик исчез, и всем несогласным придется склонить голову, потому что у клана Сокола отныне новый владыка. И горе тому, кто попробует этому помешать.</content>
+	<link type="text/html" href="/lib/id40397/" rel="alternate" title="Хлад – 2 на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/403/40397.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40397/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40397/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40397/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-02G09:42:59Z</updated>
+	<id>books:40396</id>
+	<title>Хлад – 1</title>
+	<author>
+		<name>Алекс Каменев</name>
+	</author>
+	<link href="/opds/author/id5343" rel="related" type="application/atom+xml" title="Все книги автора Алекс Каменев" />
+	<dc:language>ru</dc:language>
+	<calibre:series>Хлад</calibre:series>	<calibre:series_index>1</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8846" rel="related" type="application/atom+xml" title="Все книги серии «Хлад»" />	<dc:identifier>urn:isbn:9785171897444</dc:identifier>	<content type="text/html">Магия на службе технологий или технологии на службе магии? Сложный вопрос, на который никто не знает ответ. Но родовые корпорации под управлением влиятельных колдовских кланов понимают, что без первого и второго невозможна современная жизнь, и поэтому делают все, чтобы сохранить стабильность в неустойчивом балансе изменчивого мира.
+Клан Бельских с незапамятных времен владеет землями на далеком севере. Священное озеро, называемое многими Мертвым озером, является источником их могущества. Многие зависят от даров, что оно дает. Но не многие понимают, что Хлад, властвующий в этих местах, вовсе не послушная игрушка для смертных, а всесокрушающая стихия, с которой далеко не каждый сможет совладать.</content>
+	<link type="text/html" href="/lib/id40396/" rel="alternate" title="Хлад – 1 на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/403/40396.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40396/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40396/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40396/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-02G09:41:32Z</updated>
+	<id>books:40395</id>
+	<title>Охотник на монстров, или Почему не стоит падать в канализационный люк</title>
+	<author>
+		<name>Ирис Гененц</name>
+	</author>
+	<link href="/opds/author/id9542" rel="related" type="application/atom+xml" title="Все книги автора Ирис Гененц" />
+	<dc:language>ru</dc:language>
+	<calibre:series>Охотник на монстров</calibre:series>	<calibre:series_index>1</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8845" rel="related" type="application/atom+xml" title="Все книги серии «Охотник на монстров»" />	<dc:identifier>urn:isbn:9785042497995</dc:identifier>	<content type="text/html">Меня зовут Чарли Хартнусс, и я самый обычный 13-летний подросток, живущий в скучном городке, где никогда ничего не происходит. Или так я думал – до сегодняшнего дня. Моя безумная история началась, как ни странно, с жуткого костюма, который мама сшила мне на Хэллоуин. Это должен был быть оборотень, но на деле что-то пошло не так.
+Показаться в таком виде перед людьми и уж тем более на крутой вечеринке никак нельзя. Я придумал гениальный способ избавления от этого наряда, а мой лучший друг Мартин согласился помочь с новым. Но я и представить не мог, что дальнейшие события перечеркнут все планы, а мамин «шедевр» станет наименьшей из моих проблем.
+Всему виной этот странный школьный автобус, взявшийся из ниоткуда. Как я тут очутился? Куда он едет? Что за невообразимые монстры меня окружают? Вопросов больше, чем ответов… И это только начало моих приключений!
+Хочешь узнать, что будет дальше? Скорее открывай книгу – впереди всё самое интересное!</content>
+	<link type="text/html" href="/lib/id40395/" rel="alternate" title="Охотник на монстров, или Почему не стоит падать в канализационный люк на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/403/40395.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40395/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40395/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40395/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+<entry>
+	<updated>2026-10-02G09:38:42Z</updated>
+	<id>books:40394</id>
+	<title>Жестокое общество</title>
+	<author>
+		<name>Морган Бриджес</name>
+	</author>
+	<link href="/opds/author/id9375" rel="related" type="application/atom+xml" title="Все книги автора Морган Бриджес" />
+	<dc:language>ru</dc:language>
+	<calibre:series>Орден Обсидиана</calibre:series>	<calibre:series_index>2</calibre:series_index>	<dc:format>fb2+zip</dc:format>
+	<link href="/opds/series/id8730" rel="related" type="application/atom+xml" title="Все книги серии «Орден Обсидиана»" />	<dc:identifier>urn:isbn:9785042507335</dc:identifier>	<content type="text/html">Он борется за ее свободу. Она – за его душу.
+Вторая часть дилогии «Орден Обсидиана».
+Он вонзил в нее клинок, чтобы спасти. Но теперь именно любовь может их погубить.
+Ксавье Донован – идеальный солдат Ордена Обсидиана, элитного братства, – и ему велели убить ту, кого он любит.
+Но ради Делайлы Ксавье готов пожертвовать всем – своими принципами, клятвой, всем, во что он верит. Сколько врагов он готов уничтожить? Какую часть своей души он готов принести в жертву?
+В Ордене Обсидиана милосердие – это слабость, а желание – это оружие. Для Ксавье любовь становится самым жестоким испытанием из всех.
+Потому что без нее его жизнь ничего не стоит.
+От автора бестселлеров «Однажды ты станешь моей» и «Теперь ты моя».
+Морган Бриджес – автор темной романтики, любительница антигероев, глубоких книг с красивым слогом, романтики, от которой захватывает дух и горячих сцен, которые заставляют краснеть. Она живет со своей семьей недалеко от Далласа, штат Техас.
+В книге присутствует нецензурная брань!</content>
+	<link type="text/html" href="/lib/id40394/" rel="alternate" title="Жестокое общество на Мирах Фэнтези" />
+	<link type="image/jpeg" href="/img/preview/403/40394.jpg" rel="http://opds-spec.org/image" />
+	<link type="application/fb2+zip" href="/lib/id40394/download/" rel="http://opds-spec.org/acquisition/open-access"  />
+	<link href="/lib/id40394/download/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ 	<link href="/lib/id40394/download/mobi"  rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+</entry>
+
+
+
+	
+	<entry>
+		<updated></updated>
+		<id>tag:root:nextpage</id>
+		<title>Следующая страница: 2</title>
+		<link href="/opds/last/2/" type="application/atom+xml;profile=opds-catalog" />
+	</entry>
+
+
+</feed>

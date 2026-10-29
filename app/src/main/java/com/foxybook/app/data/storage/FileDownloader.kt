@@ -8,6 +8,7 @@ import android.os.Build
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.documentfile.provider.DocumentFile
 import com.foxybook.app.core.models.BookFormat
 import okhttp3.ResponseBody
@@ -95,6 +96,7 @@ class FileDownloader(private val context: Context) {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun saveViaMediaStore(
         format: BookFormat,
         fileName: String,

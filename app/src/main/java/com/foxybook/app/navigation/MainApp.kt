@@ -74,7 +74,7 @@ import androidx.compose.ui.res.stringResource
 import java.net.URLDecoder
 
 @Composable
-fun MainApp() {
+fun MainApp(startRoute: String = Routes.NEW_BOOKS) {
     val navController = rememberNavController()
     val updateChecker: UpdateChecker = koinInject()
     val connectivityObserver: ConnectivityObserver = koinInject()
@@ -89,7 +89,11 @@ fun MainApp() {
     if (isLandscape) {
         Row(modifier = Modifier.fillMaxSize()) {
             if (showBottomBar) {
+<<<<<<< HEAD
                 NavigationRailSide(navController)
+=======
+                NavigationRailSide(navController, rootRoute = startRoute)
+>>>>>>> d24a20e (FoxyBook v1.9)
             }
             Box(modifier = Modifier.fillMaxSize()) {
                 Scaffold(
@@ -101,7 +105,11 @@ fun MainApp() {
                         startDestination = Routes.SPLASH,
                         modifier = Modifier.padding(innerPadding),
                     ) {
+<<<<<<< HEAD
                         buildNavGraph(navController, updateChecker)
+=======
+                        buildNavGraph(navController, updateChecker, startRoute)
+>>>>>>> d24a20e (FoxyBook v1.9)
                     }
                 }
                 OfflineBanner(isOnline = isOnline, modifier = Modifier.align(Alignment.TopCenter))
@@ -113,7 +121,11 @@ fun MainApp() {
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             bottomBar = {
                 if (showBottomBar) {
+<<<<<<< HEAD
                     BottomNav(navController)
+=======
+                    BottomNav(navController, rootRoute = startRoute)
+>>>>>>> d24a20e (FoxyBook v1.9)
                 }
             },
         ) { innerPadding ->
@@ -123,7 +135,11 @@ fun MainApp() {
                     startDestination = Routes.SPLASH,
                     modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
                 ) {
+<<<<<<< HEAD
                     buildNavGraph(navController, updateChecker)
+=======
+                    buildNavGraph(navController, updateChecker, startRoute)
+>>>>>>> d24a20e (FoxyBook v1.9)
                 }
                 OfflineBanner(isOnline = isOnline, modifier = Modifier.align(Alignment.TopCenter))
             }
@@ -170,7 +186,12 @@ private fun OfflineBanner(isOnline: Boolean, modifier: Modifier = Modifier) {
 
 private fun NavGraphBuilder.buildNavGraph(
     navController: androidx.navigation.NavHostController,
+<<<<<<< HEAD
     updateChecker: UpdateChecker
+=======
+    updateChecker: UpdateChecker,
+    startRoute: String
+>>>>>>> d24a20e (FoxyBook v1.9)
 ) {
     composable(
         route = Routes.SPLASH,
@@ -180,7 +201,11 @@ private fun NavGraphBuilder.buildNavGraph(
         SplashScreen(
             updateChecker = updateChecker,
             onLoadingComplete = {
+<<<<<<< HEAD
                 navController.navigate(Routes.NEW_BOOKS) {
+=======
+                navController.navigate(startRoute) {
+>>>>>>> d24a20e (FoxyBook v1.9)
                     popUpTo(Routes.SPLASH) { inclusive = true }
                 }
             }

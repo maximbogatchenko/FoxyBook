@@ -47,6 +47,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.foxybook.app.core.models.BookCollection
+<<<<<<< HEAD
+=======
+import com.foxybook.app.core.models.BookGroup
+>>>>>>> d24a20e (FoxyBook v1.9)
 import com.foxybook.app.core.models.LibraryBook
 
 import androidx.compose.foundation.rememberScrollState
@@ -59,11 +63,19 @@ import androidx.compose.foundation.background
 @Composable
 fun CollectionsContent(
     collections: List<BookCollection>, selectedCollectionId: String?, books: List<LibraryBook>,
+<<<<<<< HEAD
+=======
+    groups: List<BookGroup> = emptyList(),
+>>>>>>> d24a20e (FoxyBook v1.9)
     viewMode: LibraryViewMode, selectedBookIds: Set<String> = emptySet(), isSelectionMode: Boolean = false,
     onCollectionClick: (String?) -> Unit, onRenameCollection: (String) -> Unit, onDeleteCollection: (String) -> Unit,
     onBookClick: (String, Int, String) -> Unit, onToggleFavorite: (Int, String) -> Unit,
     onMoveBook: (Int, String) -> Unit, onDeleteBook: (Int, String) -> Unit, onCoverClick: (String) -> Unit,
     onBookDetails: (LibraryBook) -> Unit = {}, onCreateCollection: () -> Unit = {},
+<<<<<<< HEAD
+=======
+    onSetReadState: (Int, String, String) -> Unit = { _, _, _ -> },
+>>>>>>> d24a20e (FoxyBook v1.9)
     onLongPressBook: (Int, String) -> Unit = { _, _ -> }, onToggleSelection: (Int, String) -> Unit = { _, _ -> }
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -83,11 +95,19 @@ fun CollectionsContent(
         Spacer(Modifier.height(12.dp))
 
         if (selectedCollectionId != null) {
+<<<<<<< HEAD
             BookListContent(books = books.filter { selectedCollectionId in it.collectionIds }, viewMode = viewMode,
+=======
+            BookListContent(groups = groups, viewMode = viewMode,
+>>>>>>> d24a20e (FoxyBook v1.9)
                 emptyTitle = stringResource(R.string.library_empty_collection_title), emptySubtitle = stringResource(R.string.library_empty_collection_subtitle),
                 selectedBookIds = selectedBookIds, isSelectionMode = isSelectionMode, onBookClick = onBookClick,
                 onToggleFavorite = onToggleFavorite, onMoveBook = onMoveBook, onDeleteBook = onDeleteBook,
                 onCoverClick = onCoverClick, onBookDetails = onBookDetails, onLongPressBook = onLongPressBook,
+<<<<<<< HEAD
+=======
+                onSetReadState = onSetReadState,
+>>>>>>> d24a20e (FoxyBook v1.9)
                 onToggleSelection = onToggleSelection)
         } else if (collections.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

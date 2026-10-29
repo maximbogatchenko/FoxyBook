@@ -105,6 +105,7 @@ class ReaderViewModel(
     override fun onCleared() {
         positionManager.stopSaveJob()
 
+<<<<<<< HEAD
         // Сохраняем позицию принудительно и синхронно, без таймаута
         kotlinx.coroutines.runBlocking {
             kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO + kotlinx.coroutines.NonCancellable) {
@@ -115,6 +116,18 @@ class ReaderViewModel(
             }
         }
 
+=======
+        // Позиция сохраняется асинхронно: runBlocking здесь блокировал главный
+        // поток на записи в Room. savePositionNow работает через NonCancellable,
+        // поэтому следующий saveScope.cancel() её не прервёт.
+        val bookId = chapterManager.getBookId()
+        val format = chapterManager.getFormat()
+        if (bookId >= 0 && _state.value.book != null) {
+            positionManager.savePositionNow(bookId, format, _state, saveScope)
+        }
+
+        chapterManager.cancelPendingJobs()
+>>>>>>> d24a20e (FoxyBook v1.9)
         paginationManager.cancelAllJobs()
         saveScope.cancel()
         ttsManager.destroy()
@@ -125,6 +138,7 @@ class ReaderViewModel(
         when (event) {
             // ─── Book Loading ───
             is ReaderEvent.LoadBook -> {
+<<<<<<< HEAD
                 chapterManager.setBookInfo(event.bookId, event.format)
                 viewModelScope.launch(Dispatchers.IO) {
                     chapterManager.loadBook(event.filePath, event.bookId, event.format, _state.value, _state)
@@ -134,17 +148,35 @@ class ReaderViewModel(
                     if (s.positionRestored) {
                         positionManager.savePosition(event.bookId, event.format, s)
                     }
+=======
+                paginationManager.resetLock()
+                chapterManager.setBookInfo(event.bookId, event.format)
+                viewModelScope.launch(Dispatchers.IO) {
+                    chapterManager.loadBook(event.filePath, event.bookId, event.format, _state.value, _state)
+                    _state.update { positionManager.updateReadingPercentage(it) }
+                    // Позиция восстанавливается из БД в loadBook; повторное сохранение
+                    // того же снимка избыточно (защищено проверкой lastSaved).
+>>>>>>> d24a20e (FoxyBook v1.9)
                 }
             }
 
             // ─── Chapter Navigation ───
             is ReaderEvent.ChapterChanged -> {
+<<<<<<< HEAD
                 val newState = chapterManager.goToChapter(event.index, _state.value, _state)
                 _state.update { newState }
                 viewModelScope.launch(Dispatchers.IO) {
                     chapterManager.getBlocksSync(event.index, _state.value, _state)
                     chapterManager.preloadChapter(event.index + 1, _state.value, viewModelScope)
                     chapterManager.preloadChapter(event.index - 1, _state.value, viewModelScope)
+=======
+                val newState = chapterManager.goToChapter(event.index, _state.value, _state, event.resetPosition)
+                _state.update { newState }
+                viewModelScope.launch(Dispatchers.IO) {
+                    chapterManager.getBlocksSync(event.index, _state.value, _state)
+                    chapterManager.preloadChapter(event.index + 1, _state.value, viewModelScope, _state)
+                    chapterManager.preloadChapter(event.index - 1, _state.value, viewModelScope, _state)
+>>>>>>> d24a20e (FoxyBook v1.9)
                     if (_state.value.pageWidth > 0 && _state.value.pageHeight > 0 &&
                         ReaderMode.safeValueOf(_state.value.settings.readerMode) == ReaderMode.HORIZONTAL) {
                         val tm = _state.value.textMeasurer
@@ -159,7 +191,14 @@ class ReaderViewModel(
                     }
                 }
                 _state.update { positionManager.updateReadingPercentage(it) }
+<<<<<<< HEAD
                 positionManager.debounceSave(chapterManager.getBookId(), chapterManager.getFormat(), _state, viewModelScope)
+=======
+                // Смена главы — дискретное действие, сохраняем позицию немедленно.
+                positionManager.requestSaveImmediate(
+                    chapterManager.getBookId(), chapterManager.getFormat(), _state.value, viewModelScope
+                )
+>>>>>>> d24a20e (FoxyBook v1.9)
             }
             is ReaderEvent.NextChapter -> {
                 val next = chapterManager.nextChapter(_state.value)
@@ -175,20 +214,36 @@ class ReaderViewModel(
                 val updated = positionManager.trackScroll(event.percentage, event.blockIndex, event.scrollOffset, event.offset, _state.value)
                 _state.update { updated }
                 _state.update { positionManager.updateReadingPercentage(it) }
+<<<<<<< HEAD
                 val bid = chapterManager.getBookId()
                 val fmt = chapterManager.getFormat()
                 if (bid >= 0 && _state.value.positionRestored) viewModelScope.launch(Dispatchers.IO) {
                     positionManager.savePosition(bid, fmt, _state.value)
                 }
+=======
+                // Непрерывный скролл — отложенное сохранение, чтобы не бить в БД на каждый кадр.
+                positionManager.debounceScrollSave(
+                    chapterManager.getBookId(), chapterManager.getFormat(), _state, viewModelScope
+                )
+>>>>>>> d24a20e (FoxyBook v1.9)
             }
             is ReaderEvent.PageInfo -> {
                 val updated = positionManager.trackPageInfo(event.current, event.total, event.offset, _state.value)
                 _state.update { updated }
                 _state.update { positionManager.updateReadingPercentage(it) }
+<<<<<<< HEAD
                 val bid = chapterManager.getBookId()
                 val fmt = chapterManager.getFormat()
                 if (bid >= 0 && _state.value.positionRestored) viewModelScope.launch(Dispatchers.IO) {
                     positionManager.savePosition(bid, fmt, _state.value)
+=======
+                // Листование страниц — дискретное действие, сохраняем немедленно,
+                // но не во время программного пролистывания (восстановление / перевёрстка).
+                if (!positionManager.isProgrammaticScroll) {
+                    positionManager.requestSaveImmediate(
+                        chapterManager.getBookId(), chapterManager.getFormat(), _state.value, viewModelScope
+                    )
+>>>>>>> d24a20e (FoxyBook v1.9)
                 }
             }
 
@@ -202,6 +257,7 @@ class ReaderViewModel(
                     paginationManager.paginateChapter(s.currentChapter + 1, s, viewModelScope, { getBlocks(it) }, _state)
                     paginationManager.paginateChapter(s.currentChapter - 1, s, viewModelScope, { getBlocks(it) }, _state)
                 }
+<<<<<<< HEAD
                 _state.update { it.copy(isCalculatingPages = true) }
                 paginationManager.refreshTotalBookPages(_state.value, _state)
             }
@@ -210,10 +266,31 @@ class ReaderViewModel(
             is ReaderEvent.FontSizeChanged -> updateSettings { it.copy(fontSize = event.size) }
             is ReaderEvent.LineHeightChanged -> updateSettings { it.copy(lineHeight = event.height) }
             is ReaderEvent.MarginsChanged -> updateSettings { it.copy(margins = event.margins) }
+=======
+            }
+
+            // ─── Settings ───
+            is ReaderEvent.FontSizeChanged -> {
+                updateSettings { it.copy(fontSize = event.size) }
+                requestRepagination(_state.value)
+            }
+            is ReaderEvent.LineHeightChanged -> {
+                updateSettings { it.copy(lineHeight = event.height) }
+                requestRepagination(_state.value)
+            }
+            is ReaderEvent.MarginsChanged -> {
+                updateSettings { it.copy(margins = event.margins) }
+                requestRepagination(_state.value)
+            }
+>>>>>>> d24a20e (FoxyBook v1.9)
             ReaderEvent.ToggleProgressDisplay -> updateSettings { it.copy(showProgressAsPercentage = !it.showProgressAsPercentage) }
             is ReaderEvent.ReaderModeChanged -> {
                 updateSettings { it.copy(readerMode = event.mode.name) }
                 _state.update { it.copy(positionRestored = true, lastPositionRestoreTrigger = System.currentTimeMillis()) }
+<<<<<<< HEAD
+=======
+                requestRepagination(_state.value)
+>>>>>>> d24a20e (FoxyBook v1.9)
             }
             is ReaderEvent.ReaderThemeChanged -> updateSettings { it.copy(readerTheme = event.theme.name) }
 
@@ -311,11 +388,18 @@ class ReaderViewModel(
 
     // ─── Content Access (delegates to ChapterNavigationManager) ───
 
+<<<<<<< HEAD
     fun getBlocks(chapterIndex: Int): List<ContentBlock> {
         val cached = _state.value.chapterBlocks[chapterIndex]
         if (cached != null) return cached
         chapterManager.preloadChapter(chapterIndex, _state.value, viewModelScope)
         return emptyList()
+=======
+    suspend fun getBlocks(chapterIndex: Int): List<ContentBlock> {
+        val cached = _state.value.chapterBlocks[chapterIndex]
+        if (cached != null) return cached
+        return chapterManager.getBlocksSync(chapterIndex, _state.value, _state)
+>>>>>>> d24a20e (FoxyBook v1.9)
     }
 
     fun ensurePaginated(chapterIndex: Int) {
@@ -421,22 +505,44 @@ class ReaderViewModel(
             shortTextPreview = preview.take(150),
             createdAt = System.currentTimeMillis()
         )
+        // Обновляем локальное состояние сразу, чтобы UI отразил изменения без ожидания БД
+        _state.update {
+            it.copy(bookmarks = it.bookmarks + bookmark)
+        }
         viewModelScope.launch {
             bookDataRepository.addBookmark(bookmark)
+            // Синхронизируем с БД после записи
+            bookDataRepository.getBookmarksForBook(chapterManager.getBookId()).first()
+                .let { list ->
+                    _state.update { it.copy(bookmarks = list) }
+                }
         }
     }
 
     private fun removeBookmark(bookmark: Bookmark) {
+        // Удаляем из локального состояния сразу
+        _state.update {
+            it.copy(bookmarks = it.bookmarks.filter { it != bookmark })
+        }
         viewModelScope.launch {
             bookDataRepository.removeBookmark(bookmark)
+            bookDataRepository.getBookmarksForBook(chapterManager.getBookId()).first()
+                .let { list ->
+                    _state.update { it.copy(bookmarks = list) }
+                }
         }
     }
 
     private fun goToBookmark(bookmark: Bookmark) {
         viewModelScope.launch(Dispatchers.IO) {
             chapterManager.getBlocksSync(bookmark.chapterIndex, _state.value, _state)
+<<<<<<< HEAD
             chapterManager.preloadChapter(bookmark.chapterIndex + 1, _state.value, viewModelScope)
             chapterManager.preloadChapter(bookmark.chapterIndex - 1, _state.value, viewModelScope)
+=======
+            chapterManager.preloadChapter(bookmark.chapterIndex + 1, _state.value, viewModelScope, _state)
+            chapterManager.preloadChapter(bookmark.chapterIndex - 1, _state.value, viewModelScope, _state)
+>>>>>>> d24a20e (FoxyBook v1.9)
 
             val s = _state.value
             if (s.pageWidth > 0 && s.pageHeight > 0 &&
@@ -462,10 +568,29 @@ class ReaderViewModel(
                 )
             }
             _state.update { positionManager.updateReadingPercentage(it) }
+<<<<<<< HEAD
             positionManager.debounceSave(chapterManager.getBookId(), chapterManager.getFormat(), _state, viewModelScope)
         }
     }
 
+=======
+            positionManager.requestSaveImmediate(
+                chapterManager.getBookId(), chapterManager.getFormat(), _state.value, viewModelScope
+            )
+        }
+    }
+
+    // ─── Programmatic scroll guard ───
+
+    fun beginProgrammaticScroll() {
+        positionManager.beginProgrammaticScroll()
+    }
+
+    fun endProgrammaticScroll() {
+        positionManager.endProgrammaticScroll()
+    }
+
+>>>>>>> d24a20e (FoxyBook v1.9)
     // ─── Settings ───
 
     fun savePositionNow() {
@@ -476,5 +601,17 @@ class ReaderViewModel(
         val new = transform(_state.value.settings)
         _state.update { it.copy(settings = new) }
         viewModelScope.launch { dataStoreManager.saveReaderSettings(new) }
+    }
+
+    private fun requestRepagination(state: ReaderState) {
+        if (state.pageWidth <= 0 || state.pageHeight <= 0) return
+        val tm = state.textMeasurer
+        val den = state.density
+        if (tm == null || den == null) return
+        viewModelScope.launch(Dispatchers.Default) {
+            paginationManager.paginateChapter(state.currentChapter, state, viewModelScope, ::getBlocks, _state)
+            paginationManager.paginateChapter(state.currentChapter + 1, state, viewModelScope, ::getBlocks, _state)
+            paginationManager.paginateChapter(state.currentChapter - 1, state, viewModelScope, ::getBlocks, _state)
+        }
     }
 }

@@ -15,6 +15,16 @@ captures/
 *.jks
 *.keystore
 
+<<<<<<< HEAD
+=======
+# Артефакты релиза (генерируются AGP, в git им не место)
+/app/release/
+*.dm
+
+# Kotlin 2.x build state
+.kotlin/
+
+>>>>>>> d24a20e (FoxyBook v1.9)
 # macOS
 .DS_Store
 __MACOSX/

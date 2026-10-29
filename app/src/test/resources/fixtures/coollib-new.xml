@@ -1,0 +1,603 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <feed xmlns="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/terms/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/" xmlns:opds="http://opds-spec.org/2010/catalog"> <id>tag:search:new:book:0</id>
+ <title>Новинки с 28.09.2026 по 05.10.2026</title>
+ <updated>2026-10-05T17:24:42+03:00</updated>
+ <icon>https://coollib.net/favicon.ico</icon>
+ <link href="https://coollib.net/opds-opensearch.xml" rel="search" type="application/opensearchdescription+xml" />
+ <link href="https://coollib.net/opds/search?searchTerm={searchTerms}" rel="search" type="application/atom+xml" />
+ <link href="https://coollib.net/opds" rel="start" type="application/atom+xml;profile=opds-catalog" />
+ <link href="https://coollib.net/opds/new/1/new/" rel="next" type="application/atom+xml;profile=opds-catalog" />
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859853</id>
+ <title>Для умелых рук 1966 №06(216). Юные электротехники в пионерском лагере. Выпуск 2</title>
+ <author> <name>Журнал «Юный техник»</name>
+ <uri>https://coollib.net/a/99637</uri>
+</author>
+ <link href="https://coollib.net/opds/author/99637" rel="related" type="application/atom+xml" title="Все книги автора Журнал «Юный техник»" />
+ <author> <name>Иванов Борис Сергеевич</name>
+ <uri>https://coollib.net/a/178931</uri>
+</author>
+ <link href="https://coollib.net/opds/author/178931" rel="related" type="application/atom+xml" title="Все книги автора Иванов Борис Сергеевич" />
+ <category term="Детская образовательная литература" label="Детская образовательная литература" />
+ <category term="Советская детская литература" label="Советская детская литература" />
+ <category term="Электроника, микроэлектроника, схемотехника" label="Электроника, микроэлектроника, схемотехника" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>1966</dc:issued>
+ <content type="text/html">Год издания: 1966&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 15125 Kb&lt;br&gt;Скачиваний: 2&lt;br&gt;</content>
+ <link href="https://coollib.net/i/53/859853/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/53/859853/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/53/859853/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/53/859853/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859853/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="https://coollib.net/b/859853" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859852</id>
+ <title>Для умелых рук 1966 №05(215). Юные электротехники в пионерском лагерe. Выпуск 1</title>
+ <author> <name>Журнал «Юный техник»</name>
+ <uri>https://coollib.net/a/99637</uri>
+</author>
+ <link href="https://coollib.net/opds/author/99637" rel="related" type="application/atom+xml" title="Все книги автора Журнал «Юный техник»" />
+ <author> <name>Иванов Борис Сергеевич</name>
+ <uri>https://coollib.net/a/178931</uri>
+</author>
+ <link href="https://coollib.net/opds/author/178931" rel="related" type="application/atom+xml" title="Все книги автора Иванов Борис Сергеевич" />
+ <category term="Детская образовательная литература" label="Детская образовательная литература" />
+ <category term="Советская детская литература" label="Советская детская литература" />
+ <category term="Электроника, микроэлектроника, схемотехника" label="Электроника, микроэлектроника, схемотехника" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>1966</dc:issued>
+ <content type="text/html">Год издания: 1966&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 15337 Kb&lt;br&gt;Скачиваний: 1&lt;br&gt;</content>
+ <link href="https://coollib.net/i/52/859852/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/52/859852/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/52/859852/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/52/859852/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859852/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="https://coollib.net/b/859852" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859851</id>
+ <title>Для умелых рук 1966 №04(214). На подвoдных крыльях</title>
+ <author> <name>Журнал «Юный техник»</name>
+ <uri>https://coollib.net/a/99637</uri>
+</author>
+ <link href="https://coollib.net/opds/author/99637" rel="related" type="application/atom+xml" title="Все книги автора Журнал «Юный техник»" />
+ <author> <name>Лучников С. Т.</name>
+ <uri>https://coollib.net/a/372839</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372839" rel="related" type="application/atom+xml" title="Все книги автора Лучников С. Т." />
+ <category term="Детская образовательная литература" label="Детская образовательная литература" />
+ <category term="Советская детская литература" label="Советская детская литература" />
+ <category term="Моделизм и диорамостроение" label="Моделизм и диорамостроение" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>1966</dc:issued>
+ <content type="text/html">Год издания: 1966&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 14580 Kb&lt;br&gt;Скачиваний: 2&lt;br&gt;</content>
+ <link href="https://coollib.net/i/51/859851/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/51/859851/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/51/859851/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/51/859851/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859851/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="https://coollib.net/b/859851" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859850</id>
+ <title>Для умелых рук 1966 №02(212). Клуб юных космонавтов</title>
+ <author> <name>Журнал «Юный техник»</name>
+ <uri>https://coollib.net/a/99637</uri>
+</author>
+ <link href="https://coollib.net/opds/author/99637" rel="related" type="application/atom+xml" title="Все книги автора Журнал «Юный техник»" />
+ <author> <name>Стахурский Александр Евгеньевич</name>
+ <uri>https://coollib.net/a/353267</uri>
+</author>
+ <link href="https://coollib.net/opds/author/353267" rel="related" type="application/atom+xml" title="Все книги автора Стахурский Александр Евгеньевич" />
+ <category term="Детская образовательная литература" label="Детская образовательная литература" />
+ <category term="Советская детская литература" label="Советская детская литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>1966</dc:issued>
+ <content type="text/html">Год издания: 1966&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 15541 Kb&lt;br&gt;Скачиваний: 1&lt;br&gt;</content>
+ <link href="https://coollib.net/i/50/859850/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/50/859850/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/50/859850/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/50/859850/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859850/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="https://coollib.net/b/859850" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859849</id>
+ <title>Блокиратор любопытства  [Заклинание нелюбопытства]</title>
+ <author> <name>Гейман Нил</name>
+ <uri>https://coollib.net/a/1812</uri>
+</author>
+ <link href="https://coollib.net/opds/author/1812" rel="related" type="application/atom+xml" title="Все книги автора Гейман Нил" />
+ <category term="Научная Фантастика" label="Научная Фантастика" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;По мотивам &quot;Умирающей Земли&quot; Джека Вэнса.&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Через несколько минут миру Умирающей Земли наступит конец. Реальный и неотвратимый. Который уже ничем нельзя исправить. Но у Бальтазара Неспешного еще есть время, чтобы добраться до дома, ворваться в заветную комнату и успеть проскочить в волшебную дверь, ведущую в далекое прошлое, где солнце светит ярко, будто и не умирало никогда.&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Там его ждет новая старая жизнь, новые старые жены и новые старые дети, давно недавно налаженная счастливая жизнь. Но он не может не взять с собой единственного сына из печального будущего конца света, Фарфала Несчастного…&lt;/p&gt;&lt;br&gt;Перевод: Крикун Сергей Викторович (Kiplas)&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 197 Kb&lt;br&gt;Скачиваний: 17&lt;br&gt;</content>
+ <link href="https://coollib.net/i/49/859849/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/49/859849/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/49/859849/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/49/859849/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859849/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/859849/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/859849/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/859849/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/859849/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/859849/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/859849" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859848</id>
+ <title>Био-вольф  [Неовульф, Вервольф]</title>
+ <author> <name>Гейман Нил</name>
+ <uri>https://coollib.net/a/1812</uri>
+</author>
+ <link href="https://coollib.net/opds/author/1812" rel="related" type="application/atom+xml" title="Все книги автора Гейман Нил" />
+ <category term="Научная Фантастика" label="Научная Фантастика" />
+ <category term="Поэзия" label="Поэзия" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Детективная история в недалеком будущем. Староанглийский эпос «Беовульф», пересказанный как футуристическая серия «Спасателей Малибу»...&lt;/p&gt;&lt;br&gt;Перевод: Полищук Вера Борисовна&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 70 Kb&lt;br&gt;Скачиваний: 11&lt;br&gt;</content>
+ <link href="https://coollib.net/i/48/859848/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/48/859848/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/48/859848/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/48/859848/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859848/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/859848/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/859848/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/859848/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/859848/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/859848/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/859848" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859847</id>
+ <title>Учение о верном познании в философии мадхьямики-прасангики [оптимизированная версия, издание 2006 года]</title>
+ <author> <name>Донец Андрей Михайлович</name>
+ <uri>https://coollib.net/a/141685</uri>
+</author>
+ <link href="https://coollib.net/opds/author/141685" rel="related" type="application/atom+xml" title="Все книги автора Донец Андрей Михайлович" />
+ <author> <name>Янгутов Леонид Евграфович</name>
+ <uri>https://coollib.net/a/215824</uri>
+</author>
+ <link href="https://coollib.net/opds/author/215824" rel="related" type="application/atom+xml" title="Все книги автора Янгутов Леонид Евграфович" />
+ <author> <name>Бураев Д. И.</name>
+ <uri>https://coollib.net/a/372833</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372833" rel="related" type="application/atom+xml" title="Все книги автора Бураев Д. И." />
+ <author> <name>Абрамова Н. А.</name>
+ <uri>https://coollib.net/a/372838</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372838" rel="related" type="application/atom+xml" title="Все книги автора Абрамова Н. А." />
+ <category term="Буддизм" label="Буддизм" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf+zip</dc:format>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;В книге рассматриваются особенности двух стилей срединного философствования, основные положения теории верного познания (праманы) и система главных доказательств школы мадхьямика-прасангика центральноазиатской традиции Гелуг.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;Работа может быть полезна буддологам, философам, религиоведам и всем тем, кто интересуется буддизмом и проблемами познания.&lt;/p&gt;&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 3483 Kb&lt;br&gt;Скачиваний: 2&lt;br&gt;</content>
+ <link href="https://coollib.net/i/47/859847/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/47/859847/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/47/859847/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/47/859847/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859847/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf+zip" />
+ <link href="https://coollib.net/b/859847" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859846</id>
+ <title>Тайна алмаза</title>
+ <author> <name>Нефедьев Константин Михайлович</name>
+ <uri>https://coollib.net/a/16063</uri>
+</author>
+ <link href="https://coollib.net/opds/author/16063" rel="related" type="application/atom+xml" title="Все книги автора Нефедьев Константин Михайлович" />
+ <category term="Научная Фантастика" label="Научная Фантастика" />
+ <category term="Приключения" label="Приключения" />
+ <category term="Советская приключенческая литература" label="Советская приключенческая литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>1958</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Художник. &lt;i&gt;М. И. Ткачев&lt;/i&gt;.&lt;/p&gt;
+ &lt;br&gt;
+ &lt;img loading=&#039;lazy&#039; border=0 style=&#039;spacing 9px;&#039; src=&quot;/i/0/0/logo.jpg&quot;&gt;
+ &lt;br&gt;&lt;br&gt;Год издания: 1958&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 13150 Kb&lt;br&gt;Скачиваний: 6&lt;br&gt;</content>
+ <link href="https://coollib.net/i/46/859846/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/46/859846/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/46/859846/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/46/859846/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859846/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="https://coollib.net/b/859846" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859845</id>
+ <title>Тайна алмаза</title>
+ <author> <name>Нефедьев Константин Михайлович</name>
+ <uri>https://coollib.net/a/16063</uri>
+</author>
+ <link href="https://coollib.net/opds/author/16063" rel="related" type="application/atom+xml" title="Все книги автора Нефедьев Константин Михайлович" />
+ <category term="Научная Фантастика" label="Научная Фантастика" />
+ <category term="Приключения" label="Приключения" />
+ <category term="Советская приключенческая литература" label="Советская приключенческая литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>1958</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Художник. &lt;i&gt;М. И. Ткачев&lt;/i&gt;.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;h5 class=&quot;book&quot;&gt;&lt;img loading=&#039;lazy&#039; border=0 style=&#039;spacing 9px;&#039; src=&quot;/i/45/859845/logo.jpg&quot;&gt;&lt;/h5&gt;
+    &lt;br&gt;&lt;br&gt;Год издания: 1958&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 2807 Kb&lt;br&gt;Скачиваний: 18&lt;br&gt;</content>
+ <link href="https://coollib.net/i/45/859845/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/45/859845/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/45/859845/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/45/859845/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859845/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/859845/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/859845/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/859845/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/859845/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/859845/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/859845" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859844</id>
+ <title>Для умелых рук 1966 №01(211). Опыты с семенами и pаcтениями</title>
+ <author> <name>Журнал «Юный техник»</name>
+ <uri>https://coollib.net/a/99637</uri>
+</author>
+ <link href="https://coollib.net/opds/author/99637" rel="related" type="application/atom+xml" title="Все книги автора Журнал «Юный техник»" />
+ <author> <name>Замота В.</name>
+ <uri>https://coollib.net/a/372837</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372837" rel="related" type="application/atom+xml" title="Все книги автора Замота В." />
+ <category term="Детская образовательная литература" label="Детская образовательная литература" />
+ <category term="Сад и огород" label="Сад и огород" />
+ <category term="Советская детская литература" label="Советская детская литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>1966</dc:issued>
+ <content type="text/html">Год издания: 1966&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 15420 Kb&lt;br&gt;</content>
+ <link href="https://coollib.net/i/44/859844/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/44/859844/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/44/859844/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/44/859844/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859844/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="https://coollib.net/b/859844" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859843</id>
+ <title>Сутры Махаяны</title>
+ <author> <name>Донец Андрей Михайлович</name>
+ <uri>https://coollib.net/a/141685</uri>
+</author>
+ <link href="https://coollib.net/opds/author/141685" rel="related" type="application/atom+xml" title="Все книги автора Донец Андрей Михайлович" />
+ <author> <name>Нестеркин Сергей Петрович</name>
+ <uri>https://coollib.net/a/372831</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372831" rel="related" type="application/atom+xml" title="Все книги автора Нестеркин Сергей Петрович" />
+ <author> <name>Лепехов Сергей Юрьевич</name>
+ <uri>https://coollib.net/a/372832</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372832" rel="related" type="application/atom+xml" title="Все книги автора Лепехов Сергей Юрьевич" />
+ <category term="Буддизм" label="Буддизм" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf+zip</dc:format>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;В книге представлены переводы тибетоязычных версий одиннадцати буддийских сутр, изучение которых позволяет ознакомиться со многими важными положениями и концепциями вероучения Махаяны, а также с особенностями некоторых видов текстов канонической литературы жанра сутр.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;Книга может оказаться полезной для буддологов, тибетологов, религиоведов, философов и всех интересующихся буддизмом.&lt;/p&gt;&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 1201 Kb&lt;br&gt;Скачиваний: 4&lt;br&gt;</content>
+ <link href="https://coollib.net/i/43/859843/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/43/859843/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/43/859843/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/43/859843/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859843/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf+zip" />
+ <link href="https://coollib.net/b/859843" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859842</id>
+ <title>Для умелых рук 1965 №22(208). Юные автомоделисты в пионерском лагерe</title>
+ <author> <name>Журнал «Юный техник»</name>
+ <uri>https://coollib.net/a/99637</uri>
+</author>
+ <link href="https://coollib.net/opds/author/99637" rel="related" type="application/atom+xml" title="Все книги автора Журнал «Юный техник»" />
+ <author> <name>Еманин В. С.</name>
+ <uri>https://coollib.net/a/372836</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372836" rel="related" type="application/atom+xml" title="Все книги автора Еманин В. С." />
+ <category term="Детская образовательная литература" label="Детская образовательная литература" />
+ <category term="Советская детская литература" label="Советская детская литература" />
+ <category term="Моделизм и диорамостроение" label="Моделизм и диорамостроение" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>1965</dc:issued>
+ <content type="text/html">Год издания: 1965&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 13799 Kb&lt;br&gt;Скачиваний: 3&lt;br&gt;</content>
+ <link href="https://coollib.net/i/42/859842/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/42/859842/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/42/859842/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/42/859842/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859842/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="https://coollib.net/b/859842" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859841</id>
+ <title>Фобии. Терапия древних страхов современного человека</title>
+ <author> <name>Кайрос (Николаенко) Наталья</name>
+ <uri>https://coollib.net/a/372835</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372835" rel="related" type="application/atom+xml" title="Все книги автора Кайрос (Николаенко) Наталья" />
+ <category term="Психология" label="Психология" />
+ <dc:language>ru</dc:language>
+ <dc:format>epub+zip</dc:format>
+ <link href="https://coollib.net/opds/sequencebooks/52625" rel="related" type="application/atom+xml" title="Все книги серии &quot;Практический тренинг&quot;" />
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Наталья Николаенко (Кайрос) – клинический психолог и психотерапевт с многолетним стажем. Задача настоящей книги – помочь читателю разобраться в вопросах, связанных с возможными причинами фобий, сориентироваться в подходах к их лечению и предложить действенные способы исцеления. Книга сфокусирована на методах, позволяющих справиться с такими мучительными фобическими проявлениями, как аэрофобия, страхи перед замкнутым пространством, социальное тревожное расстройство. В противовес представлениям о том, что фобия – это то, с чем нужно сражаться, предложенные в книге подходы и практики позволяют максимально мягко и бережно подойти к исцелению от фобического страдания. Автор верит, что осведомленность в специфике тревожных расстройств и панических реакций может помочь не только специалистам, но и тем, кто настроен справляться с этим самостоятельно.&lt;/p&gt;&lt;br&gt;Формат: epub&lt;br&gt;Язык: ru&lt;br&gt;Размер: 3320 Kb&lt;br&gt;Скачиваний: 8&lt;br&gt;Серия: Практический тренинг&lt;br&gt;</content>
+ <link href="https://coollib.net/i/41/859841/cover.webp" rel="http://opds-spec.org/image" type="image/webp" />
+ <link href="https://coollib.net/i/41/859841/cover.webp" rel="x-stanza-cover-image" type="image/webp" />
+ <link href="https://coollib.net/i/41/859841/cover.webp" rel="http://opds-spec.org/thumbnail" type="image/webp" />
+ <link href="https://coollib.net/i/41/859841/cover.webp" rel="x-stanza-cover-image-thumbnail" type="image/webp" />
+ <link href="https://coollib.net/b/859841/download" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/859841" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859840</id>
+ <title>Важные связи. Как найти людей, которые помогут быстрее двигаться вперед</title>
+ <author> <name>Ли Вэйвэнь</name>
+ <uri>https://coollib.net/a/372834</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372834" rel="related" type="application/atom+xml" title="Все книги автора Ли Вэйвэнь" />
+ <category term="Самосовершенствование" label="Самосовершенствование" />
+ <dc:language>ru</dc:language>
+ <dc:format>epub+zip</dc:format>
+ <link href="https://coollib.net/opds/sequencebooks/93224" rel="related" type="application/atom+xml" title="Все книги серии &quot;Важные годы. Интенсив по поиску себя&quot;" />
+ <link href="https://coollib.net/opds/sequencebooks/61025" rel="related" type="application/atom+xml" title="Все книги серии &quot;МИФ. Психология&quot;" />
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Ведущий эксперт по межличностным отношениям и создатель теории «Шесть парамит» Вэйвэнь Ли рассказывает о том, как выбрать самых значимых людей в вашей жизни и карьере, выстроить свои социальные связи и начать движение к мечте.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;С чего начать свой путь к успеху? Мотивация, знания, постановка целей важны. Но главное, чему стоит научиться, – это поиск нужных людей и выстраивание отношений. Вы гораздо быстрее добьетесь желаемого, если будете грамотно заводить и поддерживать свои социальные связи. Ведь именно наше окружение делает нас теми, кем мы являемся и кем можем стать.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;Хороший учитель передаст не только знания, но и веру в себя. Близкому другу можно открыть сердце и почувствовать себя счастливее. Талантливый руководитель поможет быстрее выстроить карьерный путь и стать профессионалом.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;Каждый может найти людей, которые станут надежной опорой для жизненного старта и быстрее приведут к успеху. Нужно лишь понять, кто именно вам нужен.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;Для кого книга&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;Для тех, кто хочет окружить себя теми, кто искренне поддержит, вовремя даст нужный совет, вдохновит на свершения, поможет избежать ошибок.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;Для всех, кто стремится выбрать правильный путь в жизни.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;На русском языке публикуется впервые.&lt;/p&gt;&lt;br&gt;Формат: epub&lt;br&gt;Язык: ru&lt;br&gt;Размер: 2397 Kb&lt;br&gt;Скачиваний: 9&lt;br&gt;Серия: Важные годы. Интенсив по поиску себя&lt;br&gt;Серия: МИФ. Психология&lt;br&gt;</content>
+ <link href="https://coollib.net/i/40/859840/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/40/859840/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/40/859840/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/40/859840/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859840/download" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/859840" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859839</id>
+ <title>Для умелых рук 1965 №21(207). Военные игры</title>
+ <author> <name>Журнал «Юный техник»</name>
+ <uri>https://coollib.net/a/99637</uri>
+</author>
+ <link href="https://coollib.net/opds/author/99637" rel="related" type="application/atom+xml" title="Все книги автора Журнал «Юный техник»" />
+ <author> <name>Стахурский Александр Евгеньевич</name>
+ <uri>https://coollib.net/a/353267</uri>
+</author>
+ <link href="https://coollib.net/opds/author/353267" rel="related" type="application/atom+xml" title="Все книги автора Стахурский Александр Евгеньевич" />
+ <category term="Военное дело" label="Военное дело" />
+ <category term="Советская детская литература" label="Советская детская литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>1965</dc:issued>
+ <content type="text/html">Год издания: 1965&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 12134 Kb&lt;br&gt;Скачиваний: 7&lt;br&gt;</content>
+ <link href="https://coollib.net/i/39/859839/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/39/859839/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/39/859839/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/39/859839/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859839/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="https://coollib.net/b/859839" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859838</id>
+ <title>Слово о пустом</title>
+ <author> <name>Никто</name>
+ <uri>https://coollib.net/a/333248</uri>
+</author>
+ <link href="https://coollib.net/opds/author/333248" rel="related" type="application/atom+xml" title="Все книги автора Никто" />
+ <category term="Религия и духовность: прочее" label="Религия и духовность: прочее" />
+ <category term="Буддизм" label="Буддизм" />
+ <dc:language>ru</dc:language>
+ <dc:format>epub+zip</dc:format>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Это книга о дзен — написанная для тех, кто никогда не читал книг о дзен, и для тех, кто прочёл их слишком много.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;Это не руководство. Это не книга по самопомощи. Она не научит вас оптимизировать своё утро, успокаивать мысли или достигать чего-то конкретного. Если вы ищете книгу такого рода — их тысячи, они вас ждут.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;Эта книга — нечто более скромное и тихое: спутник для тех, кто чувствует, что ему чего-то не хватает — не в обстоятельствах жизни, а где-то ближе. И предостережение для тех, кто ищет это «что-то» не в том месте.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;Книга состоит из четырёх частей. Первая честно рассматривает форму современного страдания. Вторая описывает духовный рынок и его опасности. Третья указывает на то, что на самом деле предлагает подлинная практика. Четвёртая подробно описывает практику одного человека — лишь как один из множества примеров, которые читатель может встретить.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;Читайте книгу медленно. Откладывайте. Возвращайтесь снова. Не торопитесь её дочитать.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;Задача этой книги — со временем стать вам ненужной.&lt;/p&gt;&lt;br&gt;Формат: epub&lt;br&gt;Язык: ru&lt;br&gt;Размер: 1861 Kb&lt;br&gt;</content>
+ <link href="https://coollib.net/b/859838/download" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/859838" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859837</id>
+ <title>Сутра Праджня-парамита восьмитысячная</title>
+ <author> <name>Донец Андрей Михайлович</name>
+ <uri>https://coollib.net/a/141685</uri>
+</author>
+ <link href="https://coollib.net/opds/author/141685" rel="related" type="application/atom+xml" title="Все книги автора Донец Андрей Михайлович" />
+ <author> <name>Нестеркин Сергей Петрович</name>
+ <uri>https://coollib.net/a/372831</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372831" rel="related" type="application/atom+xml" title="Все книги автора Нестеркин Сергей Петрович" />
+ <author> <name>Лепехов Сергей Юрьевич</name>
+ <uri>https://coollib.net/a/372832</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372832" rel="related" type="application/atom+xml" title="Все книги автора Лепехов Сергей Юрьевич" />
+ <category term="Буддизм" label="Буддизм" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf+zip</dc:format>
+ <content type="text/html">&lt;br&gt;&lt;br&gt;Формат: pdf&lt;br&gt;Язык: ru&lt;br&gt;Размер: 16494 Kb&lt;br&gt;Скачиваний: 1&lt;br&gt;</content>
+ <link href="https://coollib.net/i/37/859837/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/37/859837/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/37/859837/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/37/859837/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859837/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf+zip" />
+ <link href="https://coollib.net/b/859837" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859836</id>
+ <title>Пути Сутр и Тантр в тибетском буддизме</title>
+ <author> <name>Донец Андрей Михайлович</name>
+ <uri>https://coollib.net/a/141685</uri>
+</author>
+ <link href="https://coollib.net/opds/author/141685" rel="related" type="application/atom+xml" title="Все книги автора Донец Андрей Михайлович" />
+ <author> <name>Нестеркин Сергей Петрович</name>
+ <uri>https://coollib.net/a/372831</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372831" rel="related" type="application/atom+xml" title="Все книги автора Нестеркин Сергей Петрович" />
+ <author> <name>Лепехов Сергей Юрьевич</name>
+ <uri>https://coollib.net/a/372832</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372832" rel="related" type="application/atom+xml" title="Все книги автора Лепехов Сергей Юрьевич" />
+ <author> <name>Бураев Д. И.</name>
+ <uri>https://coollib.net/a/372833</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372833" rel="related" type="application/atom+xml" title="Все книги автора Бураев Д. И." />
+ <category term="Буддизм" label="Буддизм" />
+ <dc:language>ru</dc:language>
+ <dc:format>doc+zip</dc:format>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;В книге «Пути Сутр и Тантр в тибетском буддизме» представлены переводы с тибетского языка работ двух известных ученых монахов, которые позволяют получить ясное представление о структуре четырех главных путей совершенствования в буддизме (Шравакаяны, Пратьекабуддаяны, Парамитаяны и Ваджраяны) именно в том виде, в каком они объясняются и изучаются в традиционной системе духовного образования гелугпинских монастырей.&lt;/p&gt;
+    &lt;br&gt;
+    &lt;p class=&quot;book&quot;&gt;Книга может оказаться полезной для тибетологов, буддологов, религиоведов, философов и всех интересующихся буддизмом.&lt;/p&gt;&lt;br&gt;Формат: doc&lt;br&gt;Язык: ru&lt;br&gt;Размер: 685 Kb&lt;br&gt;Скачиваний: 2&lt;br&gt;</content>
+ <link href="https://coollib.net/b/859836/download" rel="http://opds-spec.org/acquisition/open-access" type="application/doc+zip" />
+ <link href="https://coollib.net/b/859836" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859835</id>
+ <title>Путь убийцы</title>
+ <author> <name>Керл Дж. М.</name>
+ <uri>https://coollib.net/a/372830</uri>
+</author>
+ <link href="https://coollib.net/opds/author/372830" rel="related" type="application/atom+xml" title="Все книги автора Керл Дж. М." />
+ <category term="Любовная фантастика" label="Любовная фантастика" />
+ <category term="Любительские переводы" label="Любительские переводы" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Никогда не выходи на улицу ночью. Запирай двери. Не обращай внимания на крики.&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Таковы правила, по которым живет Эсира, чтобы выжить среди чудовищ, рыщущих по ее деревне. Но все меняется, когда выясняется, что она родилась с силой, способной противостоять вампирам, которых боялась всю свою жизнь. Эсира оказывается в рядах элитной и окутанной тайнами Лиги Убийц, где милосердие считается слабостью, а страх — недопустимой роскошью. Теперь ее выживание зависит от безжалостного наставника Вандера — самого опасного убийцы среди них. И единственное, что смертоноснее его клинка, — желание, которое он пробуждает в ней. Потому что величайшей угрозой Найтхейвена могут оказаться вовсе не чудовища, скрывающиеся во тьме…&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;А он.&lt;/p&gt;&lt;br&gt;Перевод: Т/К ЧерноКнижницы&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 1776 Kb&lt;br&gt;Скачиваний: 13&lt;br&gt;</content>
+ <link href="https://coollib.net/i/35/859835/_0.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/35/859835/_0.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/35/859835/_0.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/35/859835/_0.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859835/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/859835/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/859835/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/859835/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/859835/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/859835/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/859835" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+ <entry> <updated>2026-10-05T17:24:42+03:00</updated>
+ <id>tag:book:859834</id>
+ <title>Полдень, XXI век, 2003 № 01</title>
+ <author> <name>Тюрин Александр Владимирович</name>
+ <uri>https://coollib.net/a/791</uri>
+</author>
+ <link href="https://coollib.net/opds/author/791" rel="related" type="application/atom+xml" title="Все книги автора Тюрин Александр Владимирович" />
+ <author> <name>Стругацкий Борис Натанович</name>
+ <uri>https://coollib.net/a/2701</uri>
+</author>
+ <link href="https://coollib.net/opds/author/2701" rel="related" type="application/atom+xml" title="Все книги автора Стругацкий Борис Натанович" />
+ <author> <name>Точинов Виктор Павлович</name>
+ <uri>https://coollib.net/a/6812</uri>
+</author>
+ <link href="https://coollib.net/opds/author/6812" rel="related" type="application/atom+xml" title="Все книги автора Точинов Виктор Павлович" />
+ <author> <name>Бахтина Ирина</name>
+ <uri>https://coollib.net/a/7455</uri>
+</author>
+ <link href="https://coollib.net/opds/author/7455" rel="related" type="application/atom+xml" title="Все книги автора Бахтина Ирина" />
+ <author> <name>Фортель Аделаида</name>
+ <uri>https://coollib.net/a/23834</uri>
+</author>
+ <link href="https://coollib.net/opds/author/23834" rel="related" type="application/atom+xml" title="Все книги автора Фортель Аделаида" />
+ <author> <name>Быков Дмитрий Львович</name>
+ <uri>https://coollib.net/a/25109</uri>
+</author>
+ <link href="https://coollib.net/opds/author/25109" rel="related" type="application/atom+xml" title="Все книги автора Быков Дмитрий Львович" />
+ <author> <name>Романецкий Николай Михайлович</name>
+ <uri>https://coollib.net/a/31798</uri>
+</author>
+ <link href="https://coollib.net/opds/author/31798" rel="related" type="application/atom+xml" title="Все книги автора Романецкий Николай Михайлович" />
+ <author> <name>Переслегин Сергей Борисович</name>
+ <uri>https://coollib.net/a/39161</uri>
+</author>
+ <link href="https://coollib.net/opds/author/39161" rel="related" type="application/atom+xml" title="Все книги автора Переслегин Сергей Борисович" />
+ <author> <name>Бережной Сергей Валерьевич</name>
+ <uri>https://coollib.net/a/48075</uri>
+</author>
+ <link href="https://coollib.net/opds/author/48075" rel="related" type="application/atom+xml" title="Все книги автора Бережной Сергей Валерьевич" />
+ <author> <name>«Полдень, XXI век» Журнал</name>
+ <uri>https://coollib.net/a/49336</uri>
+</author>
+ <link href="https://coollib.net/opds/author/49336" rel="related" type="application/atom+xml" title="Все книги автора «Полдень, XXI век» Журнал" />
+ <author> <name>Етоев Александр Васильевич</name>
+ <uri>https://coollib.net/a/91838</uri>
+</author>
+ <link href="https://coollib.net/opds/author/91838" rel="related" type="application/atom+xml" title="Все книги автора Етоев Александр Васильевич" />
+ <category term="Социально-философская фантастика" label="Социально-философская фантастика" />
+ <category term="Газеты и журналы" label="Газеты и журналы" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2003</dc:issued>
+ <link href="https://coollib.net/opds/sequencebooks/70429" rel="related" type="application/atom+xml" title="Все книги серии &quot;Полдень, XXI век (журнал)&quot;" />
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;
+        &lt;b&gt;ПОЛДЕНЬ, XXI век №1 2003&lt;/b&gt;
+      &lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;
+        &lt;i&gt;Литературно-художественный и критико-публицистический журнал&lt;/i&gt;
+      &lt;/p&gt;
+      &lt;br&gt;
+      &lt;p class=&quot;book&quot;&gt;Колонка дежурного по номеру. Николай Романецкий&lt;/p&gt;
+      &lt;br&gt;
+      &lt;p class=&quot;book&quot;&gt;
+        &lt;b&gt;ИСТОРИИ. ОБРАЗЫ, ФАНТАЗИИ&lt;/b&gt;
+      &lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;С. Витицкий. БЕССИЛЬНЫЕ МИРА СЕГО. Роман&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Сергей Стрелецкий. ЧЕЛОВЕК, КОТОРОГО ЖДУТ В КАПЕРНЕ. Рассказ&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Аделаида Фортель. ЖИЗНЬ СОБАЧЬЯ, ВУРДАЛАЧЬЯ... Рассказ&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Александр Етоев. ПАРАШЮТ ВЕРТИКАЛЬНОГО ВЗЛЕТА. Рассказ&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Виктор Точинов. ТРИ ЗВОНКА НА РАССВЕТЕ. Рассказ&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Александр Тюрин. ДВОЙНИКИ. Рассказ&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Ирина Бахтина. ВЗДОХ. Рассказ&lt;/p&gt;
+      &lt;br&gt;
+      &lt;p class=&quot;book&quot;&gt;
+        &lt;b&gt;ЛИЧНОСТИ, ИДЕИ, МЫСЛИ&lt;/b&gt;
+      &lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Дмитрий Быков. ДРУГОЙ АЛЬТЕРНАТИВЫ У НАС ЕСТЬ&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Сергей Переслегин. БЮРОКРАТИЯ В ОКРЕСТНОСТЯХ ПОСТИНДУСТРИАЛЬНОГО БАРЬЕРА&lt;/p&gt;
+      &lt;br&gt;
+      &lt;p class=&quot;book&quot;&gt;
+        &lt;b&gt;ИНФОРМАЦИЯ&lt;/b&gt;
+      &lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;Наши авторы&lt;/p&gt;
+      &lt;br&gt;
+      &lt;br&gt;
+      &lt;p class=&quot;book&quot;&gt;© &lt;b&gt;ПОЛДЕНЬ, XXI век, 2003 г.&lt;/b&gt;&lt;/p&gt;
+      &lt;p class=&quot;book&quot;&gt;© &lt;img loading=&#039;lazy&#039; border=0 style=&#039;spacing 9px;&#039; src=&quot;/i/34/859834/i_001.png&quot;&gt;&lt;/p&gt;
+      &lt;br&gt;&lt;br&gt;Год издания: 2003&lt;br&gt;Формат: fb2&lt;br&gt;Язык: ru&lt;br&gt;Размер: 10842 Kb&lt;br&gt;Скачиваний: 6&lt;br&gt;Серия: Полдень, XXI век (журнал) #4&lt;br&gt;</content>
+ <link href="https://coollib.net/i/34/859834/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/i/34/859834/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/i/34/859834/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/i/34/859834/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/b/859834/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="https://coollib.net/b/859834/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="https://coollib.net/b/859834/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="https://coollib.net/b/859834/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="https://coollib.net/b/859834/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="https://coollib.net/b/859834/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="https://coollib.net/b/859834" rel="alternate" type="text/html" title="Книга на сайте" />
+</entry>
+</feed>

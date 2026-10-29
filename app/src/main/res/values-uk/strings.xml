@@ -39,6 +39,9 @@
     <string name="search_error">Помилка пошуку</string>
     <string name="search_idle_title">FoxyBook</string>
     <string name="search_idle_subtitle">Введіть запит для пошуку</string>
+    <string name="search_history_title">Історія пошуку</string>
+    <string name="search_history_clear">Очистити</string>
+    <string name="search_history_empty">Тут з’являтимуться ваші запити</string>
     <string name="search_section_books">Книги</string>
     <string name="search_section_authors">Автори</string>
     <string name="search_section_series">Серії</string>
@@ -53,6 +56,10 @@
     <string name="fantasy_worlds">Fantasy</string>
     <string name="search_source_label">Застосовується до Новинок та Пошуку</string>
     <string name="search_ing">Пошук…</string>
+<<<<<<< HEAD
+=======
+    <string name="search_loading_more">Завантаження…</string>
+>>>>>>> d24a20e (FoxyBook v1.9)
     <string name="search_load_more">Завантажити ще</string>
 
     <!-- Source selection -->
@@ -67,9 +74,12 @@
     <string name="settings_theme_dark">Темна</string>
     <string name="settings_theme_amoled">AMOLED</string>
     <string name="settings_default_format">Формат за замовчуванням</string>
+    <string name="settings_start_screen">Головний екран</string>
+    <string name="settings_start_screen_hint">Екран, який відкриватиметься під час запуску застосунку</string>
     <string name="settings_language">Мова</string>
     <string name="settings_language_ru">Російська</string>
     <string name="settings_language_en">English</string>
+    <string name="settings_language_uk">Українська</string>
     <string name="settings_language_restart_title">Зміна мови</string>
     <string name="settings_language_restart_message">Для зміни мови необхідно перезапустити застосунок. Перезапустити зараз?</string>
     <string name="settings_language_restart_confirm">Перезапустити</string>
@@ -94,6 +104,7 @@
     <string name="settings_about">Про застосунок</string>
     <string name="settings_author">Created by ßoлк</string>
     <string name="settings_author_contact">Написати автору</string>
+    <string name="settings_author_telegram">Telegram-канал</string>
     <string name="settings_author_support">Підтримати автора</string>
     <string name="settings_whats_new">Що нового</string>
     <string name="settings_no_changelog">Автор не вказав список змін</string>
@@ -141,6 +152,27 @@
     <string name="library_delete_batch_title">Видалити %d книг?</string>
     <string name="library_delete_batch_body">Вибрані книги будуть видалені з бібліотеки.</string>
     <string name="library_delete_batch_from_device">Видалити файли з пристрою</string>
+
+    <!-- Library sorting -->
+    <string name="library_sort">Сортування</string>
+    <string name="library_sort_desc">Спадаюче</string>
+    <string name="library_sort_asc">Зростанням</string>
+    <string name="library_sort_group_status">Групувати за статусом читання</string>
+    <string name="library_sort_date_added">Дата додавання</string>
+    <string name="library_sort_last_read">Останнє читання</string>
+    <string name="library_sort_title">Назва</string>
+    <string name="library_sort_author">Автор</string>
+    <string name="library_sort_progress">Прогрес</string>
+
+    <!-- Read status -->
+    <string name="library_shelf_reading">Читаю</string>
+    <string name="library_shelf_unread">Не прочитано</string>
+    <string name="library_shelf_finished">Прочитано</string>
+    <string name="library_shelf_count">· %d</string>
+    <string name="library_read_mark_read">Позначити прочитаною</string>
+    <string name="library_read_mark_unread">Позначити непрочитаною</string>
+    <string name="library_read_badge">Прочитано</string>
+    <string name="library_read_auto">Авто</string>
 
     <!-- Reader -->
     <string name="reader_title">Читання</string>

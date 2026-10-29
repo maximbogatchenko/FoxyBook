@@ -95,7 +95,9 @@ data class LibraryBook(
     val isFavorite: Boolean = false,
     val lastReadDate: Long = 0L,
     val collectionIds: List<String> = emptyList(),
-    val readingProgress: Int = 0
+    val readingProgress: Int = 0,
+    /** Ручная отметка чтения: см. [BookReadState]. */
+    val readState: String = BookReadState.AUTO
 )
 
 @Serializable
@@ -235,6 +237,18 @@ enum class BookSource(val label: String) {
     FLIBUSTA("Flibusta"),
     COOLLIB("CoolLib"),
     FANTASY_WORLDS("Fantasy-worlds")
+}
+
+// ─── Start Screen ───
+
+object StartScreen {
+    const val NEW_BOOKS = "new_books"
+    const val LIBRARY = "library"
+    const val SEARCH = "search"
+
+    val ALL = listOf(NEW_BOOKS, LIBRARY, SEARCH)
+
+    fun normalize(value: String?): String = if (value != null && value in ALL) value else NEW_BOOKS
 }
 
 // ─── Search ───

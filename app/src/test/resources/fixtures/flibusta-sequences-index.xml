@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <feed xmlns="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/terms/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/" xmlns:opds="http://opds-spec.org/2010/catalog"> <id>tag:root:sequences</id>
+ <title>Книги по сериям</title>
+ <updated>2026-10-05T06:54:31+02:00</updated>
+ <icon>/favicon.ico</icon>
+ <link href="/opds-opensearch.xml" rel="search" type="application/opensearchdescription+xml" />
+ <link href="/opds/search?searchTerm={searchTerms}" rel="search" type="application/atom+xml" />
+ <link href="/opds" rel="start" type="application/atom+xml;profile=opds-catalog" />
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:А</id>
+ <title>А</title>
+ <content type="text">2857 серий на &#039;А&#039;</content>
+ <link href="/opds/sequencesindex/%D0%90" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Б</id>
+ <title>Б</title>
+ <content type="text">3602 серии на &#039;Б&#039;</content>
+ <link href="/opds/sequencesindex/%D0%91" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:В</id>
+ <title>В</title>
+ <content type="text">4372 серии на &#039;В&#039;</content>
+ <link href="/opds/sequencesindex/%D0%92" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Г</id>
+ <title>Г</title>
+ <content type="text">1879 серий на &#039;Г&#039;</content>
+ <link href="/opds/sequencesindex/%D0%93" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Д</id>
+ <title>Д</title>
+ <content type="text">3812 серии на &#039;Д&#039;</content>
+ <link href="/opds/sequencesindex/%D0%94" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Е</id>
+ <title>Е</title>
+ <content type="text">342 серии на &#039;Е&#039;</content>
+ <link href="/opds/sequencesindex/%D0%95" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Ж</id>
+ <title>Ж</title>
+ <content type="text">893 серии на &#039;Ж&#039;</content>
+ <link href="/opds/sequencesindex/%D0%96" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:З</id>
+ <title>З</title>
+ <content type="text">2278 серий на &#039;З&#039;</content>
+ <link href="/opds/sequencesindex/%D0%97" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:И</id>
+ <title>И</title>
+ <content type="text">2996 серий на &#039;И&#039;</content>
+ <link href="/opds/sequencesindex/%D0%98" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Й</id>
+ <title>Й</title>
+ <content type="text">30 серий на &#039;Й&#039;</content>
+ <link href="/opds/sequences/%D0%99" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:К</id>
+ <title>К</title>
+ <content type="text">4683 серии на &#039;К&#039;</content>
+ <link href="/opds/sequencesindex/%D0%9A" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Л</id>
+ <title>Л</title>
+ <content type="text">2579 серий на &#039;Л&#039;</content>
+ <link href="/opds/sequencesindex/%D0%9B" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:М</id>
+ <title>М</title>
+ <content type="text">4600 серий на &#039;М&#039;</content>
+ <link href="/opds/sequencesindex/%D0%9C" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Н</id>
+ <title>Н</title>
+ <content type="text">3382 серии на &#039;Н&#039;</content>
+ <link href="/opds/sequencesindex/%D0%9D" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:О</id>
+ <title>О</title>
+ <content type="text">2266 серий на &#039;О&#039;</content>
+ <link href="/opds/sequencesindex/%D0%9E" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:П</id>
+ <title>П</title>
+ <content type="text">6439 серий на &#039;П&#039;</content>
+ <link href="/opds/sequencesindex/%D0%9F" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Р</id>
+ <title>Р</title>
+ <content type="text">2493 серии на &#039;Р&#039;</content>
+ <link href="/opds/sequencesindex/%D0%A0" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:С</id>
+ <title>С</title>
+ <content type="text">6361 серия на &#039;С&#039;</content>
+ <link href="/opds/sequencesindex/%D0%A1" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Т</id>
+ <title>Т</title>
+ <content type="text">2891 серия на &#039;Т&#039;</content>
+ <link href="/opds/sequencesindex/%D0%A2" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:У</id>
+ <title>У</title>
+ <content type="text">996 серий на &#039;У&#039;</content>
+ <link href="/opds/sequencesindex/%D0%A3" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Ф</id>
+ <title>Ф</title>
+ <content type="text">858 серий на &#039;Ф&#039;</content>
+ <link href="/opds/sequencesindex/%D0%A4" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Х</id>
+ <title>Х</title>
+ <content type="text">1448 серий на &#039;Х&#039;</content>
+ <link href="/opds/sequencesindex/%D0%A5" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Ц</id>
+ <title>Ц</title>
+ <content type="text">357 серий на &#039;Ц&#039;</content>
+ <link href="/opds/sequencesindex/%D0%A6" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Ч</id>
+ <title>Ч</title>
+ <content type="text">1028 серий на &#039;Ч&#039;</content>
+ <link href="/opds/sequencesindex/%D0%A7" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Ш</id>
+ <title>Ш</title>
+ <content type="text">727 серий на &#039;Ш&#039;</content>
+ <link href="/opds/sequencesindex/%D0%A8" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Щ</id>
+ <title>Щ</title>
+ <content type="text">27 серий на &#039;Щ&#039;</content>
+ <link href="/opds/sequences/%D0%A9" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Ъ</id>
+ <title>Ъ</title>
+ <content type="text">1 серия на &#039;Ъ&#039;</content>
+ <link href="/opds/sequences/%D0%AA" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Э</id>
+ <title>Э</title>
+ <content type="text">1046 серий на &#039;Э&#039;</content>
+ <link href="/opds/sequencesindex/%D0%AD" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Ю</id>
+ <title>Ю</title>
+ <content type="text">163 серии на &#039;Ю&#039;</content>
+ <link href="/opds/sequencesindex/%D0%AE" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Я</id>
+ <title>Я</title>
+ <content type="text">406 серий на &#039;Я&#039;</content>
+ <link href="/opds/sequencesindex/%D0%AF" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences: </id>
+ <title> </title>
+ <content type="text">8 серий на &#039; &#039;</content>
+ <link href="/opds/sequences/%20" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:&quot;</id>
+ <title>&quot;</title>
+ <content type="text">3 серии на &#039;&quot;&#039;</content>
+ <link href="/opds/sequences/%22" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:#</id>
+ <title>#</title>
+ <content type="text">43 серии на &#039;#&#039;</content>
+ <link href="/opds/sequences/%2523" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:(</id>
+ <title>(</title>
+ <content type="text">63 серии на &#039;(&#039;</content>
+ <link href="/opds/sequences/%28" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:.</id>
+ <title>.</title>
+ <content type="text">2 серии на &#039;.&#039;</content>
+ <link href="/opds/sequences/." type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:/</id>
+ <title>/</title>
+ <content type="text">1 серия на &#039;/&#039;</content>
+ <link href="/opds/sequences/%252F" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:1</id>
+ <title>1</title>
+ <content type="text">122 серии на &#039;1&#039;</content>
+ <link href="/opds/sequencesindex/1" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:2</id>
+ <title>2</title>
+ <content type="text">24 серии на &#039;2&#039;</content>
+ <link href="/opds/sequences/2" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:3</id>
+ <title>3</title>
+ <content type="text">25 серий на &#039;3&#039;</content>
+ <link href="/opds/sequences/3" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:4</id>
+ <title>4</title>
+ <content type="text">22 серии на &#039;4&#039;</content>
+ <link href="/opds/sequences/4" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:5</id>
+ <title>5</title>
+ <content type="text">22 серии на &#039;5&#039;</content>
+ <link href="/opds/sequences/5" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:6</id>
+ <title>6</title>
+ <content type="text">4 серии на &#039;6&#039;</content>
+ <link href="/opds/sequences/6" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:7</id>
+ <title>7</title>
+ <content type="text">14 серий на &#039;7&#039;</content>
+ <link href="/opds/sequences/7" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:8</id>
+ <title>8</title>
+ <content type="text">6 серий на &#039;8&#039;</content>
+ <link href="/opds/sequences/8" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:9</id>
+ <title>9</title>
+ <content type="text">18 серий на &#039;9&#039;</content>
+ <link href="/opds/sequences/9" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences::</id>
+ <title>:</title>
+ <content type="text">1 серия на &#039;:&#039;</content>
+ <link href="/opds/sequences/%3A" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:@</id>
+ <title>@</title>
+ <content type="text">2 серии на &#039;@&#039;</content>
+ <link href="/opds/sequences/%40" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:A</id>
+ <title>A</title>
+ <content type="text">179 серий на &#039;A&#039;</content>
+ <link href="/opds/sequencesindex/A" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:B</id>
+ <title>B</title>
+ <content type="text">166 серий на &#039;B&#039;</content>
+ <link href="/opds/sequencesindex/B" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:C</id>
+ <title>C</title>
+ <content type="text">220 серий на &#039;C&#039;</content>
+ <link href="/opds/sequencesindex/C" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:D</id>
+ <title>D</title>
+ <content type="text">169 серий на &#039;D&#039;</content>
+ <link href="/opds/sequencesindex/D" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:E</id>
+ <title>E</title>
+ <content type="text">81 серия на &#039;E&#039;</content>
+ <link href="/opds/sequences/E" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:F</id>
+ <title>F</title>
+ <content type="text">221 серия на &#039;F&#039;</content>
+ <link href="/opds/sequencesindex/F" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:G</id>
+ <title>G</title>
+ <content type="text">102 серии на &#039;G&#039;</content>
+ <link href="/opds/sequencesindex/G" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:H</id>
+ <title>H</title>
+ <content type="text">101 серия на &#039;H&#039;</content>
+ <link href="/opds/sequencesindex/H" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:I</id>
+ <title>I</title>
+ <content type="text">82 серии на &#039;I&#039;</content>
+ <link href="/opds/sequences/I" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:J</id>
+ <title>J</title>
+ <content type="text">19 серий на &#039;J&#039;</content>
+ <link href="/opds/sequences/J" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:K</id>
+ <title>K</title>
+ <content type="text">49 серий на &#039;K&#039;</content>
+ <link href="/opds/sequences/K" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:L</id>
+ <title>L</title>
+ <content type="text">189 серий на &#039;L&#039;</content>
+ <link href="/opds/sequencesindex/L" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:M</id>
+ <title>M</title>
+ <content type="text">225 серий на &#039;M&#039;</content>
+ <link href="/opds/sequencesindex/M" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:N</id>
+ <title>N</title>
+ <content type="text">232 серии на &#039;N&#039;</content>
+ <link href="/opds/sequencesindex/N" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:O</id>
+ <title>O</title>
+ <content type="text">53 серии на &#039;O&#039;</content>
+ <link href="/opds/sequences/O" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:P</id>
+ <title>P</title>
+ <content type="text">177 серий на &#039;P&#039;</content>
+ <link href="/opds/sequencesindex/P" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:q</id>
+ <title>q</title>
+ <content type="text">10 серий на &#039;q&#039;</content>
+ <link href="/opds/sequences/q" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:R</id>
+ <title>R</title>
+ <content type="text">131 серия на &#039;R&#039;</content>
+ <link href="/opds/sequencesindex/R" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:S</id>
+ <title>S</title>
+ <content type="text">289 серий на &#039;S&#039;</content>
+ <link href="/opds/sequencesindex/S" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:T</id>
+ <title>T</title>
+ <content type="text">666 серий на &#039;T&#039;</content>
+ <link href="/opds/sequencesindex/T" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:U</id>
+ <title>U</title>
+ <content type="text">58 серий на &#039;U&#039;</content>
+ <link href="/opds/sequences/U" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:V</id>
+ <title>V</title>
+ <content type="text">50 серий на &#039;V&#039;</content>
+ <link href="/opds/sequences/V" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:W</id>
+ <title>W</title>
+ <content type="text">142 серии на &#039;W&#039;</content>
+ <link href="/opds/sequencesindex/W" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:X</id>
+ <title>X</title>
+ <content type="text">27 серий на &#039;X&#039;</content>
+ <link href="/opds/sequences/X" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Y</id>
+ <title>Y</title>
+ <content type="text">405 серий на &#039;Y&#039;</content>
+ <link href="/opds/sequencesindex/Y" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Z</id>
+ <title>Z</title>
+ <content type="text">28 серий на &#039;Z&#039;</content>
+ <link href="/opds/sequences/Z" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:[</id>
+ <title>[</title>
+ <content type="text">3 серии на &#039;[&#039;</content>
+ <link href="/opds/sequences/%5B" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:¡</id>
+ <title>¡</title>
+ <content type="text">1 серия на &#039;¡&#039;</content>
+ <link href="/opds/sequences/%C2%A1" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:©</id>
+ <title>©</title>
+ <content type="text">1 серия на &#039;©&#039;</content>
+ <link href="/opds/sequences/%C2%A9" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:«</id>
+ <title>«</title>
+ <content type="text">152 серии на &#039;«&#039;</content>
+ <link href="/opds/sequencesindex/%C2%AB" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Æ</id>
+ <title>Æ</title>
+ <content type="text">1 серия на &#039;Æ&#039;</content>
+ <link href="/opds/sequences/%C3%86" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:α</id>
+ <title>α</title>
+ <content type="text">1 серия на &#039;α&#039;</content>
+ <link href="/opds/sequences/%CE%B1" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Δ</id>
+ <title>Δ</title>
+ <content type="text">2 серии на &#039;Δ&#039;</content>
+ <link href="/opds/sequences/%CE%94" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Θ</id>
+ <title>Θ</title>
+ <content type="text">1 серия на &#039;Θ&#039;</content>
+ <link href="/opds/sequences/%CE%98" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Π</id>
+ <title>Π</title>
+ <content type="text">2 серии на &#039;Π&#039;</content>
+ <link href="/opds/sequences/%CE%A0" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:Є</id>
+ <title>Є</title>
+ <content type="text">2 серии на &#039;Є&#039;</content>
+ <link href="/opds/sequences/%D0%84" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:І</id>
+ <title>І</title>
+ <content type="text">37 серий на &#039;І&#039;</content>
+ <link href="/opds/sequences/%D0%86" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:א</id>
+ <title>א</title>
+ <content type="text">1 серия на &#039;א&#039;</content>
+ <link href="/opds/sequences/%D7%90" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:…</id>
+ <title>…</title>
+ <content type="text">8 серий на &#039;…&#039;</content>
+ <link href="/opds/sequences/%E2%80%A6" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T06:54:40+02:00</updated>
+ <id>tag:sequences:十</id>
+ <title>十</title>
+ <content type="text">2 серии на &#039;十&#039;</content>
+ <link href="/opds/sequences/%E5%8D%81" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+</feed>

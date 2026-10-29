@@ -44,7 +44,9 @@ data class SearchState(
     val isLoadingMore: Boolean = false,
     val isRefreshing: Boolean = false,
     val error: String? = null,
-    val bookSource: BookSource = BookSource.FLIBUSTA
+    val bookSource: BookSource = BookSource.FLIBUSTA,
+    /** История запросов, новые сверху. */
+    val searchHistory: List<String> = emptyList()
 ) {
     val hasQuery: Boolean get() = query.isNotBlank()
     val isEmpty: Boolean get() = isSearching.not() && hasQuery &&
@@ -58,6 +60,10 @@ sealed interface SearchEvent {
     data class TabSelected(val tab: SearchTab) : SearchEvent
     data class LoadMore(val tab: SearchTab) : SearchEvent
     data class SourceChanged(val source: BookSource) : SearchEvent
+
+    /** Повторный запрос из истории: подставляем в поле и сразу ищем. */
+    data class HistorySelected(val query: String) : SearchEvent
+    data object ClearHistory : SearchEvent
 }
 
 class SearchViewModel(
@@ -86,15 +92,54 @@ class SearchViewModel(
 
     private val cacheFile: File get() = File(application.filesDir, "cache/searches.json")
 
+    /** Время сохранения каждого запроса: без него кеш не стареет никогда. */
+    private val savedAtFile: File get() = File(application.filesDir, "cache/searches_saved_at.json")
+
+    private val savedAtStore: MutableMap<String, Long> = mutableMapOf<String, Long>().apply {
+        runCatching {
+            if (savedAtFile.exists()) {
+                json.decodeFromString<Map<String, Long>>(savedAtFile.readText())
+                    .forEach { (k, v) -> put(k, v) }
+            }
+        }
+    }
+
     private fun loadSearchCache(query: String, source: BookSource): SearchCacheEntry? {
         val key = "${query.lowercase().trim()}|${source.name}"
         return try {
             if (!cacheFile.exists()) return null
             @Suppress("UNCHECKED_CAST")
             val map = json.decodeFromString<Map<String, SearchCacheEntry>>(cacheFile.readText())
-            map[key]
+            val entry = map[key] ?: return null
+            // Кеш без срока годности отдавал один и тот же ответ на вечные
+            // запросы: новые книги в выдаче так и не появлялись.
+            if (isExpired(key)) {
+                pruneExpired(map)
+                return null
+            }
+            entry
         } catch (e: Exception) {
             null
+        }
+    }
+
+    private fun isExpired(key: String): Boolean {
+        val savedAt = savedAtStore[key] ?: return true
+        return System.currentTimeMillis() - savedAt > SEARCH_CACHE_TTL_MS
+    }
+
+    private fun pruneExpired(map: Map<String, SearchCacheEntry>) {
+        val now = System.currentTimeMillis()
+        val kept = map.filterKeys { key ->
+            val savedAt = savedAtStore[key]
+            savedAt != null && now - savedAt <= SEARCH_CACHE_TTL_MS
+        }
+        runCatching {
+            cacheFile.parentFile?.mkdirs()
+            cacheFile.writeText(json.encodeToString(kept))
+            savedAtStore.keys.retainAll(kept.keys)
+            if (savedAtStore.isEmpty() && savedAtFile.exists()) savedAtFile.delete()
+            else savedAtFile.writeText(json.encodeToString(savedAtStore))
         }
     }
 
@@ -108,6 +153,8 @@ class SearchViewModel(
             } else mutableMapOf()
             map[key] = entry
             cacheFile.writeText(json.encodeToString(map))
+            savedAtStore[key] = System.currentTimeMillis()
+            savedAtFile.writeText(json.encodeToString(savedAtStore))
         } catch (e: Exception) { /* ignore cache errors */ }
     }
 
@@ -120,6 +167,11 @@ class SearchViewModel(
                     resetPagination()
                     if (_state.value.query.isNotBlank()) performSearch()
                 }
+            }
+        }
+        viewModelScope.launch {
+            dataStoreManager.searchHistory.collect { history ->
+                _state.update { it.copy(searchHistory = history) }
             }
         }
     }
@@ -144,11 +196,22 @@ class SearchViewModel(
             is SearchEvent.QueryChanged -> onQueryChanged(event.query)
             is SearchEvent.SearchRequested -> {
                 _state.update { it.copy(isRefreshing = true) }
+<<<<<<< HEAD
                 performSearch()
+=======
+                performSearch(recordHistory = true)
+>>>>>>> d24a20e (FoxyBook v1.9)
             }
             is SearchEvent.TabSelected -> _state.update { it.copy(selectedTab = event.tab) }
             is SearchEvent.LoadMore -> loadMore(event.tab)
             is SearchEvent.SourceChanged -> switchSource(event.source)
+            is SearchEvent.HistorySelected -> {
+                _state.update { it.copy(query = event.query) }
+                performSearch(recordHistory = true)
+            }
+            is SearchEvent.ClearHistory -> viewModelScope.launch {
+                dataStoreManager.clearSearchHistory()
+            }
         }
     }
 
@@ -179,7 +242,11 @@ class SearchViewModel(
         debounceJob?.cancel()
         if (query.isBlank()) {
             searchJob?.cancel()
-            _state.update { SearchState() }
+            // Сбрасываем результаты, но сохраняем историю и источник —
+            // иначе очистка поля стирала бы её, и блок исчезал из UI.
+            _state.update {
+                SearchState(searchHistory = it.searchHistory, bookSource = it.bookSource)
+            }
             return
         }
         debounceJob = viewModelScope.launch {
@@ -188,9 +255,18 @@ class SearchViewModel(
         }
     }
 
-    private fun performSearch() {
+    /**
+     * @param recordHistory записывать запрос в историю. Только для явного
+     *   подтверждения поиска (Enter/свайп), иначе в историю попадут все
+     *   промежуточные запросы при автопоиске по мере набора.
+     */
+    private fun performSearch(recordHistory: Boolean = false) {
         val query = _state.value.query.trim()
         if (query.isBlank()) return
+
+        if (recordHistory) {
+            viewModelScope.launch { dataStoreManager.addSearchHistoryItem(query) }
+        }
 
         searchJob?.cancel()
         resetPagination()
@@ -411,8 +487,20 @@ class SearchViewModel(
     }
 
     companion object {
+<<<<<<< HEAD
         /** Задержка debounce перед поиском (мс) */
         const val SEARCH_DEBOUNCE_MS = 250L
+=======
+        /**
+         * Задержка debounce перед поиском (мс). Запрос на каждый введённый
+         * символ перезапускал четыре параллельных поиска, поэтому ждём чуть
+         * дольше — на живой сети это незаметно, а лишних запросов заметно
+         * меньше.
+         */
+        const val SEARCH_DEBOUNCE_MS = 350L
+        /** Сколько живёт кеш поиска (мс) */
+        const val SEARCH_CACHE_TTL_MS = 15L * 60L * 1000L
+>>>>>>> d24a20e (FoxyBook v1.9)
         /** Количество элементов на страницу поиска */
         const val SEARCH_PAGE_LIMIT = 15
         /** Сколько пустых страниц жанров пропускать перед остановкой */

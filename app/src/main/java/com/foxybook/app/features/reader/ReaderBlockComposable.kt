@@ -80,7 +80,11 @@ fun BlockComposable(
                             fontSize = fontSize.sp,
                             lineHeight = (fontSize * lineHeight).sp,
                             color = colors.text,
+<<<<<<< HEAD
                             textAlign = TextAlign.Justify,
+=======
+                            textAlign = TextAlign.Start,
+>>>>>>> d24a20e (FoxyBook v1.9)
                             modifier = Modifier.padding(bottom = bottomPadding)
                         )
                     }

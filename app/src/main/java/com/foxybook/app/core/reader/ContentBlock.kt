@@ -32,8 +32,8 @@ sealed class ContentBlock(val isSplitAtBottom: Boolean = false, @Volatile var or
     fun getTextContent(): String = when (this) {
         is Heading -> text
         is Paragraph -> text
-        is Quote -> text
-        is Poem -> lines.joinToString(" ")
+        is Quote -> text + (author ?: "")
+        is Poem -> (title ?: "") + lines.joinToString(" ") + (author ?: "")
         else -> ""
     }
 }

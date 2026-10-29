@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <feed xmlns="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/terms/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/" xmlns:opds="http://opds-spec.org/2010/catalog"> <id>tag:search:authors:Стругацкий:</id>
+ <title>Результат поиска</title>
+ <updated>2026-10-05T16:41:22+02:00</updated>
+ <icon>/favicon.ico</icon>
+ <link href="/opds-opensearch.xml" rel="search" type="application/opensearchdescription+xml" />
+ <link href="/opds/search?searchTerm={searchTerms}" rel="search" type="application/atom+xml" />
+ <link href="/opds" rel="start" type="application/atom+xml;profile=opds-catalog" />
+ <link href="/opds/search?searchTerm=%D0%A1%D1%82%D1%80%D1%83%D0%B3%D0%B0%D1%86%D0%BA%D0%B8%D0%B9" rel="up" type="application/atom+xml;profile=opds-catalog" />
+ <entry> <updated>2026-10-05T16:41:22+02:00</updated>
+ <id>tag:author:19189</id>
+ <title>Стругацкий Аркадий Натанович</title>
+ <content type="text">345 книг</content>
+ <link href="/opds/author/19189" type="application/atom+xml;profile=opds-catalog" />
+ <link href="/ia/41/32841/3_1.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/ia/41/32841/3_1.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/ia/41/32841/3_1.jpg" rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" />
+ <link href="/ia/41/32841/3_1.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/opds/authorsequences/19189" rel="http://www.feedbooks.com/opds/facet" type="application/atom+xml;profile=opds-catalog" title="Книги автора по сериям" />
+ <link href="/opds/authorsequenceless/19189" rel="http://www.feedbooks.com/opds/facet" type="application/atom+xml;profile=opds-catalog" title="Книги автора вне серий" />
+</entry>
+ <entry> <updated>2026-10-05T16:41:22+02:00</updated>
+ <id>tag:author:20554</id>
+ <title>Стругацкий Борис Натанович</title>
+ <content type="text">363 книги</content>
+ <link href="/opds/author/20554" type="application/atom+xml;profile=opds-catalog" />
+ <link href="/ia/38/32838/3_1.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/ia/38/32838/3_1.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/ia/38/32838/3_1.jpg" rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" />
+ <link href="/ia/38/32838/3_1.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/opds/authorsequences/20554" rel="http://www.feedbooks.com/opds/facet" type="application/atom+xml;profile=opds-catalog" title="Книги автора по сериям" />
+ <link href="/opds/authorsequenceless/20554" rel="http://www.feedbooks.com/opds/facet" type="application/atom+xml;profile=opds-catalog" title="Книги автора вне серий" />
+</entry>
+ <entry> <updated>2026-10-05T16:41:22+02:00</updated>
+ <id>tag:author:122269</id>
+ <title>Стругацкий Владимир Ильич</title>
+ <content type="text">1 книга</content>
+ <link href="/opds/author/122269" type="application/atom+xml;profile=opds-catalog" />
+ <link href="/opds/authorsequences/122269" rel="http://www.feedbooks.com/opds/facet" type="application/atom+xml;profile=opds-catalog" title="Книги автора по сериям" />
+ <link href="/opds/authorsequenceless/122269" rel="http://www.feedbooks.com/opds/facet" type="application/atom+xml;profile=opds-catalog" title="Книги автора вне серий" />
+</entry>
+</feed>

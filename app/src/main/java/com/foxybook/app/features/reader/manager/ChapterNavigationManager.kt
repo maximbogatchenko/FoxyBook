@@ -9,6 +9,10 @@ import com.foxybook.app.features.reader.ReaderState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+<<<<<<< HEAD
+=======
+import kotlinx.coroutines.joinAll
+>>>>>>> d24a20e (FoxyBook v1.9)
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -91,6 +95,7 @@ class ChapterNavigationManager(
         Log.d("ReaderNav", "loadBook: STEP 3 - restoring position")
         // Restore position
         val pos = bookDataRepository.getReadingPosition(bId, fmt).first()
+<<<<<<< HEAD
         if (pos != null && pos.chapterIndex < book.chapters.size) {
             stateFlow.update {
                 it.copy(
@@ -99,27 +104,54 @@ class ChapterNavigationManager(
                     scrollY = pos.scrollPosition,
                     scrollOffset = pos.scrollOffset,
                     pageCurrent = pos.pageIndex,
+=======
+        if (pos != null && pos.chapterIndex in book.chapters.indices) {
+            stateFlow.update {
+                it.copy(
+                    currentChapter = pos.chapterIndex,
+                    // Значения из базы могут быть «позади» текущей вёрстки,
+                    // поэтому приводим их к неотрицательным, дальше их уточнит
+                    // поиск страницы по смещению.
+                    textOffset = pos.textOffset.coerceAtLeast(0),
+                    scrollY = pos.scrollPosition.coerceAtLeast(0),
+                    scrollOffset = pos.scrollOffset.coerceAtLeast(0),
+                    pageCurrent = pos.pageIndex.coerceAtLeast(0),
+>>>>>>> d24a20e (FoxyBook v1.9)
                     positionRestored = true,
                     lastPositionRestoreTrigger = System.currentTimeMillis()
                 )
             }
             Log.d("ReaderNav", "loadBook: STEP 4 - loading chapter ${pos.chapterIndex}")
+<<<<<<< HEAD
             getBlocksSync(pos.chapterIndex, stateFlow.value, stateFlow)
             // Если сохранённая глава пустая — переключаемся на первую непустую
             val chBlocks = stateFlow.value.chapterBlocks[pos.chapterIndex]
             if (chBlocks.isNullOrEmpty()) {
+=======
+            val blocks = getBlocksSync(pos.chapterIndex, stateFlow.value, stateFlow)
+            // Если сохранённая глава пустая — переключаемся на первую непустую
+            if (blocks.isNullOrEmpty()) {
+>>>>>>> d24a20e (FoxyBook v1.9)
                 skipPastEmptyChapters(pos.chapterIndex, stateFlow)
             }
         } else {
             stateFlow.update { it.copy(currentChapter = 0, positionRestored = true) }
             Log.d("ReaderNav", "loadBook: STEP 4 - loading chapter 0")
+<<<<<<< HEAD
             getBlocksSync(0, stateFlow.value, stateFlow)
             skipPastEmptyChapters(0, stateFlow)
+=======
+            val blocks = getBlocksSync(0, stateFlow.value, stateFlow)
+            if (blocks.isNullOrEmpty()) {
+                skipPastEmptyChapters(0, stateFlow)
+            }
+>>>>>>> d24a20e (FoxyBook v1.9)
         }
 
         Log.d("ReaderNav", "loadBook: STEP 5 - setting isLoading=false")
         stateFlow.update { it.copy(isLoading = false) }
 
+<<<<<<< HEAD
         // Preload all other chapters in background
         scopeJob2?.cancel()
         scopeJob2 = CoroutineScope(Dispatchers.IO).launch {
@@ -130,6 +162,25 @@ class ChapterNavigationManager(
                     if (i == currentCh) continue
                     getBlocksSync(i, stateFlow.value, stateFlow)
                 }
+=======
+        // Preload only adjacent chapters in background (current ± 2).
+        // Загрузка всех глав сразу тяжела для больших книг и powodет зависание
+        // при открытии; остальные главы подгружаются по мере листования.
+        scopeJob2?.cancel()
+        scopeJob2 = CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val currentCh = stateFlow.value.currentChapter
+                val from = (currentCh - 2).coerceAtLeast(0)
+                val to = (currentCh + 2).coerceAtMost(book.chapters.size - 1)
+                val jobs = mutableListOf<Job>()
+                for (i in from..to) {
+                    if (i == currentCh) continue
+                    jobs.add(CoroutineScope(Dispatchers.IO).launch {
+                        getBlocksSync(i, stateFlow.value, stateFlow)
+                    })
+                }
+                jobs.joinAll()
+>>>>>>> d24a20e (FoxyBook v1.9)
             } catch (e: Exception) {
                 Log.e("ReaderNav", "loadBook: preload background failed", e)
             }
@@ -138,6 +189,7 @@ class ChapterNavigationManager(
         return stateFlow.value
     }
 
+<<<<<<< HEAD
     fun goToChapter(index: Int, state: ReaderState, stateFlow: MutableStateFlow<ReaderState>): ReaderState {
         val book = state.book ?: return state
         if (index < 0 || index >= book.chapters.size) return state
@@ -149,6 +201,24 @@ class ChapterNavigationManager(
                 pageCurrent = 0,
                 textOffset = 0,
                 scrollOffset = 0
+=======
+    fun goToChapter(index: Int, state: ReaderState, stateFlow: MutableStateFlow<ReaderState>, resetPosition: Boolean = true): ReaderState {
+        val book = state.book ?: return state
+        if (index < 0 || index >= book.chapters.size) return state
+
+        // При смене главы через BookSheet (resetPosition = true) сбрасываем
+        // главу-относительные поля в ноль. При свайпе (resetPosition = false)
+        // сохраняем текущую страницу — пейджер уже показывает правильную.
+        stateFlow.update {
+            it.copy(
+                currentChapter = index,
+                scrollY = if (resetPosition) 0 else state.scrollY,
+                pageCurrent = if (resetPosition) 0 else state.pageCurrent,
+                textOffset = if (resetPosition) 0 else state.textOffset,
+                scrollOffset = if (resetPosition) 0 else state.scrollOffset,
+                lastPositionRestoreTrigger = if (resetPosition) System.currentTimeMillis() else state.lastPositionRestoreTrigger,
+                positionRestored = true
+>>>>>>> d24a20e (FoxyBook v1.9)
             )
         }
         return stateFlow.value
@@ -189,13 +259,21 @@ class ChapterNavigationManager(
         return startChapter
     }
 
+<<<<<<< HEAD
     fun preloadChapter(index: Int, state: ReaderState, scope: CoroutineScope) {
+=======
+    fun preloadChapter(index: Int, state: ReaderState, scope: CoroutineScope, stateFlow: MutableStateFlow<ReaderState>? = null) {
+>>>>>>> d24a20e (FoxyBook v1.9)
         val book = state.book ?: return
         if (index < 0 || index >= book.chapters.size) return
         if (state.chapterBlocks.containsKey(index)) return
 
         scope.launch(Dispatchers.IO) {
+<<<<<<< HEAD
             getBlocksSync(index, state, null)
+=======
+            getBlocksSync(index, state, stateFlow)
+>>>>>>> d24a20e (FoxyBook v1.9)
         }
     }
 

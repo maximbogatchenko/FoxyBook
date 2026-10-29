@@ -68,10 +68,6 @@ class BookDetailsViewModel(
     private val _state = MutableStateFlow(BookDetailsState())
     val state: StateFlow<BookDetailsState> = _state.asStateFlow()
 
-    private val checkClient: OkHttpClient by lazy {
-        networkProvider.createClient(connectSeconds = 5, readSeconds = 5, writeSeconds = 5)
-    }
-
     private var downloadJob: kotlinx.coroutines.Job? = null
 
     fun onEvent(event: BookDetailsEvent) {
@@ -126,7 +122,7 @@ class BookDetailsViewModel(
 
         viewModelScope.launch {
             try {
-                val info = withTimeout(12_000) { getBookInfoUseCase(id) }
+                val info = withTimeout(20_000) { getBookInfoUseCase(id) }
 
                 // Даже если получили только частичную информацию — используем её с initialData
                 val finalInfo = if (info != null) {

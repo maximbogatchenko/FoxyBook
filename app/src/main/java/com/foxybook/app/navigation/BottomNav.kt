@@ -38,8 +38,29 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.foxybook.app.R
 import com.foxybook.app.navigation.Routes
 
+// Корневой маршрут нижней навигации: на нём держится стек вкладок.
+// По умолчанию — «Новинки», но может быть переопределён в настройках.
+private fun navigateTab(
+    navController: androidx.navigation.NavHostController,
+    route: String,
+    rootRoute: String
+) {
+    if (route == rootRoute) {
+        navController.navigate(route) {
+            popUpTo(rootRoute) { inclusive = true }
+        }
+    } else {
+        navController.navigate(route) {
+            popUpTo(rootRoute)
+        }
+    }
+}
+
 @Composable
-fun BottomNav(navController: androidx.navigation.NavHostController) {
+fun BottomNav(
+    navController: androidx.navigation.NavHostController,
+    rootRoute: String = Routes.NEW_BOOKS
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -71,9 +92,7 @@ fun BottomNav(navController: androidx.navigation.NavHostController) {
             selected = currentRoute == Routes.NEW_BOOKS,
             onClick = {
                 if (currentRoute != Routes.NEW_BOOKS) {
-                    navController.navigate(Routes.NEW_BOOKS) {
-                        popUpTo(Routes.NEW_BOOKS) { inclusive = true }
-                    }
+                    navigateTab(navController, Routes.NEW_BOOKS, rootRoute)
                 }
             }
         )
@@ -87,9 +106,7 @@ fun BottomNav(navController: androidx.navigation.NavHostController) {
             selected = currentRoute == Routes.SEARCH,
             onClick = {
                 if (currentRoute != Routes.SEARCH) {
-                    navController.navigate(Routes.SEARCH) {
-                        popUpTo(Routes.NEW_BOOKS)
-                    }
+                    navigateTab(navController, Routes.SEARCH, rootRoute)
                 }
             }
         )
@@ -103,9 +120,7 @@ fun BottomNav(navController: androidx.navigation.NavHostController) {
             selected = currentRoute == Routes.LIBRARY,
             onClick = {
                 if (currentRoute != Routes.LIBRARY) {
-                    navController.navigate(Routes.LIBRARY) {
-                        popUpTo(Routes.NEW_BOOKS)
-                    }
+                    navigateTab(navController, Routes.LIBRARY, rootRoute)
                 }
             }
         )
@@ -119,9 +134,137 @@ fun BottomNav(navController: androidx.navigation.NavHostController) {
             selected = currentRoute == Routes.SETTINGS,
             onClick = {
                 if (currentRoute != Routes.SETTINGS) {
-                    navController.navigate(Routes.SETTINGS) {
-                        popUpTo(Routes.NEW_BOOKS)
-                    }
+                    navigateTab(navController, Routes.SETTINGS, rootRoute)
+                }
+            }
+        )
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────
+//  Navigation Rail (landscape mode) — compact, icon-only
+// ─────────────────────────────────────────────────────────────────
+
+@Composable
+fun NavigationRailSide(
+    navController: androidx.navigation.NavHostController,
+    rootRoute: String = Routes.NEW_BOOKS
+) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val newScale by animateFloatAsState(
+        targetValue = if (currentRoute == Routes.NEW_BOOKS) 1.15f else 1f,
+        animationSpec = tween(300), label = "rail_new"
+    )
+    val searchScale by animateFloatAsState(
+        targetValue = if (currentRoute == Routes.SEARCH) 1.15f else 1f,
+        animationSpec = tween(300), label = "rail_search"
+    )
+    val libScale by animateFloatAsState(
+        targetValue = if (currentRoute == Routes.LIBRARY) 1.15f else 1f,
+        animationSpec = tween(300), label = "rail_lib"
+    )
+    val settingsScale by animateFloatAsState(
+        targetValue = if (currentRoute == Routes.SETTINGS) 1.15f else 1f,
+        animationSpec = tween(300), label = "rail_settings"
+    )
+
+    @Composable
+    fun RailItem(
+        icon: androidx.compose.ui.graphics.vector.ImageVector,
+        contentDescription: String,
+        isSelected: Boolean,
+        scale: Float,
+        onClick: () -> Unit
+    ) {
+        val bgColor by animateColorAsState(
+            targetValue = if (isSelected) MaterialTheme.colorScheme.primaryContainer
+            else MaterialTheme.colorScheme.surface,
+            animationSpec = tween(300), label = "rail_bg"
+        )
+        val iconTint by animateColorAsState(
+            targetValue = if (isSelected) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+            animationSpec = tween(300), label = "rail_tint"
+        )
+
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(bgColor)
+                .clickable(onClick = onClick),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                icon,
+                contentDescription = contentDescription,
+                modifier = Modifier.size(22.dp).scale(scale),
+                tint = iconTint
+            )
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(64.dp)
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        RailItem(
+            icon = Icons.Default.Whatshot,
+            contentDescription = stringResource(R.string.nav_new_books),
+            isSelected = currentRoute == Routes.NEW_BOOKS,
+            scale = newScale,
+            onClick = {
+                if (currentRoute != Routes.NEW_BOOKS) {
+                    navigateTab(navController, Routes.NEW_BOOKS, rootRoute)
+                }
+            }
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        RailItem(
+            icon = Icons.Default.Search,
+            contentDescription = stringResource(R.string.nav_search),
+            isSelected = currentRoute == Routes.SEARCH,
+            scale = searchScale,
+            onClick = {
+                if (currentRoute != Routes.SEARCH) {
+                    navigateTab(navController, Routes.SEARCH, rootRoute)
+                }
+            }
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        RailItem(
+            icon = Icons.Default.AutoStories,
+            contentDescription = stringResource(R.string.nav_library),
+            isSelected = currentRoute == Routes.LIBRARY,
+            scale = libScale,
+            onClick = {
+                if (currentRoute != Routes.LIBRARY) {
+                    navigateTab(navController, Routes.LIBRARY, rootRoute)
+                }
+            }
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        RailItem(
+            icon = Icons.Default.Settings,
+            contentDescription = stringResource(R.string.nav_settings),
+            isSelected = currentRoute == Routes.SETTINGS,
+            scale = settingsScale,
+            onClick = {
+                if (currentRoute != Routes.SETTINGS) {
+                    navigateTab(navController, Routes.SETTINGS, rootRoute)
                 }
             }
         )

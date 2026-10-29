@@ -53,13 +53,21 @@ fun ScrollModeContent(
     val lazyListState = rememberLazyListState()
     val book = state.book ?: return
 
+    val cutoutTopDp = 24.dp
+
     var globalBlocks by remember { mutableStateOf(emptyList<GlobalBlock>()) }
+    val includedChapters = remember { mutableSetOf<Int>() }
 
+    // Добавляем блоки только recién загруженных глав. Блоки внутри главы после
+    // парсинга больше не меняются, поэтому полная пересборка всего списка при
+    // каждой новой главе не нужна — это убирает O(n²) перерисовку LazyColumn.
     LaunchedEffect(state.chapterBlocks) {
-        globalBlocks = buildList {
-            val loadedChapters = state.chapterBlocks.keys.sorted()
+        val loadedChapters = state.chapterBlocks.keys.sorted()
+        val newChapters = loadedChapters.filter { it !in includedChapters }
+        if (newChapters.isEmpty()) return@LaunchedEffect
 
-            loadedChapters.forEach { chIdx ->
+        val appended = buildList {
+            for (chIdx in newChapters) {
                 val blocks = state.chapterBlocks[chIdx] ?: emptyList()
                 var currentOffset = 0
                 blocks.forEachIndexed { bIdx, block ->
@@ -67,9 +75,12 @@ fun ScrollModeContent(
                     currentOffset += block.getTextContent().length
                 }
             }
-
-            Log.d("ReaderNav", "ScrollMode: Built ${size} blocks from chapters $loadedChapters")
         }
+
+        globalBlocks = globalBlocks + appended
+        includedChapters += newChapters
+
+        Log.d("ReaderNav", "ScrollMode: Appended ${appended.size} blocks from chapters $newChapters (total ${globalBlocks.size})")
     }
 
     LaunchedEffect(Unit) {
@@ -124,39 +135,65 @@ fun ScrollModeContent(
     var lastHandledRestoreTrigger by remember { mutableLongStateOf(-1L) }
 
     LaunchedEffect(state.lastPositionRestoreTrigger, globalBlocks) {
-        if (globalBlocks.isEmpty() || state.lastPositionRestoreTrigger == lastHandledRestoreTrigger) {
+        if (globalBlocks.isEmpty()) {
             isRestoring = false
             return@LaunchedEffect
         }
 
-        val targetIdx = globalBlocks.indexOfFirst {
-            it.chapterIndex == state.currentChapter &&
-            state.textOffset in it.offsetInChapter until (it.offsetInChapter + it.block.getTextContent().length)
-        }.let { if (it == -1) globalBlocks.indexOfFirst { gb -> gb.chapterIndex == state.currentChapter && gb.blockIndexInChapter == state.scrollY } else it }
+        val triggerChanged = state.lastPositionRestoreTrigger != lastHandledRestoreTrigger
+
+        // Если блоков для текущей главы стало больше, но мы ещё не восстановили позицию — пробуем снова.
+        // Если триггер не менялся и мы уже восстанавливались — выходим.
+        if (!triggerChanged && lastHandledRestoreTrigger == state.lastPositionRestoreTrigger) {
+            isRestoring = false
+            return@LaunchedEffect
+        }
+
+        val targetIdx = findRestoreIndex(
+            items = globalBlocks.map {
+                RestoreAnchor(it.chapterIndex, it.offsetInChapter, it.blockIndexInChapter)
+            },
+            chapterIndex = state.currentChapter,
+            offset = state.textOffset,
+            savedIndexInChapter = state.scrollY
+        )
 
         if (targetIdx >= 0) {
             Log.d("ReaderNav", "ScrollMode: Restoring to index $targetIdx (block=${state.scrollY})")
             isRestoring = true
+            // Сначала скроллим к элементу без смещения, чтобы элементы замерились,
+            // затем применяем точное пиксельное смещение
+            lazyListState.scrollToItem(targetIdx)
+            delay(100)
             lazyListState.scrollToItem(targetIdx, state.scrollOffset)
             lastHandledRestoreTrigger = state.lastPositionRestoreTrigger
-            delay(50)
 
-            val block = globalBlocks.getOrNull(targetIdx)
-            if (block != null) {
-                val chBlocks = globalBlocks.filter { it.chapterIndex == block.chapterIndex }
-                val totalChars = chBlocks.sumOf { it.block.getTextContent().length }
-                val charPct = if (totalChars > 0) (block.offsetInChapter * 100 / totalChars).coerceIn(0, 100) else 0
-                viewModel.onEvent(ReaderEvent.ScrollProgress(
-                    charPct,
-                    block.blockIndexInChapter,
-                    lazyListState.firstVisibleItemScrollOffset,
-                    block.offsetInChapter
-                ))
+            // Ждём, пока список реально дойдёт до целевого элемента, и только тогда
+            // снимаем флаг восстановления.
+            var waited = 0L
+            while (waited < 2000L && lazyListState.firstVisibleItemIndex != targetIdx) {
+                delay(100)
+                waited += 100
             }
         }
         // Если targetIdx < 0 — не сохраняем lastHandledRestoreTrigger,
         // чтобы при дозагрузке глав LaunchedEffect сработал снова
         isRestoring = false
+
+        // После восстановления фиксируем фактическую позицию в базе
+        val saveIdx = if (targetIdx >= 0 && targetIdx < globalBlocks.size) targetIdx else lazyListState.firstVisibleItemIndex
+        if (saveIdx >= 0 && saveIdx < globalBlocks.size) {
+            val block = globalBlocks[saveIdx]
+            val chBlocks = globalBlocks.filter { pg -> pg.chapterIndex == block.chapterIndex }
+            val totalChars = chBlocks.sumOf { it.block.getTextContent().length }
+            val charPct = if (totalChars > 0) (block.offsetInChapter * 100 / totalChars).coerceIn(0, 100) else 0
+            viewModel.onEvent(ReaderEvent.ScrollProgress(
+                charPct,
+                block.blockIndexInChapter,
+                lazyListState.firstVisibleItemScrollOffset,
+                block.offsetInChapter
+            ))
+        }
     }
 
     LaunchedEffect(lazyListState) {
@@ -186,7 +223,7 @@ fun ScrollModeContent(
 
     LazyColumn(
         state = lazyListState,
-        contentPadding = PaddingValues(horizontal = settings.margins.dp, vertical = 16.dp),
+        contentPadding = PaddingValues(horizontal = settings.margins.dp, vertical = settings.margins.dp + cutoutTopDp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
         modifier = Modifier.fillMaxSize()
     ) {

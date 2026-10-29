@@ -54,16 +54,17 @@ object StorageHelper {
         }
     }
 
-    /** Очищает временные кэш-директории приложения */
+    /** Очищает временные кэш-директории приложения. Файлы книг не затрагиваются. */
     fun clearTempCaches(context: Context): String {
         var deletedCount = 0
         var deletedSize = 0L
 
+        // ВАЖНО: filesDir/imported_books здесь быть не должно — это единственная
+        // копия книг, импортированных пользователем через SAF.
         val dirs = listOf(
             File(context.cacheDir, "covers"),
             File(context.cacheDir, "book_images"),
-            File(context.cacheDir, "http_cache"),
-            File(context.filesDir, "imported_books")
+            File(context.cacheDir, "http_cache")
         )
 
         for (dir in dirs) {
@@ -75,6 +76,12 @@ object StorageHelper {
                 deletedSize += size
             }
         }
+
+        // Каталог импортированных книг чистится выборочно — см. SettingsViewModel.clearCaches(),
+        // который передаёт реальные пути из библиотеки.
+        val imported = cleanupOrphanedImportedFiles(context, knownPaths = emptySet())
+        deletedCount += imported.first
+        deletedSize += imported.second
 
         // Удаляем файл скачанного обновления, если есть
         val updateFile = File(context.cacheDir, "update.apk")
@@ -91,4 +98,34 @@ object StorageHelper {
         }
         return "Очищено файлов: $deletedCount ($sizeStr)"
     }
+
+    /**
+     * Удаляет из filesDir/imported_books только те файлы, на которые больше нет
+     * записи в библиотеке. Возвращает (количество файлов, суммарный размер).
+     *
+     * @param knownPaths пути файлов из библиотеки; если пусто — ничего не удаляется,
+     *                   чтобы случайный вызов не привёл к потере книг.
+     */
+    fun cleanupOrphanedImportedFiles(
+        context: Context,
+        knownPaths: Set<String>
+    ): Pair<Int, Long> {
+        val dir = File(context.filesDir, "imported_books")
+        if (!dir.exists() || knownPaths.isEmpty()) return 0 to 0L
+
+        var count = 0
+        var size = 0L
+        val referenced = knownPaths.map { normalizePath(it) }.toSet()
+
+        dir.listFiles()?.forEach { file ->
+            if (!file.isFile) return@forEach
+            if (normalizePath(file.absolutePath) in referenced) return@forEach
+            size += file.length()
+            if (file.delete()) count++
+        }
+        return count to size
+    }
+
+    private fun normalizePath(path: String): String =
+        runCatching { File(path).canonicalPath }.getOrDefault(path)
 }

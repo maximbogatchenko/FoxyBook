@@ -1,9 +1,15 @@
 package com.foxybook.app.core.database
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "library_books", primaryKeys = ["id", "format"])
+@Entity(
+    tableName = "library_books",
+    primaryKeys = ["id", "format"],
+    indices = [Index(value = ["downloadDate"])]
+)
 data class LibraryBookEntity(
     val id: Int,
     val title: String,
@@ -14,10 +20,14 @@ data class LibraryBookEntity(
     val downloadDate: Long,
     val isFavorite: Boolean = false,
     val lastReadDate: Long = 0L,
-    val readingProgress: Int = 0
+    val readingProgress: Int = 0,
+    val readState: String = "AUTO"
 )
 
-@Entity(tableName = "bookmarks")
+@Entity(
+    tableName = "bookmarks",
+    indices = [Index(value = ["bookId"]), Index(value = ["createdAt"])]
+)
 data class BookmarkEntity(
     @PrimaryKey
     val id: String,
@@ -54,7 +64,16 @@ data class BookCollectionEntity(
 
 @Entity(
     tableName = "book_collection_entries",
-    primaryKeys = ["bookId", "format", "collectionId"]
+    primaryKeys = ["bookId", "format", "collectionId"],
+    indices = [Index(value = ["collectionId"])],
+    foreignKeys = [
+        ForeignKey(
+            entity = BookCollectionEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["collectionId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
 )
 data class BookCollectionEntryEntity(
     val bookId: Int,

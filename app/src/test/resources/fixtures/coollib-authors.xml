@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <feed xmlns="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/terms/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/" xmlns:opds="http://opds-spec.org/2010/catalog"> <id>tag:search:authors:Стругацкий:</id>
+ <title>Результат поиска</title>
+ <updated>2026-10-05T17:41:11+03:00</updated>
+ <icon>https://coollib.net/favicon.ico</icon>
+ <link href="https://coollib.net/opds-opensearch.xml" rel="search" type="application/opensearchdescription+xml" />
+ <link href="https://coollib.net/opds/search?searchTerm={searchTerms}" rel="search" type="application/atom+xml" />
+ <link href="https://coollib.net/opds" rel="start" type="application/atom+xml;profile=opds-catalog" />
+ <link href="https://coollib.net/opds/search?searchTerm=%D0%A1%D1%82%D1%80%D1%83%D0%B3%D0%B0%D1%86%D0%BA%D0%B8%D0%B9" rel="up" type="application/atom+xml;profile=opds-catalog" />
+ <entry> <updated>2026-10-05T17:41:11+03:00</updated>
+ <id>tag:author:3272</id>
+ <title>Стругацкий Аркадий Натанович</title>
+ <content type="text">274 книги</content>
+ <link href="https://coollib.net/opds/author/3272" type="application/atom+xml;profile=opds-catalog" />
+ <link href="https://coollib.net/sites/default/files/images_29.jpeg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/sites/default/files/images_29.jpeg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/sites/default/files/images_29.jpeg" rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/sites/default/files/images_29.jpeg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/opds/authorsequences/3272" rel="http://www.feedbooks.com/opds/facet" type="application/atom+xml;profile=opds-catalog" title="Книги автора по сериям" />
+ <link href="https://coollib.net/opds/authorsequenceless/3272" rel="http://www.feedbooks.com/opds/facet" type="application/atom+xml;profile=opds-catalog" title="Книги автора вне серий" />
+</entry>
+ <entry> <updated>2026-10-05T17:41:11+03:00</updated>
+ <id>tag:author:2701</id>
+ <title>Стругацкий Борис Натанович</title>
+ <content type="text">284 книги</content>
+ <link href="https://coollib.net/opds/author/2701" type="application/atom+xml;profile=opds-catalog" />
+ <link href="https://coollib.net/sites/default/files/220px-Boris_Strugatsky_Seminar_20060109_02_0.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="https://coollib.net/sites/default/files/220px-Boris_Strugatsky_Seminar_20060109_02_0.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="https://coollib.net/sites/default/files/220px-Boris_Strugatsky_Seminar_20060109_02_0.jpg" rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/sites/default/files/220px-Boris_Strugatsky_Seminar_20060109_02_0.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="https://coollib.net/opds/authorsequences/2701" rel="http://www.feedbooks.com/opds/facet" type="application/atom+xml;profile=opds-catalog" title="Книги автора по сериям" />
+ <link href="https://coollib.net/opds/authorsequenceless/2701" rel="http://www.feedbooks.com/opds/facet" type="application/atom+xml;profile=opds-catalog" title="Книги автора вне серий" />
+</entry>
+</feed>

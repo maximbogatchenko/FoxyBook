@@ -2,6 +2,7 @@ package com.foxybook.app
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,7 +12,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+<<<<<<< HEAD
+=======
+import kotlinx.coroutines.runBlocking
+>>>>>>> d24a20e (FoxyBook v1.9)
 import com.foxybook.app.core.datastore.DataStoreManager
+import com.foxybook.app.core.models.StartScreen
 import com.foxybook.app.core.utils.LocaleHelper
 import com.foxybook.app.navigation.MainApp
 import com.foxybook.app.ui.theme.FoxyBookAppTheme
@@ -31,11 +37,23 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+<<<<<<< HEAD
+=======
+        // Стартовый экран читается ДО setContent, чтобы маршрут не зависел от того,
+        // успел ли DataStore отдать значение к моменту отрисовки графа навигации.
+        var startRoute = StartScreen.NEW_BOOKS
+
+>>>>>>> d24a20e (FoxyBook v1.9)
         // Применяем сохранённую локаль — Koin уже инициализирован в Application.onCreate()
         try {
             val dataStoreManager = org.koin.java.KoinJavaComponent.get<DataStoreManager>(DataStoreManager::class.java) as DataStoreManager
             // Читаем из кэша DataStore — обычно <1ms
             val dm = dataStoreManager
+<<<<<<< HEAD
+=======
+            startRoute = runBlocking { dm.startScreen.first() }
+            Log.d(TAG, "startRoute = $startRoute")
+>>>>>>> d24a20e (FoxyBook v1.9)
             lifecycleScope.launch {
                 val language = withContext(Dispatchers.IO) { dm.appLanguage.first() }
                 LocaleHelper.currentLanguage = language
@@ -45,12 +63,18 @@ class MainActivity : ComponentActivity() {
             LocaleHelper.applyLocale(this, LocaleHelper.currentLanguage)
         }
 
+        val resolvedStartRoute = startRoute
+
         setContent {
             val dm = org.koin.compose.koinInject<DataStoreManager>()
             val themeMode by dm.themeMode.collectAsState(initial = "system")
             FoxyBookAppTheme(themeMode = themeMode) {
-                MainApp()
+                MainApp(startRoute = resolvedStartRoute)
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "FoxyBookMain"
     }
 }

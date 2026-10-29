@@ -26,6 +26,11 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+<<<<<<< HEAD
+=======
+import androidx.compose.material.icons.filled.Autorenew
+import androidx.compose.material.icons.filled.MenuBook
+>>>>>>> d24a20e (FoxyBook v1.9)
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material3.Card
@@ -48,19 +53,46 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+<<<<<<< HEAD
 import com.foxybook.app.core.models.LibraryBook
+=======
+import com.foxybook.app.core.models.BookReadState
+import com.foxybook.app.core.models.LibraryBook
+import com.foxybook.app.core.models.LibrarySorter
+import com.foxybook.app.core.models.ReadStatus
+>>>>>>> d24a20e (FoxyBook v1.9)
 import com.foxybook.app.ui.components.CoverWithAuthor
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+<<<<<<< HEAD
+=======
+// ─── Shared read-state helpers ────────────────────────────────────
+
+/** Подпись пункта меню: переключение между «прочитано» и «не прочитано». */
+private fun readMenuLabel(book: LibraryBook): Int =
+    if (LibrarySorter.readStatus(book) == ReadStatus.FINISHED) R.string.library_read_mark_unread
+    else R.string.library_read_mark_read
+
+/** Следующее состояние по нажатию на пункт меню. */
+private fun nextReadState(book: LibraryBook): String =
+    if (LibrarySorter.readStatus(book) == ReadStatus.FINISHED) BookReadState.UNREAD
+    else BookReadState.FINISHED
+
+>>>>>>> d24a20e (FoxyBook v1.9)
 // ─── List Book Card ──────────────────────────────────────────────
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LibraryBookCard(
     book: LibraryBook, isSelected: Boolean = false, onClick: () -> Unit, onLongClick: () -> Unit = {},
+<<<<<<< HEAD
     onToggleFavorite: () -> Unit, onMove: () -> Unit, onDelete: () -> Unit, onCoverClick: () -> Unit
+=======
+    onToggleFavorite: () -> Unit, onMove: () -> Unit, onDelete: () -> Unit, onCoverClick: () -> Unit,
+    onSetReadState: (String) -> Unit = {}
+>>>>>>> d24a20e (FoxyBook v1.9)
 ) {
     val dateFormat = remember { SimpleDateFormat("dd MMM yyyy", Locale.getDefault()) }
     val shape = remember { RoundedCornerShape(16.dp) }
@@ -85,6 +117,13 @@ fun LibraryBookCard(
                     Text("·", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     val date = if (book.lastReadDate > 0) Date(book.lastReadDate) else Date(book.downloadDate)
                     Text(dateFormat.format(date), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+<<<<<<< HEAD
+=======
+                    if (LibrarySorter.readStatus(book) == ReadStatus.FINISHED) {
+                        Text("·", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.library_read_badge), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
+                    }
+>>>>>>> d24a20e (FoxyBook v1.9)
                 }
             }
             IconButton(onClick = onToggleFavorite, modifier = Modifier.size(36.dp)) {
@@ -94,6 +133,17 @@ fun LibraryBookCard(
             Box {
                 IconButton(onClick = { showMenu = true }, modifier = Modifier.size(36.dp)) { Icon(Icons.Default.MoreVert, stringResource(R.string.cd_more), modifier = Modifier.size(20.dp)) }
                 DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+<<<<<<< HEAD
+=======
+                    DropdownMenuItem(text = { Text(stringResource(readMenuLabel(book))) },
+                        onClick = { showMenu = false; onSetReadState(nextReadState(book)) },
+                        leadingIcon = { Icon(if (LibrarySorter.readStatus(book) == ReadStatus.FINISHED) Icons.Default.CheckCircle else Icons.Default.MenuBook, null, modifier = Modifier.size(18.dp)) })
+                    if (book.readState != BookReadState.AUTO) {
+                        DropdownMenuItem(text = { Text(stringResource(R.string.library_read_auto)) },
+                            onClick = { showMenu = false; onSetReadState(BookReadState.AUTO) },
+                            leadingIcon = { Icon(Icons.Default.Autorenew, null, modifier = Modifier.size(18.dp)) })
+                    }
+>>>>>>> d24a20e (FoxyBook v1.9)
                     DropdownMenuItem(text = { Text(stringResource(R.string.cd_add_to_collection)) }, onClick = { showMenu = false; onMove() }, leadingIcon = { Icon(Icons.AutoMirrored.Filled.PlaylistAdd, null, modifier = Modifier.size(18.dp)) })
                     DropdownMenuItem(text = { Text(stringResource(R.string.cd_delete), color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDelete() }, leadingIcon = { Icon(Icons.Default.Delete, null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error) })
                 }
@@ -108,7 +158,12 @@ fun LibraryBookCard(
 @Composable
 fun CompactBookCard(
     book: LibraryBook, isSelected: Boolean = false, onClick: () -> Unit, onLongClick: () -> Unit = {},
+<<<<<<< HEAD
     onToggleFavorite: () -> Unit, onMoveToCollection: () -> Unit, onDeleteBook: () -> Unit, onCoverClick: () -> Unit
+=======
+    onToggleFavorite: () -> Unit, onMoveToCollection: () -> Unit, onDeleteBook: () -> Unit, onCoverClick: () -> Unit,
+    onSetReadState: (String) -> Unit = {}
+>>>>>>> d24a20e (FoxyBook v1.9)
 ) {
     val shape = remember { RoundedCornerShape(12.dp) }
     var showMenu by remember { mutableStateOf(false) }
@@ -123,13 +178,34 @@ fun CompactBookCard(
             CoverWithAuthor(coverUrl = book.coverUrl, author = book.author, contentDescription = book.title, width = 40.dp, height = 56.dp, onCoverClick = { onCoverClick() })
             Spacer(Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
+<<<<<<< HEAD
                 Text(book.title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+=======
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(book.title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
+                    if (LibrarySorter.readStatus(book) == ReadStatus.FINISHED) {
+                        Spacer(Modifier.width(4.dp))
+                        Icon(Icons.Default.CheckCircle, stringResource(R.string.library_read_badge), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
+                    }
+                }
+>>>>>>> d24a20e (FoxyBook v1.9)
                 Text(book.author, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             IconButton(onClick = onToggleFavorite, modifier = Modifier.size(32.dp)) { Icon(if (book.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder, stringResource(R.string.cd_favorites), tint = if (book.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp)) }
             Box {
                 IconButton(onClick = { showMenu = true }, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.MoreVert, stringResource(R.string.cd_more), modifier = Modifier.size(18.dp)) }
                 DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+<<<<<<< HEAD
+=======
+                    DropdownMenuItem(text = { Text(stringResource(readMenuLabel(book))) },
+                        onClick = { showMenu = false; onSetReadState(nextReadState(book)) },
+                        leadingIcon = { Icon(if (LibrarySorter.readStatus(book) == ReadStatus.FINISHED) Icons.Default.CheckCircle else Icons.Default.MenuBook, null, modifier = Modifier.size(18.dp)) })
+                    if (book.readState != BookReadState.AUTO) {
+                        DropdownMenuItem(text = { Text(stringResource(R.string.library_read_auto)) },
+                            onClick = { showMenu = false; onSetReadState(BookReadState.AUTO) },
+                            leadingIcon = { Icon(Icons.Default.Autorenew, null, modifier = Modifier.size(18.dp)) })
+                    }
+>>>>>>> d24a20e (FoxyBook v1.9)
                     DropdownMenuItem(text = { Text(stringResource(R.string.cd_add_to_collection)) }, onClick = { showMenu = false; onMoveToCollection() }, leadingIcon = { Icon(Icons.AutoMirrored.Filled.PlaylistAdd, null, modifier = Modifier.size(18.dp)) })
                     DropdownMenuItem(text = { Text(stringResource(R.string.cd_delete), color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDeleteBook() }, leadingIcon = { Icon(Icons.Default.Delete, null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error) })
                 }
@@ -146,6 +222,10 @@ fun GridBookCard(
     book: LibraryBook, isSelected: Boolean = false, isSelectionMode: Boolean = false,
     onCoverClick: () -> Unit, onReadClick: () -> Unit, onLongClick: () -> Unit = {},
     onToggleFavorite: () -> Unit, onMoveToCollection: () -> Unit, onDeleteBook: () -> Unit,
+<<<<<<< HEAD
+=======
+    onSetReadState: (String) -> Unit = {},
+>>>>>>> d24a20e (FoxyBook v1.9)
     isLandscape: Boolean = false
 ) {
     val shape = remember { RoundedCornerShape(12.dp) }
@@ -169,13 +249,34 @@ fun GridBookCard(
                     Box(modifier = Modifier.align(Alignment.TopEnd).padding(6.dp).size(32.dp).background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f), CircleShape)) {
                         IconButton(onClick = { showMenu = true }, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.MoreVert, stringResource(R.string.cd_more), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp)) }
                         DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+<<<<<<< HEAD
+=======
+                            DropdownMenuItem(text = { Text(stringResource(readMenuLabel(book))) },
+                                onClick = { showMenu = false; onSetReadState(nextReadState(book)) },
+                                leadingIcon = { Icon(if (LibrarySorter.readStatus(book) == ReadStatus.FINISHED) Icons.Default.CheckCircle else Icons.Default.MenuBook, null, modifier = Modifier.size(18.dp)) })
+                            if (book.readState != BookReadState.AUTO) {
+                                DropdownMenuItem(text = { Text(stringResource(R.string.library_read_auto)) },
+                                    onClick = { showMenu = false; onSetReadState(BookReadState.AUTO) },
+                                    leadingIcon = { Icon(Icons.Default.Autorenew, null, modifier = Modifier.size(18.dp)) })
+                            }
+>>>>>>> d24a20e (FoxyBook v1.9)
                             DropdownMenuItem(text = { Text(stringResource(R.string.cd_add_to_collection)) }, onClick = { showMenu = false; onMoveToCollection() }, leadingIcon = { Icon(Icons.AutoMirrored.Filled.PlaylistAdd, null, modifier = Modifier.size(18.dp)) })
                             DropdownMenuItem(text = { Text(stringResource(R.string.cd_delete), color = MaterialTheme.colorScheme.error) }, onClick = { showMenu = false; onDeleteBook() }, leadingIcon = { Icon(Icons.Default.Delete, null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error) })
                         }
                     }
                 }
             }
+<<<<<<< HEAD
             Text(book.title, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center, modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 6.dp))
+=======
+            Row(modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(book.title, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
+                if (LibrarySorter.readStatus(book) == ReadStatus.FINISHED) {
+                    Spacer(Modifier.width(4.dp))
+                    Icon(Icons.Default.CheckCircle, stringResource(R.string.library_read_badge), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
+                }
+            }
+>>>>>>> d24a20e (FoxyBook v1.9)
             Text(book.author, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center, modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 4.dp))
             OutlinedButton(onClick = onReadClick, modifier = Modifier.padding(bottom = if (isLandscape) 4.dp else 10.dp), shape = RoundedCornerShape(8.dp)) {
                 Text(if (isSelectionMode) stringResource(R.string.library_select) else stringResource(R.string.book_details_read_btn), style = MaterialTheme.typography.labelMedium)

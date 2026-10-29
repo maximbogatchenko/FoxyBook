@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <feed xmlns="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/terms/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/" xmlns:opds="http://opds-spec.org/2010/catalog"> <id>tag:search:books:градский:</id>
+ <title>Результат поиска</title>
+ <updated>2026-10-05T16:21:43+02:00</updated>
+ <icon>/favicon.ico</icon>
+ <link href="/opds-opensearch.xml" rel="search" type="application/opensearchdescription+xml" />
+ <link href="/opds/search?searchTerm={searchTerms}" rel="search" type="application/atom+xml" />
+ <link href="/opds" rel="start" type="application/atom+xml;profile=opds-catalog" />
+ <link href="/opds/search?searchTerm=%D0%B3%D1%80%D0%B0%D0%B4%D1%81%D0%BA%D0%B8%D0%B9" rel="up" type="application/atom+xml;profile=opds-catalog" />
+ <link href="/opds/search?searchType=books&amp;searchTerm=%D0%B3%D1%80%D0%B0%D0%B4%D1%81%D0%BA%D0%B8%D0%B9&amp;pageNumber=1" rel="next" type="application/atom+xml;profile=opds-catalog" />
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>2. Коллекция: Петербургская проза (ленинградский период). 1970-е</title>
+ <author> <name>Битов Андрей Георгиевич</name>
+ <uri>/a/1279</uri>
+</author>
+ <link href="/opds/author/1279" rel="related" type="application/atom+xml" title="Все книги автора Битов Андрей Георгиевич" />
+ <author> <name>Иванов Борис Иванович</name>
+ <uri>/a/27667</uri>
+</author>
+ <link href="/opds/author/27667" rel="related" type="application/atom+xml" title="Все книги автора Иванов Борис Иванович" />
+ <author> <name>Коняев Николай Михайлович</name>
+ <uri>/a/46648</uri>
+</author>
+ <link href="/opds/author/46648" rel="related" type="application/atom+xml" title="Все книги автора Коняев Николай Михайлович" />
+ <author> <name>Морев Александр Сергеевич</name>
+ <uri>/a/78668</uri>
+</author>
+ <link href="/opds/author/78668" rel="related" type="application/atom+xml" title="Все книги автора Морев Александр Сергеевич" />
+ <author> <name>Лапенков Владимир Борисович</name>
+ <uri>/a/82119</uri>
+</author>
+ <link href="/opds/author/82119" rel="related" type="application/atom+xml" title="Все книги автора Лапенков Владимир Борисович" />
+ <author> <name>Петряков Александр Михайлович</name>
+ <uri>/a/89628</uri>
+</author>
+ <link href="/opds/author/89628" rel="related" type="application/atom+xml" title="Все книги автора Петряков Александр Михайлович" />
+ <author> <name>Аксёнов Василий Иванович</name>
+ <uri>/a/125657</uri>
+</author>
+ <link href="/opds/author/125657" rel="related" type="application/atom+xml" title="Все книги автора Аксёнов Василий Иванович" />
+ <author> <name>Беляев Илья Дмитриевич</name>
+ <uri>/a/165002</uri>
+</author>
+ <link href="/opds/author/165002" rel="related" type="application/atom+xml" title="Все книги автора Беляев Илья Дмитриевич" />
+ <author> <name>Дышленко Борис Иванович</name>
+ <uri>/a/173150</uri>
+</author>
+ <link href="/opds/author/173150" rel="related" type="application/atom+xml" title="Все книги автора Дышленко Борис Иванович" />
+ <author> <name>Алексеев Владимир Владимирович</name>
+ <uri>/a/173151</uri>
+</author>
+ <link href="/opds/author/173151" rel="related" type="application/atom+xml" title="Все книги автора Алексеев Владимир Владимирович" />
+ <author> <name>Шигашов Юрий Николаевич</name>
+ <uri>/a/173152</uri>
+</author>
+ <link href="/opds/author/173152" rel="related" type="application/atom+xml" title="Все книги автора Шигашов Юрий Николаевич" />
+ <author> <name>Улановская Белла Юрьевна</name>
+ <uri>/a/173153</uri>
+</author>
+ <link href="/opds/author/173153" rel="related" type="application/atom+xml" title="Все книги автора Улановская Белла Юрьевна" />
+ <author> <name>Корвин Тамара Зиновьевна</name>
+ <uri>/a/173154</uri>
+</author>
+ <link href="/opds/author/173154" rel="related" type="application/atom+xml" title="Все книги автора Корвин Тамара Зиновьевна" />
+ <author> <name>Губин Владимир Андреевич</name>
+ <uri>/a/173155</uri>
+</author>
+ <link href="/opds/author/173155" rel="related" type="application/atom+xml" title="Все книги автора Губин Владимир Андреевич" />
+ <author> <name>Кудряков Борис Александрович</name>
+ <uri>/a/173156</uri>
+</author>
+ <link href="/opds/author/173156" rel="related" type="application/atom+xml" title="Все книги автора Кудряков Борис Александрович" />
+ <category term="Современная русская и зарубежная проза" label="Современная русская и зарубежная проза" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2003</dc:issued>
+ <content type="text/html">
+    &lt;p class=&quot;book&quot;&gt;Вторая книга из трех под общим названием «Коллекция: Петербургская проза (ленинградский период)», посвященных 1960–1980-м годам XX века. Освобождение от «ценностей» советского общества формировало особую авторскую позицию: обращение к ценностям, репрессированным официальной культурой и в нравственной, и в эстетической сферах. В уникальных для литературы 1970-х гг. текстах отражен художественный опыт выживания в пустоте.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Автор концепции издания — Б. И. Иванов.&lt;/p&gt;
+   &lt;br/&gt;Год издания: 2003&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 2046 Kb&lt;br/&gt;Скачиваний: 4888&lt;br/&gt;</content>
+ <link href="/i/38/461338/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/38/461338/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/38/461338/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/38/461338/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/461338/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/461338/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/461338/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/461338/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/461338/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/461338/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/461338" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:d8e8a2099b8999a011de11fcb3500ea3</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Александр Градский. The ГОЛОС, или «Насравший в вечность»</title>
+ <author> <name>Додолев Евгений Юрьевич</name>
+ <uri>/a/97046</uri>
+</author>
+ <link href="/opds/author/97046" rel="related" type="application/atom+xml" title="Все книги автора Додолев Евгений Юрьевич" />
+ <category term="Биографии и мемуары: прочее" label="Биографии и мемуары: прочее" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <content type="text/html">&lt;p class=book&gt;Это первая книга об Александре Борисовиче Градском, при этом данный труд – не столько книга о Градском, сколько, собственно, книга самого Градского: в ней, помимо авторских наблюдений и эссе, собраны статьи и заметки легендарного рок-одиночки и конечно же разномастные интервью Александра Борисовича, которые в течение десятилетий записывали друзья, родственники, подчиненные автора и сам Евгений Ю. Додолев, разумеется. Ну и плюс бесценные ремарки маэстро, которыми он щедро поделился во время чтения рукописи. Так что вещь получилась пристрастная и необъективная. Нестандартная. Как, собственно, в целом само творчество легендарного объекта книги – АБГ. Изначально рукопись была озаглавлена «Насравший в вечность», кстати. Столь необычное название записок появилось с подачи Николая Фоменко, об этом рассказано в самом конце.&lt;/p&gt;&lt;p class=book&gt;Иллюстрирована уникальными фотографиями из коллекции Издательского Дома «Новый Взгляд» и архива самого певца.&lt;/p&gt;&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 4964 Kb&lt;br/&gt;Скачиваний: 5597&lt;br/&gt;</content>
+ <link href="/i/35/335535/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/35/335535/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/35/335535/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/35/335535/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/335535/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/335535/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/335535/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/335535/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/335535/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/335535/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/335535" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:bdfef8603b8bb8da589d1354cce12849</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>В те дни. Ленинградский альбом</title>
+ <author> <name>Тихонов Николай Семенович</name>
+ <uri>/a/71447</uri>
+</author>
+ <link href="/opds/author/71447" rel="related" type="application/atom+xml" title="Все книги автора Тихонов Николай Семенович" />
+ <author> <name>Пахомов А</name>
+ <uri>/a/214013</uri>
+</author>
+ <link href="/opds/author/214013" rel="related" type="application/atom+xml" title="Все книги автора Пахомов А" />
+ <category term="Биографии и мемуары: прочее" label="Биографии и мемуары: прочее" />
+ <category term="Военная документалистика и аналитика" label="Военная документалистика и аналитика" />
+ <category term="Документальная литература" label="Документальная литература" />
+ <category term="Публицистика" label="Публицистика" />
+ <dc:language>ru</dc:language>
+ <dc:format>doc</dc:format>
+ <dc:issued>1946</dc:issued>
+ <content type="text/html">О жизни и борьбе блокадного Ленинграда&lt;br/&gt;Год издания: 1946&lt;br/&gt;Формат: doc&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 3386 Kb&lt;br/&gt;Скачиваний: 605&lt;br/&gt;</content>
+ <link href="/b/546325/download" rel="http://opds-spec.org/acquisition/open-access" type="application/doc" />
+ <link href="/b/546325" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:de0f205791527b373f4de97883ec7dc4</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Градский рядом</title>
+ <author> <name>Петров Алексей Станиславович</name>
+ <uri>/a/76886</uri>
+</author>
+ <link href="/opds/author/76886" rel="related" type="application/atom+xml" title="Все книги автора Петров Алексей Станиславович" />
+ <category term="Роман, повесть" label="Роман, повесть" />
+ <category term="Современная русская и зарубежная проза" label="Современная русская и зарубежная проза" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <content type="text/html">
+    &lt;p class=&quot;book&quot;&gt;Понимаете, в чём штука: есть вещи, о которых бессмысленно говорить. Например, смысл жизни. Зачем о нём говорить? Надо прожить жизнь, оно и будет понятней.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Алексей Петров пишет о любви к музыке, не ища в этом смысла. Он просто рассказывает о том, как он жил, и музыка жила с ним.&lt;/p&gt;
+   &lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 191 Kb&lt;br/&gt;Скачиваний: 874&lt;br/&gt;</content>
+ <link href="/b/450851/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/450851/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/450851/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/450851/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/450851/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/450851/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/450851" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:a64cc6c1c7c6dfdc3413454165399e61</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Калининградский сувенир</title>
+ <author> <name>Прядеев Евгений</name>
+ <uri>/a/223950</uri>
+</author>
+ <link href="/opds/author/223950" rel="related" type="application/atom+xml" title="Все книги автора Прядеев Евгений" />
+ <category term="Городское фэнтези" label="Городское фэнтези" />
+ <category term="Самиздат, сетевая литература" label="Самиздат, сетевая литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2021</dc:issued>
+ <link href="/opds/sequencebooks/85234" rel="related" type="application/atom+xml" title="Все книги серии &quot;Вселенная мира Ночи&quot;" />
+ <link href="/opds/sequencebooks/73166" rel="related" type="application/atom+xml" title="Все книги серии &quot;Дела медвежьи&quot;" />
+ <content type="text/html">
+    &lt;p class=&quot;book&quot;&gt;Иногда старые тайны гораздо ближе, чем нам кажется. Поездка в Калининград, родной город Андрея, не могла обойтись без приключений, ведь новые дома здесь стоят на костях прошлого. Однако Винни и его верный друг Мирон уже давным-давно ничего не боятся.&lt;/p&gt;
+   &lt;br/&gt;Год издания: 2021&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 973 Kb&lt;br/&gt;Скачиваний: 9534&lt;br/&gt;Серия: Вселенная мира Ночи&lt;br/&gt;Серия: Дела медвежьи #3&lt;br/&gt;</content>
+ <link href="/i/23/614623/_34fa7cb2d87741f6ad79d441ce74c397.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/23/614623/_34fa7cb2d87741f6ad79d441ce74c397.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/23/614623/_34fa7cb2d87741f6ad79d441ce74c397.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/23/614623/_34fa7cb2d87741f6ad79d441ce74c397.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/614623/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/614623/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/614623/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/614623/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/614623/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/614623/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/614623" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:5f8f7ea0d75fec66e47ec1dbf244e198</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Керогаз и другие. Ленинградский каталог</title>
+ <author> <name>Гранин Даниил Александрович</name>
+ <uri>/a/51536</uri>
+</author>
+ <link href="/opds/author/51536" rel="related" type="application/atom+xml" title="Все книги автора Гранин Даниил Александрович" />
+ <category term="Документальная литература" label="Документальная литература" />
+ <category term="Публицистика" label="Публицистика" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>2003</dc:issued>
+ <content type="text/html">Год издания: 2003&lt;br/&gt;Формат: pdf&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 17559 Kb&lt;br/&gt;Скачиваний: 873&lt;br/&gt;</content>
+ <link href="/b/548546/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="/b/548546" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:80eac4bb2fdac810d3b79e801132d7f5</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Коллекция: Петербургская проза (ленинградский период). 1960-е</title>
+ <author> <name>Битов Андрей Георгиевич</name>
+ <uri>/a/1279</uri>
+</author>
+ <link href="/opds/author/1279" rel="related" type="application/atom+xml" title="Все книги автора Битов Андрей Георгиевич" />
+ <author> <name>Попов Валерий Георгиевич</name>
+ <uri>/a/9848</uri>
+</author>
+ <link href="/opds/author/9848" rel="related" type="application/atom+xml" title="Все книги автора Попов Валерий Георгиевич" />
+ <author> <name>Вольф Сергей Евгеньевич</name>
+ <uri>/a/13351</uri>
+</author>
+ <link href="/opds/author/13351" rel="related" type="application/atom+xml" title="Все книги автора Вольф Сергей Евгеньевич" />
+ <author> <name>Иванов Борис Иванович</name>
+ <uri>/a/27667</uri>
+</author>
+ <link href="/opds/author/27667" rel="related" type="application/atom+xml" title="Все книги автора Иванов Борис Иванович" />
+ <author> <name>Кондратов Александр Михайлович</name>
+ <uri>/a/29709</uri>
+</author>
+ <link href="/opds/author/29709" rel="related" type="application/atom+xml" title="Все книги автора Кондратов Александр Михайлович" />
+ <author> <name>Грачев Рид Иосифович</name>
+ <uri>/a/61799</uri>
+</author>
+ <link href="/opds/author/61799" rel="related" type="application/atom+xml" title="Все книги автора Грачев Рид Иосифович" />
+ <author> <name>Вахтин Борис Борисович</name>
+ <uri>/a/75130</uri>
+</author>
+ <link href="/opds/author/75130" rel="related" type="application/atom+xml" title="Все книги автора Вахтин Борис Борисович" />
+ <author> <name>Григорьев Олег Евгеньевич</name>
+ <uri>/a/110604</uri>
+</author>
+ <link href="/opds/author/110604" rel="related" type="application/atom+xml" title="Все книги автора Григорьев Олег Евгеньевич" />
+ <author> <name>Петкевич Инга Григорьевна</name>
+ <uri>/a/138599</uri>
+</author>
+ <link href="/opds/author/138599" rel="related" type="application/atom+xml" title="Все книги автора Петкевич Инга Григорьевна" />
+ <author> <name>Шеф Генрих Владимирович</name>
+ <uri>/a/177916</uri>
+</author>
+ <link href="/opds/author/177916" rel="related" type="application/atom+xml" title="Все книги автора Шеф Генрих Владимирович" />
+ <author> <name>Чирсков Федор Борисович</name>
+ <uri>/a/177917</uri>
+</author>
+ <link href="/opds/author/177917" rel="related" type="application/atom+xml" title="Все книги автора Чирсков Федор Борисович" />
+ <category term="Советская классическая проза" label="Советская классическая проза" />
+ <category term="Современная русская и зарубежная проза" label="Современная русская и зарубежная проза" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2003</dc:issued>
+ <content type="text/html">
+        &lt;p class=&quot;book&quot;&gt;Первая книга из трех под общим названием «Коллекция: Петербургская проза (ленинградский период)», посвященных 1960–1980-м годам XX века. В нее вошли как опубликованные, так и не публиковавшиеся, ранее произведения авторов, принадлежащих к так называемой «второй культуре». Их герои — идеалисты без иллюзий. Честь и достоинство они обретали в своей собственной, отдельно от советского государства взятой жизни.&lt;/p&gt;
+      &lt;br/&gt;Год издания: 2003&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 1880 Kb&lt;br/&gt;Скачиваний: 5533&lt;br/&gt;</content>
+ <link href="/i/84/472984/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/84/472984/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/84/472984/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/84/472984/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/472984/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/472984/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/472984/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/472984/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/472984/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/472984/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/472984" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:0188d8830f6297662b580d6988115f2c</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Коллекция: Петербургская проза (ленинградский период). 1980-е</title>
+ <author> <name>Адамацкий Игорь Алексеевич</name>
+ <uri>/a/48</uri>
+</author>
+ <link href="/opds/author/48" rel="related" type="application/atom+xml" title="Все книги автора Адамацкий Игорь Алексеевич" />
+ <author> <name>Шинкарёв Владимир Николаевич</name>
+ <uri>/a/17704</uri>
+</author>
+ <link href="/opds/author/17704" rel="related" type="application/atom+xml" title="Все книги автора Шинкарёв Владимир Николаевич" />
+ <author> <name>Носов Сергей Анатольевич</name>
+ <uri>/a/31335</uri>
+</author>
+ <link href="/opds/author/31335" rel="related" type="application/atom+xml" title="Все книги автора Носов Сергей Анатольевич" />
+ <author> <name>Коровин Сергей Иванович</name>
+ <uri>/a/73572</uri>
+</author>
+ <link href="/opds/author/73572" rel="related" type="application/atom+xml" title="Все книги автора Коровин Сергей Иванович" />
+ <author> <name>Исаев Николай Павлович</name>
+ <uri>/a/93269</uri>
+</author>
+ <link href="/opds/author/93269" rel="related" type="application/atom+xml" title="Все книги автора Исаев Николай Павлович" />
+ <author> <name>Катерли Нина Семеновна</name>
+ <uri>/a/120187</uri>
+</author>
+ <link href="/opds/author/120187" rel="related" type="application/atom+xml" title="Все книги автора Катерли Нина Семеновна" />
+ <author> <name>Аксёнов Василий Иванович</name>
+ <uri>/a/125657</uri>
+</author>
+ <link href="/opds/author/125657" rel="related" type="application/atom+xml" title="Все книги автора Аксёнов Василий Иванович" />
+ <author> <name>Дышленко Борис Иванович</name>
+ <uri>/a/173150</uri>
+</author>
+ <link href="/opds/author/173150" rel="related" type="application/atom+xml" title="Все книги автора Дышленко Борис Иванович" />
+ <author> <name>Звягин Евгений Аронович</name>
+ <uri>/a/177947</uri>
+</author>
+ <link href="/opds/author/177947" rel="related" type="application/atom+xml" title="Все книги автора Звягин Евгений Аронович" />
+ <author> <name>Федоров Сергей Алексеевич</name>
+ <uri>/a/177948</uri>
+</author>
+ <link href="/opds/author/177948" rel="related" type="application/atom+xml" title="Все книги автора Федоров Сергей Алексеевич" />
+ <author> <name>Холоденко Валерий Александрович</name>
+ <uri>/a/177949</uri>
+</author>
+ <link href="/opds/author/177949" rel="related" type="application/atom+xml" title="Все книги автора Холоденко Валерий Александрович" />
+ <author> <name>Бартов Аркадий Анатольевич</name>
+ <uri>/a/177950</uri>
+</author>
+ <link href="/opds/author/177950" rel="related" type="application/atom+xml" title="Все книги автора Бартов Аркадий Анатольевич" />
+ <author> <name>Кривулин Виктор Борисович</name>
+ <uri>/a/177951</uri>
+</author>
+ <link href="/opds/author/177951" rel="related" type="application/atom+xml" title="Все книги автора Кривулин Виктор Борисович" />
+ <category term="Современная русская и зарубежная проза" label="Современная русская и зарубежная проза" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2004</dc:issued>
+ <content type="text/html">
+        &lt;p class=&quot;book&quot;&gt;Последняя книга из трех под общим названием «Коллекция: Петербургская проза (ленинградский период)». Произведения, составляющие сборник, были написаны и напечатаны в сам- и тамиздате еще до перестройки, упреждая поток разоблачительной публицистики конца 1980-х. Их герои воспринимают проблемы бытия не сквозь призму идеологических предписаний, а в достоверности личного эмоционального опыта.&lt;/p&gt;
+        &lt;p class=&quot;book&quot;&gt;Автор концепции издания — Б. И. Иванов.&lt;/p&gt;
+      &lt;br/&gt;Год издания: 2004&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 1751 Kb&lt;br/&gt;Скачиваний: 4861&lt;br/&gt;</content>
+ <link href="/i/64/473064/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/64/473064/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/64/473064/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/64/473064/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/473064/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/473064/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/473064/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/473064/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/473064/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/473064/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/473064" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:99db99618603ed79f5a19917e212482b</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Ленинградский «Блицкриг» [На основе военных дневников высших офицеров вермахта генерал-фельдмаршала Вильгельма Риттера фон Лееба и генерал-полковника Франца Гальдера, 1941-1942 (Maxima-Library)]</title>
+ <author> <name>Лебедев Юрий Михайлович</name>
+ <uri>/a/65951</uri>
+</author>
+ <link href="/opds/author/65951" rel="related" type="application/atom+xml" title="Все книги автора Лебедев Юрий Михайлович" />
+ <category term="Военная документалистика и аналитика" label="Военная документалистика и аналитика" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2011</dc:issued>
+ <content type="text/html">
+    &lt;p class=book&gt;В книге представлены отрывки из военных дневников двух высших офицеров вермахта: генерал-фельдмаршала Вильгельма Риттера фон Лееба и генерал-полковника Франца Гальдера. Во время Великой Отечественной войны первый из них был командующим группы армий «Север», второй являлся начальником Генерального штаба сухопутных войск (ОКХ). Ленинград стал ареной их личного противоборства. Победил в конце концов Гальдер, убедивший Гитлера отказаться от штурма Северной столицы. Ради захвата Москвы город на Неве был объявлен «театром второстепенных военных действий» и был обречен на бесчеловечную блокаду, а его жители — на лишения, голод и гибель…&lt;/p&gt;
+    &lt;p class=book&gt;Ежедневные заметки немецких военачальников, начиная с нападения на Советский Союз и описание боев за Ленинград в 1941–1942 годах, тщательно проанализированы и дополнены комментариями Юрия Лебедева. Материалы печатаются впервые, и книга, выходящая в канун 70-летия начала блокады Ленинграда, приоткрывает завесу над ее причинами.&lt;/p&gt;
+    &lt;br&gt;
+   &lt;br/&gt;Год издания: 2011&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 4179 Kb&lt;br/&gt;Скачиваний: 3502&lt;br/&gt;</content>
+ <link href="/i/64/352664/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/64/352664/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/64/352664/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/64/352664/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/352664/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/352664/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/352664/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/352664/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/352664/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/352664/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/352664" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:aed45dece126ab28de92dbf02fbc86f1</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Ленинградский альбом</title>
+ <author> <name>Кокорин Анатолий Владимирович</name>
+ <uri>/a/215647</uri>
+</author>
+ <link href="/opds/author/215647" rel="related" type="application/atom+xml" title="Все книги автора Кокорин Анатолий Владимирович" />
+ <category term="Живопись, альбомы, иллюстрированные каталоги" label="Живопись, альбомы, иллюстрированные каталоги" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>1967</dc:issued>
+ <content type="text/html">Альбом художника А.В.Кокорина посвящен Ленинграду. Он включает в себя более шестидесяти рисунков и набросков, на которых запечатлены ленинградские пейзажи.&lt;br/&gt;Год издания: 1967&lt;br/&gt;Формат: pdf&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 18100 Kb&lt;br/&gt;Скачиваний: 942&lt;br/&gt;</content>
+ <link href="/b/550067/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="/b/550067" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:06f1e86f13ae8952587994e48a2db2d0</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Ленинградский архитектор Николай Николаевич Баранов</title>
+ <author> <name>Биографии и мемуары Коллектив авторов --</name>
+ <uri>/a/112809</uri>
+</author>
+ <link href="/opds/author/112809" rel="related" type="application/atom+xml" title="Все книги автора Биографии и мемуары Коллектив авторов --" />
+ <author> <name>Баранов Николай Николаевич</name>
+ <uri>/a/271624</uri>
+</author>
+ <link href="/opds/author/271624" rel="related" type="application/atom+xml" title="Все книги автора Баранов Николай Николаевич" />
+ <category term="Биографии и мемуары: прочее" label="Биографии и мемуары: прочее" />
+ <category term="Скульптура и архитектура" label="Скульптура и архитектура" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>2016</dc:issued>
+ <content type="text/html">Николай Николаевич Баранов (1935–2006), Заслуженный архитектор России, в данном издании, выходящем
+к 10-летию со дня его кончины, представлен не только как создатель главного своего произведения, гостиницы
+«Прибалтийская» в Петербурге, но и как автор множества проектных работ: от застройки жилых кварталов до малых,
+в том числе – мемориальных, архитектурных форм, а также как исследователь и как тонкий художник, увлеченый
+разнообразной техникой печатной графики.&lt;br/&gt;Год издания: 2016&lt;br/&gt;Формат: pdf&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 14638 Kb&lt;br/&gt;Скачиваний: 445&lt;br/&gt;</content>
+ <link href="/b/706036/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="/b/706036" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:89ca964dc8bf6534822ffc2923c7578f</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Ленинградский вокзал</title>
+ <author> <name>Краёв Юрий</name>
+ <uri>/a/259676</uri>
+</author>
+ <link href="/opds/author/259676" rel="related" type="application/atom+xml" title="Все книги автора Краёв Юрий" />
+ <category term="Приключения" label="Приключения" />
+ <category term="Современная русская и зарубежная проза" label="Современная русская и зарубежная проза" />
+ <category term="Юмористическая проза" label="Юмористическая проза" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2021</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Блогер решается на создание серьёзного литературного произведения. Сложности подстерегают его на каждом шагу.&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;Содержит нецензурную брань.&lt;/p&gt;
+&lt;br/&gt;Год издания: 2021&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 1679 Kb&lt;br/&gt;Скачиваний: 528&lt;br/&gt;</content>
+ <link href="/i/15/671115/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/15/671115/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/15/671115/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/15/671115/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/671115/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/671115/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/671115/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/671115/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/671115/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/671115/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/671115" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:5e44c2b775d532cc148be5297e17996e</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Ленинградский дневник</title>
+ <author> <name>Берггольц Ольга Федоровна</name>
+ <uri>/a/61323</uri>
+</author>
+ <link href="/opds/author/61323" rel="related" type="application/atom+xml" title="Все книги автора Берггольц Ольга Федоровна" />
+ <category term="Поэзия" label="Поэзия" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <content type="text/html">Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 8529 B&lt;br/&gt;Скачиваний: 3451&lt;br/&gt;</content>
+ <link href="/b/6483/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/6483/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/6483/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/6483/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/6483/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/6483/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/6483" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:4d0ff8e50223bb0c76f73ef0c5141606</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Ленинградский дневник [сборник]</title>
+ <author> <name>Берггольц Ольга Федоровна</name>
+ <uri>/a/61323</uri>
+</author>
+ <link href="/opds/author/61323" rel="related" type="application/atom+xml" title="Все книги автора Берггольц Ольга Федоровна" />
+ <category term="Классическая проза ХX века" label="Классическая проза ХX века" />
+ <category term="Поэзия" label="Поэзия" />
+ <category term="Русская классическая проза" label="Русская классическая проза" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2015</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Ольга Берггольц (1910–1975) – тонкий лирик и поэт гражданского темперамента, широко известная знаменитыми стихотворениями, созданными ею в блокадном Ленинграде. Ранние стихотворения проникнуты светлым жизнеутверждающим началом, искренностью, любовью к жизни. В годы репрессий, в конце 30-х, оказалась по ложному обвинению в тюрьме. Этот страшный период отражен в тюремных стихотворениях, вошедших в этот сборник. Невероятная поэтическая сила О. Берггольц проявилась в период тяжелейших испытаний, выпавших на долю народа, страны, – во время Великой Отечественной войны. В книгу включены знаменитые стихотворения поэта, а также дневниковые записи «Дневные звезды».&lt;/p&gt;
+&lt;br/&gt;Год издания: 2015&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 2461 Kb&lt;br/&gt;Скачиваний: 3114&lt;br/&gt;</content>
+ <link href="/i/92/414492/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/92/414492/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/92/414492/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/92/414492/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/414492/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/414492/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/414492/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/414492/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/414492/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/414492/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/414492" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:308e39a4bc5c4c5e1d10bd6bc3eb806d</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Ленинградский каталог</title>
+ <author> <name>Гранин Даниил Александрович</name>
+ <uri>/a/51536</uri>
+</author>
+ <link href="/opds/author/51536" rel="related" type="application/atom+xml" title="Все книги автора Гранин Даниил Александрович" />
+ <category term="Советская классическая проза" label="Советская классическая проза" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2006</dc:issued>
+ <content type="text/html">Год издания: 2006&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 156 Kb&lt;br/&gt;Скачиваний: 2705&lt;br/&gt;</content>
+ <link href="/b/294493/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/294493/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/294493/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/294493/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/294493/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/294493/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/294493" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:50fca2370b0b10bcc079721aaf65928d</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Ленинградский коверкот</title>
+ <author> <name>Симачев Леонид Алексеевич</name>
+ <uri>/a/239595</uri>
+</author>
+ <link href="/opds/author/239595" rel="related" type="application/atom+xml" title="Все книги автора Симачев Леонид Алексеевич" />
+ <category term="Проза" label="Проза" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>1986</dc:issued>
+ <content type="text/html">
+    &lt;p class=&quot;book&quot;&gt;СИМАЧЕВ Леонид Алексеевич родился в 1950 году в городе Сковородино Амурской области. Работал в зейской экспедиции Мосгипротранса на участке Бам — Тында. Закончил в 1971 году Дальневосточное мореходное училище города Находки. Плавал начальником радиостанции китобойного судна флотилии «Владивосток». В настоящее время работает инженером на телевизионной приемной станции «Орбита». В 1982 году закончил заочное отделение Литературного института имени А. М. Горького.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Рассказы Л. Симачева публиковались в альманахе «Приамурье мое», журналах «Октябрь» и «Студенческий меридиан». Он участник первого зонального совещания молодых литераторов Дальнего Востока в Петропавловске-Камчатском 1981 года, VIII Всесоюзного совещания молодых писателей в Москве.&lt;/p&gt;
+   &lt;br/&gt;Год издания: 1986&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 1380 Kb&lt;br/&gt;Скачиваний: 620&lt;br/&gt;</content>
+ <link href="/i/96/616996/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/96/616996/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/96/616996/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/96/616996/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/616996/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/616996/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/616996/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/616996/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/616996/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/616996/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/616996" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:d09fa4d99b5b221bead66857c5635d3b</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Ленинградский лексикон</title>
+ <author> <name>Богданов Игорь Алексеевич</name>
+ <uri>/a/45732</uri>
+</author>
+ <link href="/opds/author/45732" rel="related" type="application/atom+xml" title="Все книги автора Богданов Игорь Алексеевич" />
+ <category term="Документальная литература" label="Документальная литература" />
+ <category term="Публицистика" label="Публицистика" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>2013</dc:issued>
+ <content type="text/html">Год издания: 2013&lt;br/&gt;Формат: pdf&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 15217 Kb&lt;br/&gt;Скачиваний: 832&lt;br/&gt;</content>
+ <link href="/b/550211/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="/b/550211" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:36bb4e0c9b56e26d86c929c2139de88a</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Ленинградский лексикон. Картины жизни Северной столицы. Конец 40-х – начало 90-х [2-е издание][litres]</title>
+ <author> <name>Богданов Игорь Алексеевич</name>
+ <uri>/a/45732</uri>
+</author>
+ <link href="/opds/author/45732" rel="related" type="application/atom+xml" title="Все книги автора Богданов Игорь Алексеевич" />
+ <category term="Биографии и мемуары: прочее" label="Биографии и мемуары: прочее" />
+ <category term="Документальная литература" label="Документальная литература" />
+ <category term="История" label="История" />
+ <category term="Проза" label="Проза" />
+ <category term="Публицистика" label="Публицистика" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>2026</dc:issued>
+ <content type="text/html">
+    &lt;p class=&quot;book&quot;&gt;Автор делится своими наблюдениями и воспоминаниями, представляя реальную картину жизни Ленинграда конца 1940-х – начала 1990-х годов. Необычна форма изложения воспоминаний – они представлены по словарному принципу. Книга являет собой связующее звено, мостик, соединяющий поколения. Современному читателю, не знакомому с реалиями социалистической действительности, откроются вещи совершенно поразительные. Вы узнаете, что «распашонка» – это не детская кофточка, а планировка квартиры, «андроповка» – это водка, а «живопырка» – это заведение общепита.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Эта книга для тех, кто интересуется жизнью и историей Северной столицы, так стремительно меняющей свой облик.&lt;/p&gt;
+   &lt;br/&gt;Год издания: 2026&lt;br/&gt;Формат: pdf&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 23309 Kb&lt;br/&gt;</content>
+ <link href="/i/80/890980/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/80/890980/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/80/890980/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/80/890980/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/890980/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="/b/890980" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:3f74e079eacd6491b6d573773e9f8529</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Ленинградский меридиан [litres]</title>
+ <author> <name>Белогорский Евгений Александрович</name>
+ <uri>/a/154665</uri>
+</author>
+ <link href="/opds/author/154665" rel="related" type="application/atom+xml" title="Все книги автора Белогорский Евгений Александрович" />
+ <category term="Альтернативная история" label="Альтернативная история" />
+ <category term="Попаданцы" label="Попаданцы" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2021</dc:issued>
+ <link href="/opds/sequencebooks/69335" rel="related" type="application/atom+xml" title="Все книги серии &quot;Генерал Кинжал&quot;" />
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Попытка 2-й ударной армии прорвать блокаду осажденного Ленинграда летом 1942 года закончилась неудачей. Для подготовки новой наступательной операции под кодовым названием «Искра» Ставка ВГК в качестве своего представителя направляет на Волховский фронт генерала Рокоссовского. У него нет сильных резервов или чудо-оружия, способного быстро переломить положение на фронте в пользу советских войск, и единственный его козырь – это отличное владение суворовской наукой побеждать врага не числом, а умением. Ему противостоит его давний противник – фельдмаршал Манштейн, готовящий операцию «Северное сияние» с целью захвата Ленинграда до наступления осенних дождей.&lt;/p&gt;
+&lt;br/&gt;Год издания: 2021&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 2584 Kb&lt;br/&gt;Скачиваний: 11677&lt;br/&gt;Серия: Генерал Кинжал #3&lt;br/&gt;</content>
+ <link href="/i/44/617344/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/44/617344/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/44/617344/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/44/617344/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/617344/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/617344/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/617344/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/617344/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/617344/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/617344/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/617344" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:1db4512b5a0d719f7a2c9dabd8402ba9</id>
+</entry>
+ <entry> <updated>2026-10-05T16:21:43+02:00</updated>
+ <title>Ленинградский панк [litres]</title>
+ <author> <name>Соя Антон Владимирович</name>
+ <uri>/a/63970</uri>
+</author>
+ <link href="/opds/author/63970" rel="related" type="application/atom+xml" title="Все книги автора Соя Антон Владимирович" />
+ <category term="Биографии и мемуары: прочее" label="Биографии и мемуары: прочее" />
+ <category term="История" label="История" />
+ <category term="Контркультура" label="Контркультура" />
+ <category term="Музыка" label="Музыка" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2024</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Антон Соя – российский писатель, поэт и рок-продюсер. Был продюсером групп «Бригадный подряд», «МультFильмы», «Кукрыниксы», «Башаков BAND» и сольного альбома Михаила Горшенёва. Автор культовой сатирической песни «Попса». В 2004–2005 году собрал и выпустил антологию в 10 томах «Поэты русского рока». Автор более 30 книг, самая известная из которых – «ЭмоБой».&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;«Сборник эссе, статей и художественных произведений под общим названием «Ленинградский панк» не является объективным и полноценным исследованием этого многогранного субкультурного феномена 80-х годов прошлого столетия, зародившегося и преставившегося в культурной столице тоталитарного СССР. Это всего лишь субъективная попытка копнуть поверхностно этот почти никем не тронутый плодородный пласт, попытка рассказать и показать вам то, что я видел своими глазами, рассказать про своих товарищей, ленинградских панков, проживших яркие, скандальные, короткие жизни и оставивших нам в наследство свое кричащее, неуемное и неудобное творчество. Конечно же, я не смог написать про всех. Было в Ленинграде наверняка еще какое-то количество культовых персонажей и интересных панк-групп, с которыми я просто не пересекался. Надеюсь, что кто-нибудь расскажет и про них.»&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;&lt;i&gt;Антон Соя&lt;/i&gt;&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;Эссе «Ленпанк» и «Свин» использовались для создания каталога выставки «Панк-Культура. Король и Шут» по заказу бюро Planet9.&lt;/p&gt;
+&lt;br/&gt;Год издания: 2024&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 26747 Kb&lt;br/&gt;Скачиваний: 1473&lt;br/&gt;</content>
+ <link href="/i/35/792335/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/35/792335/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/35/792335/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/35/792335/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/792335/fb2" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/792335/html" rel="http://opds-spec.org/acquisition/open-access" type="application/html+zip" />
+ <link href="/b/792335/txt" rel="http://opds-spec.org/acquisition/open-access" type="application/txt+zip" />
+ <link href="/b/792335/rtf" rel="http://opds-spec.org/acquisition/open-access" type="application/rtf+zip" />
+ <link href="/b/792335/epub" rel="http://opds-spec.org/acquisition/open-access" type="application/epub+zip" />
+ <link href="/b/792335/mobi" rel="http://opds-spec.org/acquisition/open-access" type="application/x-mobipocket-ebook" />
+ <link href="/b/792335" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:a87f223df76bb89f11d0ea9852a14d1a</id>
+</entry>
+</feed>

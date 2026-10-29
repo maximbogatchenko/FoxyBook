@@ -39,6 +39,9 @@
     <string name="search_error">Search error</string>
     <string name="search_idle_title">FoxyBook</string>
     <string name="search_idle_subtitle">Enter a query to search</string>
+    <string name="search_history_title">Search history</string>
+    <string name="search_history_clear">Clear</string>
+    <string name="search_history_empty">Your queries will appear here</string>
     <string name="search_section_books">Books</string>
     <string name="search_section_authors">Authors</string>
     <string name="search_section_series">Series</string>
@@ -53,6 +56,10 @@
     <string name="fantasy_worlds">Fantasy</string>
     <string name="search_source_label">Applies to New Books and Search</string>
     <string name="search_ing">Searching…</string>
+<<<<<<< HEAD
+=======
+    <string name="search_loading_more">Loading…</string>
+>>>>>>> d24a20e (FoxyBook v1.9)
     <string name="search_load_more">Load more</string>
 
     <!-- Source selection -->
@@ -67,6 +74,8 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_amoled">AMOLED</string>
     <string name="settings_default_format">Default format</string>
+    <string name="settings_start_screen">Start screen</string>
+    <string name="settings_start_screen_hint">The screen that opens when the app is launched</string>
     <string name="settings_language">Language</string>
     <string name="settings_language_ru">Русский</string>
     <string name="settings_language_en">English</string>
@@ -95,6 +104,7 @@
     <string name="settings_about">About</string>
     <string name="settings_author">Created by ßoлк</string>
     <string name="settings_author_contact">Contact author</string>
+    <string name="settings_author_telegram">Telegram channel</string>
     <string name="settings_author_support">Support the author</string>
     <string name="settings_whats_new">What\'s new</string>
     <string name="settings_no_changelog">Author did not provide a changelog</string>
@@ -142,6 +152,27 @@
     <string name="library_delete_batch_title">Delete %d books?</string>
     <string name="library_delete_batch_body">Selected books will be removed from the library.</string>
     <string name="library_delete_batch_from_device">Delete files from device</string>
+
+    <!-- Library sorting -->
+    <string name="library_sort">Sort</string>
+    <string name="library_sort_desc">Descending</string>
+    <string name="library_sort_asc">Ascending</string>
+    <string name="library_sort_group_status">Group by read status</string>
+    <string name="library_sort_date_added">Date added</string>
+    <string name="library_sort_last_read">Last read</string>
+    <string name="library_sort_title">Title</string>
+    <string name="library_sort_author">Author</string>
+    <string name="library_sort_progress">Progress</string>
+
+    <!-- Read status -->
+    <string name="library_shelf_reading">Reading</string>
+    <string name="library_shelf_unread">Unread</string>
+    <string name="library_shelf_finished">Finished</string>
+    <string name="library_shelf_count">· %d</string>
+    <string name="library_read_mark_read">Mark as read</string>
+    <string name="library_read_mark_unread">Mark as unread</string>
+    <string name="library_read_badge">Finished</string>
+    <string name="library_read_auto">Auto</string>
 
     <!-- Reader -->
     <string name="reader_title">Reading</string>

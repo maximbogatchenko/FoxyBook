@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <feed xmlns="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/terms/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/" xmlns:opds="http://opds-spec.org/2010/catalog"> <id>tag:root:sequences</id>
+ <title>Книги по сериям</title>
+ <updated>2026-10-05T16:21:49+02:00</updated>
+ <icon>/favicon.ico</icon>
+ <link href="/opds-opensearch.xml" rel="search" type="application/opensearchdescription+xml" />
+ <link href="/opds/search?searchTerm={searchTerms}" rel="search" type="application/atom+xml" />
+ <link href="/opds" rel="start" type="application/atom+xml;profile=opds-catalog" />
+ <link href="/opds/sequences/%252F1" rel="next" type="application/atom+xml;profile=opds-catalog" />
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:96783</id>
+ <title> Аврора и «Искатель Зари»</title>
+ <content type="text">2 книги в серии</content>
+ <link href="/opds/sequencebooks/96783" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:56050</id>
+ <title> Ауалур</title>
+ <content type="text">2 книги в серии</content>
+ <link href="/opds/sequencebooks/56050" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:48033</id>
+ <title> Джеймс Прескотт</title>
+ <content type="text">2 книги в серии</content>
+ <link href="/opds/sequencebooks/48033" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:79910</id>
+ <title> Дикая собака Динго, или Повесть о первой любви - be (версии)</title>
+ <content type="text">2 книги в серии</content>
+ <link href="/opds/sequencebooks/79910" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:62910</id>
+ <title> Кицунэ шевельнула хвостиком, каким из девяти?</title>
+ <content type="text">2 книги в серии</content>
+ <link href="/opds/sequencebooks/62910" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:77456</id>
+ <title> Наизусть </title>
+ <content type="text">2 книги в серии</content>
+ <link href="/opds/sequencebooks/77456" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:27385</id>
+ <title> Секретный проект [= Не надо переворачивать лодку]</title>
+ <content type="text">4 книги в серии</content>
+ <link href="/opds/sequencebooks/27385" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:92733</id>
+ <title>:А:Н:Т:И:М:И:Р:</title>
+ <content type="text">1 книга в серии</content>
+ <link href="/opds/sequencebooks/92733" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:97699</id>
+ <title>¡No pasaran!</title>
+ <content type="text">4 книги в серии</content>
+ <link href="/opds/sequencebooks/97699" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:75435</id>
+ <title>.. одной актрисы</title>
+ <content type="text">3 книги в серии</content>
+ <link href="/opds/sequencebooks/75435" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:85877</id>
+ <title>… по прозвищу Кобра</title>
+ <content type="text">5 книг в серии</content>
+ <link href="/opds/sequencebooks/85877" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:87919</id>
+ <title>…Белый Грузовик-кун меня развоплотит</title>
+ <content type="text">2 книги в серии</content>
+ <link href="/opds/sequencebooks/87919" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:112657</id>
+ <title>…И времени побег (версии)</title>
+ <content type="text">2 книги в серии</content>
+ <link href="/opds/sequencebooks/112657" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:112613</id>
+ <title>…И правда сделает тебя свободным (версии)</title>
+ <content type="text">2 книги в серии</content>
+ <link href="/opds/sequencebooks/112613" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:82113</id>
+ <title>…из Габена</title>
+ <content type="text">20 книг в серии</content>
+ <link href="/opds/sequencebooks/82113" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:9486</id>
+ <title>…на компьютере</title>
+ <content type="text">1 книга в серии</content>
+ <link href="/opds/sequencebooks/9486" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:101549</id>
+ <title>…Не будь ко мне жестоко</title>
+ <content type="text">2 книги в серии</content>
+ <link href="/opds/sequencebooks/101549" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:97556</id>
+ <title>…Хоть потоп (версии)</title>
+ <content type="text">2 книги в серии</content>
+ <link href="/opds/sequencebooks/97556" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:43409</id>
+ <title>.RU_Современная проза русского зарубежья</title>
+ <content type="text">5 книг в серии</content>
+ <link href="/opds/sequencebooks/43409" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+ <entry> <updated>2026-10-05T16:22:13+02:00</updated>
+ <id>tag:sequence:76065</id>
+ <title>&quot;Diva&quot;</title>
+ <content type="text">1 книга в серии</content>
+ <link href="/opds/sequencebooks/76065" type="application/atom+xml;profile=opds-catalog" />
+</entry>
+</feed>

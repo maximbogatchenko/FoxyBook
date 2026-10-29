@@ -258,7 +258,7 @@ class BookParser(
         for (part in full.split("/")) {
             when {
                 part.isEmpty() || part == "." -> {}
-                part == ".." -> if (result.isNotEmpty()) result.removeLast()
+                part == ".." -> if (result.isNotEmpty()) result.removeAt(result.size - 1)
                 else -> result.add(part)
             }
         }
@@ -281,7 +281,7 @@ class BookParser(
                     var entry = z.nextEntry
                     while (entry != null) {
                         if (entry.name.endsWith(".fb2")) {
-                            return z.bufferedReader().readText()
+                            return TextEncodingDetector.decodeXml(z.readBytes())
                         }
                         entry = z.nextEntry
                     }
@@ -289,7 +289,7 @@ class BookParser(
                 return null
             }
 
-            String(bytes, Charsets.UTF_8)
+            TextEncodingDetector.decodeXml(bytes)
         } catch (e: Exception) {
             Log.e(TAG, "readFb2Xml failed", e)
             null

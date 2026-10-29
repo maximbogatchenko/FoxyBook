@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.foxybook.app.core.models.ReaderSettings
+import kotlin.math.max
 
 /**
  * Paginates ContentBlocks into screen-sized pages for Page Mode.
@@ -57,6 +58,7 @@ object TextPaginator {
     // Cache keys (settings + density determine layouts)
     // Кэш пересчитывается при изменении настроек (fontSize/lineHeight), так что
     // утечки нет — старые значения заменяются новыми при любом изменении параметров.
+    private val cacheLock = Any()
     private var lastSettingsKey: Long = 0
     private var lastDensityKey: Long = 0L
     private var lastStyles: LayoutStyles? = null
@@ -65,52 +67,62 @@ object TextPaginator {
     private fun getStyles(settings: ReaderSettings): LayoutStyles {
         val key = settings.fontSize.toLong() +
             (settings.lineHeight * 100).toLong() * 1000L
-        if (lastStyles != null && key == lastSettingsKey) return lastStyles!!
-        lastSettingsKey = key
-        val s = LayoutStyles(
-            headingStyles = mapOf(
-                1 to TextStyle(fontSize = 28.sp, lineHeight = (28 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold),
-                2 to TextStyle(fontSize = 24.sp, lineHeight = (24 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold),
-                3 to TextStyle(fontSize = 21.sp, lineHeight = (21 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold),
-                4 to TextStyle(fontSize = 19.sp, lineHeight = (19 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold),
-                5 to TextStyle(fontSize = 17.sp, lineHeight = (17 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold),
-                6 to TextStyle(fontSize = 15.sp, lineHeight = (15 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold)
-            ),
-            defaultHeadingStyle = TextStyle(fontSize = 18.sp, lineHeight = (18 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold),
-            paragraphStyle = TextStyle(fontSize = settings.fontSize.sp, lineHeight = (settings.fontSize * settings.lineHeight).sp),
-            quoteTextStyle = TextStyle(fontSize = (settings.fontSize - 1).sp, lineHeight = (settings.fontSize * settings.lineHeight).sp, fontStyle = FontStyle.Italic),
-            quoteAuthorStyle = TextStyle(fontSize = (settings.fontSize - 2).sp),
-            poemLineStyle = TextStyle(fontSize = (settings.fontSize - 1).sp, lineHeight = (settings.fontSize * settings.lineHeight * 0.9).sp),
-            poemTitleStyle = TextStyle(fontSize = (settings.fontSize - 1).sp, fontWeight = FontWeight.SemiBold),
-            poemAuthorStyle = TextStyle(fontSize = (settings.fontSize - 2).sp)
-        )
-        lastStyles = s
-        return s
+        return synchronized(cacheLock) {
+            if (lastStyles != null && key == lastSettingsKey) lastStyles!!
+            lastSettingsKey = key
+            val s = LayoutStyles(
+                headingStyles = mapOf(
+                    1 to TextStyle(fontSize = 28.sp, lineHeight = (28 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold),
+                    2 to TextStyle(fontSize = 24.sp, lineHeight = (24 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold),
+                    3 to TextStyle(fontSize = 21.sp, lineHeight = (21 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold),
+                    4 to TextStyle(fontSize = 19.sp, lineHeight = (19 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold),
+                    5 to TextStyle(fontSize = 17.sp, lineHeight = (17 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold),
+                    6 to TextStyle(fontSize = 15.sp, lineHeight = (15 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold)
+                ),
+                defaultHeadingStyle = TextStyle(fontSize = 18.sp, lineHeight = (18 * settings.lineHeight * 0.85).sp, fontWeight = FontWeight.Bold),
+                paragraphStyle = TextStyle(fontSize = settings.fontSize.sp, lineHeight = (settings.fontSize * settings.lineHeight).sp),
+                quoteTextStyle = TextStyle(fontSize = (settings.fontSize - 1).sp, lineHeight = (settings.fontSize * settings.lineHeight).sp, fontStyle = FontStyle.Italic),
+                quoteAuthorStyle = TextStyle(fontSize = (settings.fontSize - 2).sp),
+                poemLineStyle = TextStyle(fontSize = (settings.fontSize - 1).sp, lineHeight = (settings.fontSize * settings.lineHeight * 0.9).sp),
+                poemTitleStyle = TextStyle(fontSize = (settings.fontSize - 1).sp, fontWeight = FontWeight.SemiBold),
+                poemAuthorStyle = TextStyle(fontSize = (settings.fontSize - 2).sp)
+            )
+            lastStyles = s
+            s
+        }
     }
 
     private fun getPaddings(settings: ReaderSettings, density: Density): Paddings {
         val key = (settings.fontSize.toLong() * 100) +
             (settings.lineHeight * 100).toLong() +
             (density.density * 1000).toLong() * 100_000L
-        if (lastPaddings != null && key == lastDensityKey) return lastPaddings!!
-        lastDensityKey = key
-        val p = Paddings(
-            headingTopPadding = with(density) { 16.dp.toPx() },
-            headingBottomPadding = with(density) { 8.dp.toPx() },
-            paragraphBottomPadding = with(density) { (settings.fontSize * 0.4).dp.toPx() },
-            quoteOuterPadding = with(density) { 6.dp.toPx() },
-            quoteInnerPaddingVertical = with(density) { 8.dp.toPx() },
-            quoteAuthorTopPadding = with(density) { 4.dp.toPx() },
-            poemVerticalPadding = with(density) { 8.dp.toPx() },
-            poemTitleBottomPadding = with(density) { 6.dp.toPx() },
-            poemAuthorTopPadding = with(density) { 6.dp.toPx() },
-            imageBlockHeight = with(density) { 200.dp.toPx() },
-            lineHeightPx = with(density) { (settings.fontSize * settings.lineHeight).sp.toPx() },
-            bottomSafetyBuffer = (with(density) { (settings.fontSize * settings.lineHeight).sp.toPx() } * 1.5f)
-                .coerceAtLeast(with(density) { 16.dp.toPx() })
-        )
-        lastPaddings = p
-        return p
+        return synchronized(cacheLock) {
+            if (lastPaddings != null && key == lastDensityKey) lastPaddings!!
+            lastDensityKey = key
+            val lineHeightPx = with(density) { (settings.fontSize * settings.lineHeight).sp.toPx() }
+            // contentHeightPx уже вычитает верхний и нижний отступы плюс вырез камеры.
+            // bottomSafetyBuffer резервирует дополнительный зазор снизу, чтобы текст
+            // никогда не заходил на отступ и на номер страницы. Всегда переносится на
+            // следующую страницу вместо выхода за границу.
+            val labelReservePx = with(density) { 32.dp.roundToPx() }.toFloat()
+            val bottomSafetyBuffer = max(lineHeightPx * 2.5f, labelReservePx * 1.5f)
+            val p = Paddings(
+                headingTopPadding = with(density) { 16.dp.toPx() },
+                headingBottomPadding = with(density) { 8.dp.toPx() },
+                paragraphBottomPadding = with(density) { (settings.fontSize * 0.4).dp.toPx() },
+                quoteOuterPadding = with(density) { 6.dp.toPx() },
+                quoteInnerPaddingVertical = with(density) { 8.dp.toPx() },
+                quoteAuthorTopPadding = with(density) { 4.dp.toPx() },
+                poemVerticalPadding = with(density) { 8.dp.toPx() },
+                poemTitleBottomPadding = with(density) { 6.dp.toPx() },
+                poemAuthorTopPadding = with(density) { 6.dp.toPx() },
+                imageBlockHeight = with(density) { 200.dp.toPx() },
+                lineHeightPx = lineHeightPx,
+                bottomSafetyBuffer = bottomSafetyBuffer
+            )
+            lastPaddings = p
+            p
+        }
     }
 
     fun paginate(
@@ -132,13 +144,14 @@ object TextPaginator {
         var currentHeight = 0f
         var cumulativeOffsetInChapter = 0
 
-        val usableHeightPx = pageHeightPx - pad.bottomSafetyBuffer
+        val minUsableHeight = max(pad.lineHeightPx * 2f, pad.bottomSafetyBuffer * 0.5f)
+        val usableHeightPx = (pageHeightPx - pad.bottomSafetyBuffer).coerceAtLeast(minUsableHeight)
 
         val remainingBlocks = ArrayDeque(blocks)
 
         while (remainingBlocks.isNotEmpty()) {
             val block = remainingBlocks.removeFirst()
-            val remainingHeight = (usableHeightPx - currentHeight).coerceAtLeast(0f) + 0.5f
+            val remainingHeight = (usableHeightPx - currentHeight).coerceAtLeast(0f)
 
             if (remainingHeight < pad.lineHeightPx && currentPageBlocks.isNotEmpty()) {
                 val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
@@ -157,16 +170,75 @@ object TextPaginator {
                         constraints = Constraints(maxWidth = pageWidthPx)
                     )
                     val blockHeight = textLayout.size.height + pad.headingTopPadding + pad.headingBottomPadding
-                    if (blockHeight <= remainingHeight || currentPageBlocks.isEmpty()) {
+                    if (blockHeight <= remainingHeight) {
                         currentPageBlocks.add(block)
                         currentHeight += blockHeight
                     } else {
-                        remainingBlocks.addFirst(block)
-                        val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
-                        pages.add(page)
-                        cumulativeOffsetInChapter = page.endOffset
-                        currentPageBlocks = mutableListOf()
-                        currentHeight = 0f
+                        var lastFittingLine = -1
+                        for (i in 0 until textLayout.lineCount) {
+                            if (textLayout.getLineBottom(i) <= remainingHeight) {
+                                lastFittingLine = i
+                            } else {
+                                break
+                            }
+                        }
+
+                        if (lastFittingLine >= 0) {
+                            val splitIndex = textLayout.getLineEnd(lastFittingLine)
+                            if (splitIndex > 0 && splitIndex < block.text.length) {
+                                val firstPart = block.text.substring(0, splitIndex)
+                                val secondPart = block.text.substring(splitIndex)
+
+                                currentPageBlocks.add(ContentBlock.Heading(text = firstPart, level = block.level).apply { originalIndex = block.originalIndex })
+                                val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
+                                pages.add(page)
+                                cumulativeOffsetInChapter = page.endOffset
+
+                                remainingBlocks.addFirst(ContentBlock.Heading(text = secondPart, level = block.level).apply { originalIndex = block.originalIndex })
+                                currentPageBlocks = mutableListOf()
+                                currentHeight = 0f
+                                continue
+                            }
+                        }
+
+                        if (currentPageBlocks.isEmpty()) {
+                            // Страница пустая, но заголовок выше доступной области — режем по символам
+                            val text = block.text
+                            var cut = 1
+                            while (cut < text.length) {
+                                val part = text.substring(0, cut)
+                                val testLayout = textMeasurer.measure(
+                                    text = part,
+                                    style = style,
+                                    constraints = Constraints(maxWidth = pageWidthPx)
+                                )
+                                val testHeight = testLayout.size.height + pad.headingTopPadding + pad.headingBottomPadding
+                                if (testHeight > usableHeightPx.coerceAtLeast(0f)) break
+                                cut++
+                            }
+                            val splitIndex = (cut - 1).coerceAtLeast(1)
+                            if (splitIndex < text.length) {
+                                val firstPart = text.substring(0, splitIndex)
+                                val secondPart = text.substring(splitIndex)
+                                currentPageBlocks.add(ContentBlock.Heading(text = firstPart, level = block.level).apply { originalIndex = block.originalIndex })
+                                val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
+                                pages.add(page)
+                                cumulativeOffsetInChapter = page.endOffset
+                                remainingBlocks.addFirst(ContentBlock.Heading(text = secondPart, level = block.level).apply { originalIndex = block.originalIndex })
+                                currentPageBlocks = mutableListOf()
+                                currentHeight = 0f
+                                continue
+                            }
+                            currentPageBlocks.add(block)
+                            currentHeight += blockHeight
+                        } else {
+                            remainingBlocks.addFirst(block)
+                            val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
+                            pages.add(page)
+                            cumulativeOffsetInChapter = page.endOffset
+                            currentPageBlocks = mutableListOf()
+                            currentHeight = 0f
+                        }
                     }
                 }
                 is ContentBlock.Paragraph -> {
@@ -218,6 +290,34 @@ object TextPaginator {
                         }
 
                         if (currentPageBlocks.isEmpty()) {
+                            // Страница пустая, но блок выше доступной области —
+                            // режем по символам вместо выхода за нижний отступ.
+                            val text = block.text
+                            var cut = 1
+                            while (cut < text.length) {
+                                val part = text.substring(0, cut)
+                                val testLayout = textMeasurer.measure(
+                                    text = part,
+                                    style = ls.paragraphStyle,
+                                    constraints = Constraints(maxWidth = pageWidthPx)
+                                )
+                                if (testLayout.size.height > usableHeightPx.coerceAtLeast(0f)) break
+                                cut++
+                            }
+                            val splitIndex = (cut - 1).coerceAtLeast(1)
+                            if (splitIndex < text.length) {
+                                val firstPart = text.substring(0, splitIndex)
+                                val secondPart = text.substring(splitIndex)
+                                currentPageBlocks.add(ContentBlock.Paragraph(text = firstPart, isSplit = true).apply { originalIndex = block.originalIndex })
+                                val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
+                                pages.add(page)
+                                cumulativeOffsetInChapter = page.endOffset
+                                remainingBlocks.addFirst(ContentBlock.Paragraph(text = secondPart, isSplit = block.isSplit).apply { originalIndex = block.originalIndex })
+                                currentPageBlocks = mutableListOf()
+                                currentHeight = 0f
+                                continue
+                            }
+                            // Абсолютный fallback: блок неделим — добавляем как есть
                             currentPageBlocks.add(block)
                             currentHeight += blockHeight
                         } else {
@@ -269,7 +369,7 @@ object TextPaginator {
                                 val firstPart = block.text.substring(0, splitIndex)
                                 val secondPart = block.text.substring(splitIndex)
 
-                                currentPageBlocks.add(ContentBlock.Quote(text = firstPart, author = null, isSplit = true).apply { originalIndex = block.originalIndex })
+                                currentPageBlocks.add(ContentBlock.Quote(text = firstPart, author = block.author, isSplit = true).apply { originalIndex = block.originalIndex })
                                 val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
                                 pages.add(page)
                                 cumulativeOffsetInChapter = page.endOffset
@@ -282,6 +382,32 @@ object TextPaginator {
                         }
 
                         if (currentPageBlocks.isEmpty()) {
+                            // Страница пустая, но цитата выше доступной области — режем по символам
+                            val text = block.text
+                            var cut = 1
+                            while (cut < text.length) {
+                                val part = text.substring(0, cut)
+                                val testLayout = textMeasurer.measure(
+                                    text = part,
+                                    style = ls.quoteTextStyle,
+                                    constraints = Constraints(maxWidth = pageWidthPx - qHMargin)
+                                )
+                                if (testLayout.size.height + authorHeight + (pad.quoteOuterPadding * 2) + (pad.quoteInnerPaddingVertical * 2) > usableHeightPx.coerceAtLeast(0f)) break
+                                cut++
+                            }
+                            val splitIndex = (cut - 1).coerceAtLeast(1)
+                            if (splitIndex < text.length) {
+                                val firstPart = text.substring(0, splitIndex)
+                                val secondPart = text.substring(splitIndex)
+                                currentPageBlocks.add(ContentBlock.Quote(text = firstPart, author = block.author, isSplit = true).apply { originalIndex = block.originalIndex })
+                                val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
+                                pages.add(page)
+                                cumulativeOffsetInChapter = page.endOffset
+                                remainingBlocks.addFirst(ContentBlock.Quote(text = secondPart, author = block.author, isSplit = block.isSplit).apply { originalIndex = block.originalIndex })
+                                currentPageBlocks = mutableListOf()
+                                currentHeight = 0f
+                                continue
+                            }
                             currentPageBlocks.add(block)
                             currentHeight += blockHeight
                         } else {
@@ -339,7 +465,7 @@ object TextPaginator {
                             val firstPartLines = block.lines.take(linesFitted)
                             val secondPartLines = block.lines.drop(linesFitted)
 
-                            currentPageBlocks.add(ContentBlock.Poem(lines = firstPartLines, title = block.title, author = null, isSplit = true).apply { originalIndex = block.originalIndex })
+                            currentPageBlocks.add(ContentBlock.Poem(lines = firstPartLines, title = block.title, author = block.author, isSplit = true).apply { originalIndex = block.originalIndex })
                             val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
                             pages.add(page)
                             cumulativeOffsetInChapter = page.endOffset
@@ -349,8 +475,22 @@ object TextPaginator {
                             currentHeight = 0f
                         } else {
                             if (currentPageBlocks.isEmpty()) {
-                                currentPageBlocks.add(block)
-                                currentHeight += blockHeight
+                                // Страница пустая, но стихотворение не влезает —
+                                // добавляем хотя бы первую строку, чтобы не выходить за границу
+                                if (linesFitted > 0) {
+                                    val firstPartLines = block.lines.take(linesFitted)
+                                    val secondPartLines = block.lines.drop(linesFitted)
+                                    currentPageBlocks.add(ContentBlock.Poem(lines = firstPartLines, title = block.title, author = block.author, isSplit = true).apply { originalIndex = block.originalIndex })
+                                    val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
+                                    pages.add(page)
+                                    cumulativeOffsetInChapter = page.endOffset
+                                    remainingBlocks.addFirst(ContentBlock.Poem(lines = secondPartLines, title = null, author = block.author, isSplit = block.isSplit).apply { originalIndex = block.originalIndex })
+                                    currentPageBlocks = mutableListOf()
+                                    currentHeight = 0f
+                                } else {
+                                    currentPageBlocks.add(block)
+                                    currentHeight += blockHeight
+                                }
                             } else {
                                 remainingBlocks.addFirst(block)
                                 val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
@@ -364,9 +504,12 @@ object TextPaginator {
                 }
                 is ContentBlock.EmptyLine -> {
                     val h = with(density) { block.height.dp.toPx() }
-                    if (h <= remainingHeight || currentPageBlocks.isEmpty()) {
+                    if (h <= remainingHeight) {
                         currentPageBlocks.add(block)
                         currentHeight += h
+                    } else if (currentPageBlocks.isEmpty()) {
+                        // Пустая строка не влезает на пустую страницу — пропускаем её
+                        continue
                     } else {
                         remainingBlocks.addFirst(block)
                         val page = createPage(currentPageBlocks, chapterIndex, pages.size, cumulativeOffsetInChapter)
@@ -404,16 +547,5 @@ object TextPaginator {
         val endOffset = startOffset + charsCount
         Log.d("TextPaginator", "chapterIndex: $chapterIndex, pageIndex: $pageIndex, startOffset: $startOffset, endOffset: $endOffset, charsCount: $charsCount")
         return Page(blocks.toList(), chapterIndex, pageIndex, startOffset, endOffset)
-    }
-
-    private fun ContentBlock.getTextContent(): String {
-        return when (this) {
-            is ContentBlock.Heading -> text
-            is ContentBlock.Paragraph -> text
-            is ContentBlock.Quote -> text + (author ?: "")
-            is ContentBlock.Poem -> (title ?: "") + lines.joinToString("") + (author ?: "")
-            is ContentBlock.EmptyLine -> ""
-            is ContentBlock.Image -> ""
-        }
     }
 }

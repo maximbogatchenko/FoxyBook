@@ -11,7 +11,11 @@ import com.foxybook.app.core.database.BookDataRepository
 import com.foxybook.app.core.datastore.DataStoreManager
 import com.foxybook.app.core.models.BookCollection
 import com.foxybook.app.core.models.BookFormat
+import com.foxybook.app.core.models.BookGroup
 import com.foxybook.app.core.models.LibraryBook
+import com.foxybook.app.core.models.LibrarySortField
+import com.foxybook.app.core.models.LibrarySortSpec
+import com.foxybook.app.core.models.LibrarySorter
 import com.foxybook.app.core.models.LibraryTab
 import com.foxybook.app.core.reader.BookParser
 import com.foxybook.app.core.utils.FileHelper
@@ -50,6 +54,7 @@ data class LibraryState(
     val deleteBookFormat: String? = null,
     val deleteFromDevice: Boolean = true,
     val viewMode: LibraryViewMode = LibraryViewMode.LIST,
+    val sortSpec: LibrarySortSpec = LibrarySortSpec.DEFAULT,
     val isImporting: Boolean = false,
     val importError: String? = null,
 
@@ -60,14 +65,36 @@ data class LibraryState(
     val batchDeleteFromDevice: Boolean = true
 ) {
     val isSelectionMode: Boolean get() = selectedBookIds.isNotEmpty()
-    val favoriteBooks: List<LibraryBook> get() = allBooks.filter { it.isFavorite }
-    val historyBooks: List<LibraryBook> get() = allBooks.filter { it.lastReadDate > 0 }.sortedByDescending { it.lastReadDate }
-    val displayedBooks: List<LibraryBook> get() = when (currentTab) {
-        LibraryTab.ALL -> allBooks
-        LibraryTab.FAVORITES -> favoriteBooks
-        LibraryTab.HISTORY -> historyBooks
-        LibraryTab.COLLECTIONS -> selectedCollectionId?.let { cid -> allBooks.filter { cid in it.collectionIds } } ?: emptyList()
+
+    /** Книги, видимые на вкладке, отсортированные по текущей настройке. */
+    fun booksForTab(tab: LibraryTab): List<LibraryBook> {
+        val filtered = when (tab) {
+            LibraryTab.ALL -> allBooks
+            LibraryTab.FAVORITES -> allBooks.filter { it.isFavorite }
+            LibraryTab.HISTORY -> allBooks.filter { it.lastReadDate > 0 }
+            LibraryTab.COLLECTIONS -> selectedCollectionId?.let { cid ->
+                allBooks.filter { cid in it.collectionIds }
+            } ?: emptyList()
+        }
+        return LibrarySorter.sort(filtered, sortSpec)
     }
+
+    /** Книги вкладки, разбитые на полки по статусу чтения. */
+    fun groupsForTab(tab: LibraryTab): List<BookGroup> =
+        LibrarySorter.group(booksForTab(tab), sortSpec)
+
+    /** Книги вкладки с учётом выбранной коллекции (для экрана «Коллекции»). */
+    fun booksForCollection(collectionId: String?): List<LibraryBook> {
+        val filtered = if (collectionId == null) allBooks
+        else allBooks.filter { collectionId in it.collectionIds }
+        return LibrarySorter.sort(filtered, sortSpec)
+    }
+
+    fun groupsForCollection(collectionId: String?): List<BookGroup> =
+        LibrarySorter.group(booksForCollection(collectionId), sortSpec)
+
+    /** Все видимые книги текущей вкладки — для «Выбрать все». */
+    val displayedBooks: List<LibraryBook> get() = booksForTab(currentTab)
 }
 
 sealed interface LibraryEvent {
@@ -85,6 +112,10 @@ sealed interface LibraryEvent {
     data class MoveBookToCollection(val bookId: Int, val format: String, val collectionId: String) : LibraryEvent
     data class RemoveBookFromCollection(val bookId: Int, val format: String, val collectionId: String) : LibraryEvent
     data class ChangeViewMode(val mode: LibraryViewMode) : LibraryEvent
+    data class ChangeSort(val field: LibrarySortField) : LibraryEvent
+    data object ToggleSortDirection : LibraryEvent
+    data object ToggleGroupByStatus : LibraryEvent
+    data class SetReadState(val bookId: Int, val format: String, val readState: String) : LibraryEvent
     data object DismissDialogs : LibraryEvent
 
     // Batch selection
@@ -127,6 +158,10 @@ class LibraryViewModel(
                     viewMode = try { LibraryViewMode.valueOf(saved) } catch (_: Exception) { LibraryViewMode.LIST }
                 )
             }
+        }
+        viewModelScope.launch {
+            val savedSort = dataStoreManager.librarySortSpec.first()
+            _state.update { it.copy(sortSpec = LibrarySortSpec.decode(savedSort)) }
         }
     }
 
@@ -232,7 +267,19 @@ class LibraryViewModel(
                 _state.update { it.copy(viewMode = event.mode) }
                 viewModelScope.launch { dataStoreManager.setLibraryViewMode(event.mode.name) }
             }
+            is LibraryEvent.ChangeSort -> updateSort { it.copy(field = event.field) }
+            LibraryEvent.ToggleSortDirection -> updateSort { it.copy(descending = !it.descending) }
+            LibraryEvent.ToggleGroupByStatus -> updateSort { it.copy(groupByStatus = !it.groupByStatus) }
+            is LibraryEvent.SetReadState -> viewModelScope.launch {
+                bookDataRepository.setBookReadState(event.bookId, event.format, event.readState)
+            }
         }
+    }
+
+    private fun updateSort(transform: (LibrarySortSpec) -> LibrarySortSpec) {
+        val updated = transform(_state.value.sortSpec)
+        _state.update { it.copy(sortSpec = updated) }
+        viewModelScope.launch { dataStoreManager.setLibrarySortSpec(updated) }
     }
 
     fun confirmDeleteBook() {

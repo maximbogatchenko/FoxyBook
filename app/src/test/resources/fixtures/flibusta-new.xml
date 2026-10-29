@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <feed xmlns="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/terms/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/" xmlns:opds="http://opds-spec.org/2010/catalog"> <id>tag:search:new:book:0</id>
+ <title>Новинки с 28.09.2026 по 05.10.2026</title>
+ <updated>2026-10-05T12:52:08+02:00</updated>
+ <icon>/favicon.ico</icon>
+ <link href="/opds-opensearch.xml" rel="search" type="application/opensearchdescription+xml" />
+ <link href="/opds/search?searchTerm={searchTerms}" rel="search" type="application/atom+xml" />
+ <link href="/opds" rel="start" type="application/atom+xml;profile=opds-catalog" />
+ <link href="/opds/new/1/new/" rel="next" type="application/atom+xml;profile=opds-catalog" />
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Можно все, или Как создавать желаемое. Квантовые практики достижения успеха</title>
+ <author> <name>Бравая Анна</name>
+ <uri>/a/346083</uri>
+</author>
+ <link href="/opds/author/346083" rel="related" type="application/atom+xml" title="Все книги автора Бравая Анна" />
+ <category term="Проза" label="Проза" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2026</dc:issued>
+ <content type="text/html">Год издания: 2026&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 1029 Kb&lt;br/&gt;</content>
+ <link href="/i/50/891750/img_oebps_dta5rl0zfhgz.jpeg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/50/891750/img_oebps_dta5rl0zfhgz.jpeg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/50/891750/img_oebps_dta5rl0zfhgz.jpeg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/50/891750/img_oebps_dta5rl0zfhgz.jpeg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891750/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891750" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:1628fc6dcc8993245e1449651775fab1</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Аркадий Чернышёв</title>
+ <author> <name>Рейзер Леонид Юрьевич</name>
+ <uri>/a/231805</uri>
+</author>
+ <link href="/opds/author/231805" rel="related" type="application/atom+xml" title="Все книги автора Рейзер Леонид Юрьевич" />
+ <category term="Биографии и мемуары: прочее" label="Биографии и мемуары: прочее" />
+ <category term="Боевые искусства, спорт" label="Боевые искусства, спорт" />
+ <dc:language>ru</dc:language>
+ <dc:format>djvu</dc:format>
+ <dc:issued>2020</dc:issued>
+ <content type="text/html">Многолетний тренер сборной СССР и московского «Динамо» по хоккею с шайбой Аркадий Иванович Чернышев (1914—1992) по праву может быть назван первым среди наших первопроходцев этой заморской игры. Первый тренер, увидевший родоначальников хоккея канадцев, он первым сокрушил их при дебюте страны на международной арене. И именно под его руководством Советский Союз за два десятилетия превратился в могучую и признанную в мире хоккейную державу. Девять лет без единого поражения на тренерском мостике сборной, девять золотых медалей чемпионов мира и три выигранные Олимпиады подряд — такого достижения не знает больше ни один тренер в мире, и вряд ли этот невероятный рекорд когда-либо будет превзойден.
+Но это отнюдь не полный перечень громких заслуг и профессиональных качеств Аркадия Чернышева. Эта фигура сколь масштабная и достойная, столь и незаслуженно обделенная славой при жизни и благодарной памятью потомков после смерти. В чем же феномен Чернышева? Каким образом сочетал он интеллигентность с искусством руководства ледовой дружиной? Почему о нем благодарно и почтительно отзываются все без исключения спортсмены разных клубов и разных поколений? На множество этих и других вопросов пришлось искать ответы автору книги — известному писателю, историку хоккея и журналисту Леониду Рейзеру.
+ &lt;br/&gt;Год издания: 2020&lt;br/&gt;Формат: djvu&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 10340 Kb&lt;br/&gt;</content>
+ <link href="/b/891749/download" rel="http://opds-spec.org/acquisition/open-access" type="application/djvu" />
+ <link href="/b/891749" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:e273ec09679d7095ad14d187ca2d8aff</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Великие творцы, роковые секреты и женщины, обреченные вдохновлять. Рождение красоты</title>
+ <author> <name>Платова Юлия</name>
+ <uri>/a/346082</uri>
+</author>
+ <link href="/opds/author/346082" rel="related" type="application/atom+xml" title="Все книги автора Платова Юлия" />
+ <category term="История" label="История" />
+ <category term="Культурология" label="Культурология" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2023</dc:issued>
+ <content type="text/html">Юлия Платова — переводчик, журналист, блогер. Автор, блог которого насчитывает более 120 000 подписчиков и 5 000 000 читателей.
+Кем была Венера Боттичелли? Какой постыдный секрет притаился в золотых картинах Климта? Как повлиял скандал Уайльда на его жену? Чей образ нашел отражение в роскошных коллекциях Диора? Была ли Брик единственной музой Маяковского?
+&quot;Рождение красоты&quot; — это возможность услышать голоса людей, оставшихся в тени гениев, но без которых не появились бы признанные мировые шедевры.
+Пучины страсти, боли, надежды, безумия и любви — с исторических личностей спадут чопорные маски, мешающие увидеть живых людей.
+Подслушать ссору Рафаэля с заскучавшей в затворничестве &quot;Мадонной&quot;. Вместе с мадам Тюссо уцелеть в безумии французской революции, а с Врубелем — избежать ловушек демона. Услышать заразительный смех Жанны Самари и узнать, что за &quot;маленькая пантера&quot; помогла укрепиться дому Картье.
+Вы погрузитесь в разные эпохи и станете свидетелями тех трепетных моментов, когда рождалась красота. Красота, способная спасти мир.&lt;br/&gt;Год издания: 2023&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 2719 Kb&lt;br/&gt;</content>
+ <link href="/i/48/891748/img_oebps_dlgxy53d5113.jpeg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/48/891748/img_oebps_dlgxy53d5113.jpeg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/48/891748/img_oebps_dlgxy53d5113.jpeg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/48/891748/img_oebps_dlgxy53d5113.jpeg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891748/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891748" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:1fc6d8dcea40d6ecf89da3e99d0cbb65</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Кров легіону</title>
+ <author> <name>Метельский Николай Александрович</name>
+ <uri>/a/109170</uri>
+</author>
+ <link href="/opds/author/109170" rel="related" type="application/atom+xml" title="Все книги автора Метельский Николай Александрович" />
+ <category term="Героическая фантастика и фэнтези" label="Героическая фантастика и фэнтези" />
+ <category term="Самиздат, сетевая литература" label="Самиздат, сетевая литература" />
+ <category term="Фэнтези" label="Фэнтези" />
+ <dc:language>uk</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2024</dc:issued>
+ <link href="/opds/sequencebooks/113636" rel="related" type="application/atom+xml" title="Все книги серии &quot;Легіон стоїть тут [uk]&quot;" />
+ <content type="text/html">
+    &lt;p class=&quot;book&quot;&gt;Тисячу років тому Імперія загинула у війні з Інферно. Її міста перетворилися на руїни, легіони зникли, а нащадки тих, хто вижив, навчилися жити серед уламків колишньої величі.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Дарій Романо теж мав би жити своїм життям. Молодий спадкоємець давнього роду, який утік подалі від двору, обов’язків і чужих очікувань. Але разом із кров’ю предків він успадкував дещо значно небезпечніше — їхню пам’ять.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Спогади людини, що колись командувала легіонами, поступово стають частиною його самого. Давні руїни перестають бути просто руїнами. Забуті накази знову набувають сенсу. А люди, які ще вчора були звичайними мисливцями, ремісниками чи найманцями, раптом починають згадувати те, чого ніколи не знали.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Бо Імперія могла впасти. Легіони могли загинути. Та кров пам’ятає.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;І коли ворог знову приходить туди, де смертні вже давно відвикли стояти пліч-о-пліч, залишається лише одне питання:&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;чи справді Легіон помер тисячу років тому?&lt;/p&gt;
+   &lt;br/&gt;Перевод: ProdoMag&lt;br/&gt;Год издания: 2024&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: uk&lt;br/&gt;Размер: 2122 Kb&lt;br/&gt;Серия: Легіон стоїть тут [uk] #1&lt;br/&gt;</content>
+ <link href="/i/47/891747/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/47/891747/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/47/891747/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/47/891747/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891747/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891747" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:67e151031dbe8089e1423030b4da5ed4</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Я найду тебя в любом из миров. Книга 1. Жрица</title>
+ <author> <name>Ветрова Арина</name>
+ <uri>/a/346080</uri>
+</author>
+ <link href="/opds/author/346080" rel="related" type="application/atom+xml" title="Все книги автора Ветрова Арина" />
+ <category term="Любовное фэнтези, любовно-фантастические романы" label="Любовное фэнтези, любовно-фантастические романы" />
+ <category term="Мистика" label="Мистика" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <link href="/opds/sequencebooks/3113" rel="related" type="application/atom+xml" title="Все книги серии &quot;Древний Египет&quot;" />
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;От разгневанной женщины всегда жди беды — особенно если эта женщина — великая богиня, способная тысячелетиями гнать тебя по кругу перерождений, отнимая самое дорогое. Но даже гнев самой Бастет смягчается любовью и упорством.&lt;/p&gt;&lt;p class=&quot;book&quot;&gt;В книге: Древний Египет, эпоха блистательного Нового царства. Там, где переплетаются воля богов и своенравие людей, разворачивается история жрицы богини Бастет и гениального ювелира, дерзнувшего полюбить её. Одна вспышка гнева, один необдуманный поступок — и целая жизнь летит под откос. Однако боги не просто наказывают: они ведут своих избранников сквозь время, через смерти и новые рождения, превращая трагедию в урок, а страдание — в мудрость.&lt;/p&gt;&lt;p class=&quot;book&quot;&gt;Мистическое фэнтези о романтической любви, которая сильнее времени, сильнее смерти и даже сильнее воли богов. Полное погружение в атмосферу Древнего Египта времён Нового царства.&lt;/p&gt;&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 759 Kb&lt;br/&gt;Серия: Древний Египет&lt;br/&gt;</content>
+ <link href="/i/46/891746/a3a093e4-6ef0-4b46-b971-90fdd12471bc.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/46/891746/a3a093e4-6ef0-4b46-b971-90fdd12471bc.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/46/891746/a3a093e4-6ef0-4b46-b971-90fdd12471bc.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/46/891746/a3a093e4-6ef0-4b46-b971-90fdd12471bc.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891746/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891746" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:af85de01843b51441ab17d7eb62e7001</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Убить в себе государство. Как бунтари, философы и мечтатели придумали русский анархизм [litres]</title>
+ <author> <name>Герасимов Николай</name>
+ <uri>/a/316629</uri>
+</author>
+ <link href="/opds/author/316629" rel="related" type="application/atom+xml" title="Все книги автора Герасимов Николай" />
+ <category term="История" label="История" />
+ <category term="Философия" label="Философия" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2024</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Их называли безумцами, утопистами и опасными фанатиками, подрывающими общественный порядок. Они же считали, что свобода и достоинство человека не зависят от воли государства и его законов. Философ Николай Герасимов исследует интеллектуальную историю русского анархизма через биографии его ключевых фигур: князь Кропоткин приходит к анархии через народничество, Лев Толстой привносит в нее Христа, Эмма Гольдман борется за освобождение женщин, а советские биокосмисты мечтают о заселении космоса и воскрешении мертвых. Эта книга – о тех, кто в эпоху мировых войн, революций и тоталитарных режимов имел смелость противостоять власти во всех ее формах.&lt;/p&gt;
+&lt;br/&gt;Год издания: 2024&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 6310 Kb&lt;br/&gt;Скачиваний: 18&lt;br/&gt;</content>
+ <link href="/i/45/891745/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/45/891745/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/45/891745/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/45/891745/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891745/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891745" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:e88beba93ff0fcb12adb40c1d7820e0b</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Хижина. Как я сколотил себе новую жизнь [PDF A4]</title>
+ <author> <name>Хатчисон Патрик</name>
+ <uri>/a/346078</uri>
+</author>
+ <link href="/opds/author/346078" rel="related" type="application/atom+xml" title="Все книги автора Хатчисон Патрик" />
+ <category term="Биографии и мемуары: прочее" label="Биографии и мемуары: прочее" />
+ <category term="Публицистика" label="Публицистика" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>2026</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;В свои двадцать пять Патрик Хатчисон хотел покорять мир, но вместо этого писал рекламные тексты про сантехнику и боролся с постоянным ощущением тоски и бессмысленности. Выход нашелся неожиданно: он купил хижину в горах на северо-западе США, чтобы жить на природе и заниматься ручным трудом. При этом Патрик не имел никаких плотницких навыков, а его новое жилье могло похвастаться разве что дырявой крышей, кривыми полами и армией пауков. За шесть лет, полных абсурдных ошибок и героических побед, Патрик не только сменил офисное кресло на строительные перчатки, но и научился радоваться мелочам: когда дверь закрывается без пинка, бензопила заводится с первого раза, а носки остаются сухими. «Хижина» – честный и уморительно смешной рассказ о том, что для великого приключения нужны лишь самоирония, надежные друзья и немного решимости.&lt;/p&gt;
+
+&lt;strong&gt;В формате PDF A4 сохранен издательский макет.&lt;/strong&gt;
+&lt;br/&gt;Перевод: Мышковская Анна&lt;br/&gt;Год издания: 2026&lt;br/&gt;Формат: pdf&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 974 Kb&lt;br/&gt;Скачиваний: 8&lt;br/&gt;</content>
+ <link href="/b/891744/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="/b/891744" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:c4b3ba5bf7ae970e2b09ca2f1b6e9a37</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Хижина. Как я сколотил себе новую жизнь [litres]</title>
+ <author> <name>Хатчисон Патрик</name>
+ <uri>/a/346078</uri>
+</author>
+ <link href="/opds/author/346078" rel="related" type="application/atom+xml" title="Все книги автора Хатчисон Патрик" />
+ <category term="Биографии и мемуары: прочее" label="Биографии и мемуары: прочее" />
+ <category term="Публицистика" label="Публицистика" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2026</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;В свои двадцать пять Патрик Хатчисон хотел покорять мир, но вместо этого писал рекламные тексты про сантехнику и боролся с постоянным ощущением тоски и бессмысленности. Выход нашелся неожиданно: он купил хижину в горах на северо-западе США, чтобы жить на природе и заниматься ручным трудом. При этом Патрик не имел никаких плотницких навыков, а его новое жилье могло похвастаться разве что дырявой крышей, кривыми полами и армией пауков. За шесть лет, полных абсурдных ошибок и героических побед, Патрик не только сменил офисное кресло на строительные перчатки, но и научился радоваться мелочам: когда дверь закрывается без пинка, бензопила заводится с первого раза, а носки остаются сухими. «Хижина» – честный и уморительно смешной рассказ о том, что для великого приключения нужны лишь самоирония, надежные друзья и немного решимости.&lt;/p&gt;
+
+&lt;a href=&quot;https://flibusta.site/b/891744&quot;&gt;В формате PDF A4 сохранен издательский макет.&lt;/a&gt;
+&lt;br/&gt;Перевод: Мышковская Анна&lt;br/&gt;Год издания: 2026&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 1080 Kb&lt;br/&gt;Скачиваний: 36&lt;br/&gt;</content>
+ <link href="/i/43/891743/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/43/891743/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/43/891743/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/43/891743/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891743/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891743" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:cf72a55ed4e14919c962620ce02df94c</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Просвещенная экономика. Великобритания и промышленная революция 1700–1850 гг.</title>
+ <author> <name>Мокир Джоэль</name>
+ <uri>/a/288603</uri>
+</author>
+ <link href="/opds/author/288603" rel="related" type="application/atom+xml" title="Все книги автора Мокир Джоэль" />
+ <category term="История" label="История" />
+ <category term="Экономика" label="Экономика" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>2017</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;В этой книге показывается роль идеологических и институциональных факторов в быстром развитии британской экономики в годы между «Славной революцией» и Всемирной выставкой 1851 г. Известный экономический историк Джоэль Мокир показывает, что промышленную революцию невозможно понять без признания важности масштабных изменений, связанных с британским Просвещением. Автор не ограничивается стандартными объяснениями, которые подчеркивают роль географических факторов, рынков, политики и общества, а обращается к истокам современного экономического роста в Британии, во многом зависевшего от того, что знали и что думали ключевые игроки и как их убеждения и взгляды влияли на их экономическое поведение.&lt;/p&gt;
+     &lt;p class=&quot;book&quot;&gt;Он утверждает, что Британии удалось опередить остальную Европу благодаря оптимальному сочетанию идей, культуры, институтов и технологии, которое сделало возможным быстрый экономический рост.&lt;/p&gt;
+   &lt;br/&gt;Перевод: Эдельман Николай Валерианович&lt;br/&gt;Год издания: 2017&lt;br/&gt;Формат: pdf&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 3239 Kb&lt;br/&gt;Скачиваний: 13&lt;br/&gt;</content>
+ <link href="/i/42/891742/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/42/891742/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/42/891742/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/42/891742/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891742/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="/b/891742" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:5c1afeed185740adeb64ee7c0a8d5b1f</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>История Древнего Востока</title>
+ <author> <name>Тураев Борис Александрович</name>
+ <uri>/a/84266</uri>
+</author>
+ <link href="/opds/author/84266" rel="related" type="application/atom+xml" title="Все книги автора Тураев Борис Александрович" />
+ <category term="История" label="История" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>1935</dc:issued>
+ <link href="/opds/sequencebooks/113634" rel="related" type="application/atom+xml" title="Все книги серии &quot;История Древнего Востока&quot;" />
+ <content type="text/html">
+    &lt;p class=&quot;book&quot;&gt;Книга является подробным курсом по истории Древнего Востока и охватывает материалы древних обществ Египта, Вавилонии, Ассирии, Палестины, Сирии, Малой Азии и Ирана. Книга снабжена большим количеством переводов с оригиналов различных литературных памятников и письменных документов социально-экономического характера, рисующих нам различные стороны жизни древне-восточных обществ. Предисловие акад. В.В. Струве и И.Л. Снегирева посвящено определению значения работы акад. Б.А. Тураева в развитии исторического изучения народов Древнего Востока и характеристике социально-экономической формации Древнего Востока. Книга Рассчитана на учащихся старших курсов вузов и преподавателей.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Под редакцией Струве В.В. и Снегирева И.Л.&lt;/p&gt;
+   &lt;br/&gt;Год издания: 1935&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 8503 Kb&lt;br/&gt;Скачиваний: 33&lt;br/&gt;Серия: История Древнего Востока #1&lt;br/&gt;</content>
+ <link href="/i/41/891741/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/41/891741/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/41/891741/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/41/891741/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891741/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891741" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:57a2e3e5c60dc5934d81601267912d6e</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Не навреди!</title>
+ <author> <name>Гиппократ</name>
+ <uri>/a/346076</uri>
+</author>
+ <link href="/opds/author/346076" rel="related" type="application/atom+xml" title="Все книги автора Гиппократ" />
+ <category term="antique" label="antique" />
+ <category term="Античная литература" label="Античная литература" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2026</dc:issued>
+ <link href="/opds/sequencebooks/113633" rel="related" type="application/atom+xml" title="Все книги серии &quot;Эксклюзивная классика (АСТ)&quot;" />
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;В сборник «Не навреди!» вошли избранные книги по основным направлениям греческой медицины V и VI вв. до н. э. и естественнонаучным проблемам. Сборник включает книги: «Клятва», «Закон», «О враче», «О воздухах, водах и местностях», «Прогностика», «Афоризмы» и другие, охватывая терапию, хирургию, диетологию, травматологию и этику. Эти тексты заложили основы рациональной медицины, трактуя болезнь как естественный процесс, а не сверхъестественное явление.&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;Перевод книг выполнен профессором В. И. Рудневым, каждая книга дополнена вступительной статьей и комментариями профессора В. П. Карпова.&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;В формате PDF A4 сохранен издательский макет книги.&lt;/p&gt;
+&lt;br/&gt;Перевод: Руднев В. И.&lt;br/&gt;Год издания: 2026&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 1765 Kb&lt;br/&gt;Скачиваний: 6&lt;br/&gt;Серия: Эксклюзивная классика (АСТ)&lt;br/&gt;</content>
+ <link href="/i/40/891740/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/40/891740/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/40/891740/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/40/891740/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891740/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891740" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:46a863d7eb4296e09f6b57b74dba4ba9</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Я хочу, чтобы ты любил меня. Мэрилин Монро, жизнь в 100 кадрах</title>
+ <author> <name>Уилсон Эндрю Норман</name>
+ <uri>/a/103684</uri>
+</author>
+ <link href="/opds/author/103684" rel="related" type="application/atom+xml" title="Все книги автора Уилсон Эндрю Норман" />
+ <category term="Биографии и мемуары: прочее" label="Биографии и мемуары: прочее" />
+ <category term="Публицистика" label="Публицистика" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <link href="/opds/sequencebooks/88210" rel="related" type="application/atom+xml" title="Все книги серии &quot;Большое искусство. Персоны и биографии&quot;" />
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;К 100-летию со дня рождения иконы Голливуда – откровенная биография Мэрилин Монро, написанная известным романистом и журналистом, а также биографом Морно- Эндрю Уилсоном.&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;Автор создал портрет иконы Голливуда на основе уникальных материалов: неопубликованных писем, аудиозаписей разговоров с близкими, медицинских документов и свидетельств очевидцев.&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;Это и личные письма Мэрилин и её мужей, аудиоинтервью с Джейн Рассел, Билли Уайлдером и другими современниками, неопубликованные письма и истории болезни Ральфа Гринсона.&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;Опираясь на редкие архивные материалы, личные свидетельства и уникальные аудиозаписи, Эндрю Уилсон создаёт многогранный портрет Мэрилин Монро.&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;В формате PDF A4 сохранен издательский макет книги.&lt;/p&gt;
+&lt;br/&gt;Перевод: Бородычева Ирина Сергеевна&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 2606 Kb&lt;br/&gt;Скачиваний: 37&lt;br/&gt;Серия: Большое искусство. Персоны и биографии&lt;br/&gt;</content>
+ <link href="/i/39/891739/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/39/891739/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/39/891739/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/39/891739/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891739/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891739" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:1bdee8928360fb255a7dd07c23effbfa</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Новые детективные истории эпохи Мэйдзи</title>
+ <author> <name>Сакагути Анго</name>
+ <uri>/a/284489</uri>
+</author>
+ <link href="/opds/author/284489" rel="related" type="application/atom+xml" title="Все книги автора Сакагути Анго" />
+ <category term="Детективы" label="Детективы" />
+ <category term="Исторический детектив" label="Исторический детектив" />
+ <category term="Проза" label="Проза" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2026</dc:issued>
+ <link href="/opds/sequencebooks/113632" rel="related" type="application/atom+xml" title="Все книги серии &quot;Детективные истории эпохи Мэйдзи&quot;" />
+ <link href="/opds/sequencebooks/113633" rel="related" type="application/atom+xml" title="Все книги серии &quot;Эксклюзивная классика (АСТ)&quot;" />
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Благородного джентльмена Юки Синдзюро – сыщика-любителя, к которому полиция обращается за помощью всякий раз, как сталкивается с невероятно сложным и неразрешимым на первый взгляд делом, – ждут новые увлекательные загадки. Например, загадочное двойное убийство на свадьбе сына мастера боевых искусств, таинственное исчезновение молоденькой служанки ночью во время грозы или необъяснимая смерть хозяина борделя на железной дороге, которую попытались выдать за самоубийство.&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;Изначально печатавшиеся в виде отдельных рассказов на страницах периодических журналов, «Детективные истории эпохи Мэйдзи» завоевали популярность публики и с тех пор легли в основу двух телесериалов, манги и аниме. В данное издание вошли вторые десять из двадцати рассказов оригинального авторского сборника.&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;Все истории публикуются на русском языке впервые!&lt;/p&gt;
+&lt;br/&gt;Перевод: Палагина А. В., Кизымишина Елизавета, Слащева Анна Сергеевна, Гулёнок Полина Александровна, Аркатова Анна Сергеевна&lt;br/&gt;Год издания: 2026&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 2764 Kb&lt;br/&gt;Скачиваний: 43&lt;br/&gt;Серия: Детективные истории эпохи Мэйдзи #2&lt;br/&gt;Серия: Эксклюзивная классика (АСТ)&lt;br/&gt;</content>
+ <link href="/i/38/891738/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/38/891738/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/38/891738/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/38/891738/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891738/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891738" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:cbbff051fe6988cb6411b55b32260841</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Золотая бочка</title>
+ <author> <name>Феваль Поль Анри</name>
+ <uri>/a/104746</uri>
+</author>
+ <link href="/opds/author/104746" rel="related" type="application/atom+xml" title="Все книги автора Феваль Поль Анри" />
+ <category term="Приключения" label="Приключения" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2026</dc:issued>
+ <link href="/opds/sequencebooks/51612" rel="related" type="application/atom+xml" title="Все книги серии &quot;Мастера приключений&quot;" />
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;В очередной том «Мастеров приключений» входит роман Поля Феваля «Золотая бочка» из серии увлекательных историй, рассказанных у камелька одной прекрасной маркизы. Узнав о диком и, как ей кажется, совершенно неправдоподобном случае с «Золотыми ножами», маркиза поведала свою, более правдивую, историю о человеке, который терпеть не мог приключения и отправился на край света по маршруту, нарисованному кровью на носовом платке.&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;Невероятно, но факт – эхо некоторых сцен, образов и даже фраз из «Золотой бочки» слышится в романах Луи Буссенара «Похитители бриллиантов» и «Капитан Сорви-голова», написанных гораздо позднее. Издание украшает комплект оригинальных газетных иллюстраций. На русском языке роман публикуется впервые.&lt;/p&gt;
+&lt;br/&gt;Перевод: Мерзон Леонид Ильич&lt;br/&gt;Год издания: 2026&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 6448 Kb&lt;br/&gt;Скачиваний: 57&lt;br/&gt;Серия: Мастера приключений&lt;br/&gt;</content>
+ <link href="/i/37/891737/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/37/891737/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/37/891737/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/37/891737/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891737/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891737" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:31977f818b5237c116a10bcd889be674</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Олимпийский Мишка. Судьба последней советской утопии и её талисмана [PDF A4]</title>
+ <author> <name>Корнеев Иван Евгеньевич</name>
+ <uri>/a/338165</uri>
+</author>
+ <link href="/opds/author/338165" rel="related" type="application/atom+xml" title="Все книги автора Корнеев Иван Евгеньевич" />
+ <category term="История" label="История" />
+ <category term="Публицистика" label="Публицистика" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>2025</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Самый дружелюбный русский медведь в истории, первый и единственный по-настоящему популярный маскот Олимпиады, Мишка явился в Москву 1980-го, чтобы изменить всё – принять в гости друзей со всего света, поразить их гостеприимством и показать миру новое, радостное и доброе лицо Советского Союза. Но ему помешали, и он улетел без обещания вернуться.&lt;/p&gt;
+
+&lt;p class=&quot;book&quot;&gt;Историк Иван Корнеев написал биографию Олимпийского Мишки как рассказ о позднем СССР до, во время и после московской Олимпиады. В медвежьих глазах отражаются быт простых советских граждан и партийные интриги, блеск и тревоги олимпийской столицы, торжественные церемонии и международные скандалы. И всё это складывается в историю о времени больших надежд, когда казалось, что спорт сможет объединить мир и примирить враждующие государства, а благие намерения руководства страны искренни и не обернутся собственной противоположностью.&lt;/p&gt;
+
+&lt;strong&gt;В формате PDF A4 сохранен издательский макет.&lt;/strong&gt;
+&lt;br/&gt;Год издания: 2025&lt;br/&gt;Формат: pdf&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 4563 Kb&lt;br/&gt;Скачиваний: 7&lt;br/&gt;</content>
+ <link href="/b/891736/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="/b/891736" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:138336780c1fa759e1ffa0ca1ada4404</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>Олимпийский Мишка. Судьба последней советской утопии и её талисмана [litres]</title>
+ <author> <name>Корнеев Иван Евгеньевич</name>
+ <uri>/a/338165</uri>
+</author>
+ <link href="/opds/author/338165" rel="related" type="application/atom+xml" title="Все книги автора Корнеев Иван Евгеньевич" />
+ <category term="История" label="История" />
+ <category term="Публицистика" label="Публицистика" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2025</dc:issued>
+ <content type="text/html">&lt;p class=&quot;book&quot;&gt;Самый дружелюбный русский медведь в истории, первый и единственный по-настоящему популярный маскот Олимпиады, Мишка явился в Москву 1980-го, чтобы изменить всё – принять в гости друзей со всего света, поразить их гостеприимством и показать миру новое, радостное и доброе лицо Советского Союза. Но ему помешали, и он улетел без обещания вернуться.&lt;/p&gt;
+
+&lt;p class=&quot;book&quot;&gt;Историк Иван Корнеев написал биографию Олимпийского Мишки как рассказ о позднем СССР до, во время и после московской Олимпиады. В медвежьих глазах отражаются быт простых советских граждан и партийные интриги, блеск и тревоги олимпийской столицы, торжественные церемонии и международные скандалы. И всё это складывается в историю о времени больших надежд, когда казалось, что спорт сможет объединить мир и примирить враждующие государства, а благие намерения руководства страны искренни и не обернутся собственной противоположностью.&lt;/p&gt;
+
+&lt;a href=&quot;https://flibusta.site/b/891736&quot;&gt;В формате PDF A4 сохранен издательский макет.&lt;/a&gt;
+&lt;br/&gt;Год издания: 2025&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 6738 Kb&lt;br/&gt;</content>
+ <link href="/i/35/891735/cover.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/35/891735/cover.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/35/891735/cover.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/35/891735/cover.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891735/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891735" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:6cdb342b07e3793d33e70ee565f4f14a</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>BANKSY [litres]</title>
+ <author> <name>Антонелли Стефано</name>
+ <uri>/a/346072</uri>
+</author>
+ <link href="/opds/author/346072" rel="related" type="application/atom+xml" title="Все книги автора Антонелли Стефано" />
+ <author> <name>Марциани Джанлука</name>
+ <uri>/a/346073</uri>
+</author>
+ <link href="/opds/author/346073" rel="related" type="application/atom+xml" title="Все книги автора Марциани Джанлука" />
+ <category term="Живопись, альбомы, иллюстрированные каталоги" label="Живопись, альбомы, иллюстрированные каталоги" />
+ <dc:language>ru</dc:language>
+ <dc:format>pdf</dc:format>
+ <dc:issued>2023</dc:issued>
+ <content type="text/html">Бэнкси – самый загадочный, самый обсуждаемый и самый востребованный художник в мире. Яркий представитель андеграунда и стрит-арта. Его называют величайшим мастером уличного искусства. Его бунтарские работы окрашены своеобразным черным юмором по отношению к социальным и политическим аспектам современного общества.
+
+Его работами владеют многие мировые знаменитости: Анджелина Джоли, Брэд Питт, Кейт Мосс, Джуд Лоу и другие.
+
+Альбом содержит все знаковые произведения неординарного художника: картины, трафареты и инсталляции, многие из которых ранее нигде не публиковались.
+
+Это издание, созданное в сотрудничестве с Pest Control, группой, которая управляет всем, что касается Бэнкси, является настолько официальным и авторизованным, насколько может быть любая работа мастера.&lt;br/&gt;Перевод: Боченкова Ирина Дмитриевна&lt;br/&gt;Год издания: 2023&lt;br/&gt;Формат: pdf&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 38190 Kb&lt;br/&gt;Скачиваний: 31&lt;br/&gt;</content>
+ <link href="/b/891734/download" rel="http://opds-spec.org/acquisition/open-access" type="application/pdf" />
+ <link href="/b/891734" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:cc4b7451e94fedd06225861b031e9461</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>По прозвищу Святой. Книга шестая. [исправленные сноски]</title>
+ <author> <name>Евтушенко Алексей Анатольевич</name>
+ <uri>/a/31289</uri>
+</author>
+ <link href="/opds/author/31289" rel="related" type="application/atom+xml" title="Все книги автора Евтушенко Алексей Анатольевич" />
+ <category term="Неотсортированное" label="Неотсортированное" />
+ <category term="Попаданцы" label="Попаданцы" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2026</dc:issued>
+ <link href="/opds/sequencebooks/113631" rel="related" type="application/atom+xml" title="Все книги серии &quot;Святой&quot;" />
+ <content type="text/html">
+&lt;p class=&quot;book&quot;&gt;В эксперимент вкралась ошибка, и Максим вместе  со своим космическим кораблём перенёсся в август 1941 года. Вокруг – пылающая в огне войны родная земля. Нужно сражаться и побеждать. Потому что он  – советский человек конца двадцать первого века. Сильный, умный, беспощадный и милосердный.&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;Сначала он бил фашистов во вражеском тылу и на фронте. Но теперь пришло время для совсем другой войны.&lt;/p&gt;
+&lt;br/&gt;Год издания: 2026&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 851 Kb&lt;br/&gt;Серия: Святой #6&lt;br/&gt;</content>
+ <link href="/i/33/891733/88f66bad-b37c-470b-b0f4-940c5b1f5d52.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/33/891733/88f66bad-b37c-470b-b0f4-940c5b1f5d52.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/33/891733/88f66bad-b37c-470b-b0f4-940c5b1f5d52.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/33/891733/88f66bad-b37c-470b-b0f4-940c5b1f5d52.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891733/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891733" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:3312039e238b9fefab28e29488863bbe</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>По прозвищу Святой. Книга пятая.</title>
+ <author> <name>Евтушенко Алексей Анатольевич</name>
+ <uri>/a/31289</uri>
+</author>
+ <link href="/opds/author/31289" rel="related" type="application/atom+xml" title="Все книги автора Евтушенко Алексей Анатольевич" />
+ <category term="Неотсортированное" label="Неотсортированное" />
+ <category term="Попаданцы" label="Попаданцы" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2026</dc:issued>
+ <link href="/opds/sequencebooks/113631" rel="related" type="application/atom+xml" title="Все книги серии &quot;Святой&quot;" />
+ <content type="text/html">
+&lt;p class=&quot;book&quot;&gt;В эксперимент вкралась ошибка, и Максим вместе  со своим космическим кораблём перенёсся в август 1941 года. Вокруг – пылающая в огне войны родная земля. Нужно сражаться и побеждать. Потому что он  – советский человек конца двадцать первого века. Сильный, умный, беспощадный и милосердный.&lt;/p&gt;
+&lt;p class=&quot;book&quot;&gt;Сначала он бил фашистов во вражеском тылу и на фронте. Но теперь пришло время для совсем другой войны.&lt;/p&gt;
+&lt;br/&gt;Год издания: 2026&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 803 Kb&lt;br/&gt;Серия: Святой #5&lt;br/&gt;</content>
+ <link href="/i/32/891732/2ca8a2fc-19f7-4ceb-8bbc-28b87e2f62f2.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/32/891732/2ca8a2fc-19f7-4ceb-8bbc-28b87e2f62f2.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/32/891732/2ca8a2fc-19f7-4ceb-8bbc-28b87e2f62f2.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/32/891732/2ca8a2fc-19f7-4ceb-8bbc-28b87e2f62f2.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891732/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891732" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:9a213dec0f4a8cc1b70f202e31b36026</id>
+</entry>
+ <entry> <updated>2026-10-05T12:52:08+02:00</updated>
+ <title>По прозвищу Святой. Книга четвертая</title>
+ <author> <name>Евтушенко Алексей Анатольевич</name>
+ <uri>/a/31289</uri>
+</author>
+ <link href="/opds/author/31289" rel="related" type="application/atom+xml" title="Все книги автора Евтушенко Алексей Анатольевич" />
+ <category term="Альтернативная история" label="Альтернативная история" />
+ <category term="Попаданцы" label="Попаданцы" />
+ <dc:language>ru</dc:language>
+ <dc:format>fb2+zip</dc:format>
+ <dc:issued>2026</dc:issued>
+ <link href="/opds/sequencebooks/113631" rel="related" type="application/atom+xml" title="Все книги серии &quot;Святой&quot;" />
+ <content type="text/html">
+    &lt;p class=&quot;book&quot;&gt;В эксперимент вкралась ошибка, и Максим вместе  со своим космическим кораблём перенёсся в август 1941 года. Вокруг – пылающая в огне войны родная земля. Нужно сражаться и побеждать. Потому что он  – советский человек конца двадцать первого века. Сильный, умный, беспощадный и милосердный.&lt;/p&gt;
+    &lt;p class=&quot;book&quot;&gt;Самые трудные месяцы войны позади, немец отброшен от Москвы. Но до победы ещё далеко. А значит, бой продолжается.&lt;/p&gt;
+   &lt;br/&gt;Год издания: 2026&lt;br/&gt;Формат: fb2&lt;br/&gt;Язык: ru&lt;br/&gt;Размер: 825 Kb&lt;br/&gt;Скачиваний: 72&lt;br/&gt;Серия: Святой #4&lt;br/&gt;</content>
+ <link href="/i/31/891731/3a163e2e-1938-4e31-88d9-2a5b0a843459.jpg" rel="http://opds-spec.org/image" type="image/jpeg" />
+ <link href="/i/31/891731/3a163e2e-1938-4e31-88d9-2a5b0a843459.jpg" rel="x-stanza-cover-image" type="image/jpeg" />
+ <link href="/i/31/891731/3a163e2e-1938-4e31-88d9-2a5b0a843459.jpg" rel="http://opds-spec.org/thumbnail" type="image/jpeg" />
+ <link href="/i/31/891731/3a163e2e-1938-4e31-88d9-2a5b0a843459.jpg" rel="x-stanza-cover-image-thumbnail" type="image/jpeg" />
+ <link href="/b/891731/download" rel="http://opds-spec.org/acquisition/open-access" type="application/fb2+zip" />
+ <link href="/b/891731" rel="alternate" type="text/html" title="Книга на сайте" />
+ <id>tag:book:68b87212e1a0dcea67b2f30484f07fcb</id>
+</entry>
+</feed>

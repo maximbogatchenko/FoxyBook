@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
@@ -57,8 +58,23 @@ class NewBooksViewModel(
     private var pageCount = 0
     private val allBooks = mutableListOf<Book>()
 
+    /** Старт загрузки: без него первый запрос из init и первый из подписки
+     *  на источник уезжают одновременно и дважды качают первую страницу. */
+    @Volatile
+    private var loadJob: kotlinx.coroutines.Job? = null
+
+    @Volatile
+    private var loadMoreJob: kotlinx.coroutines.Job? = null
+
     companion object {
         private const val CACHE_FILE = "new_books_cache.json"
+        /**
+         * Таймаут первой страницы. Сетевой слой теперь отменяемый, поэтому
+         * таймаут реально прерывает запрос; 8 с были фиктивными — запрос
+         * продолжал висеть на IO-потоке до 30 с на зеркало.
+         */
+        private const val FIRST_PAGE_TIMEOUT_MS = 20_000L
+        private const val NEXT_PAGE_TIMEOUT_MS = 25_000L
     }
 
     private val json = Json { ignoreUnknownKeys = true }
@@ -77,7 +93,7 @@ class NewBooksViewModel(
                 if (source != _bookSource.value) {
                     _bookSource.value = source
                     networkProvider.switchSource(source)
-                    loadNewBooks()
+                    loadNewBooks(force = true)
                 }
             }
         }
@@ -123,11 +139,18 @@ class NewBooksViewModel(
         if (source == _bookSource.value) return
         _bookSource.value = source
         networkProvider.switchSource(source)
-        loadNewBooks()
+        loadNewBooks(force = true)
     }
 
-    fun loadNewBooks() {
-        viewModelScope.launch {
+    fun loadNewBooks(force: Boolean = false) {
+        if (loadJob?.isActive == true && !force) return
+        loadJob?.cancel()
+        // Догрузка страницы относится к предыдущей выдаче: оставленная
+        // без отмены она дописала бы книги старого источника в очищенный
+        // список и подменила бы nextPageUrl.
+        loadMoreJob?.cancel()
+        _isLoadingMore.value = false
+        loadJob = viewModelScope.launch {
             val isOnline = connectivityObserver.isOnline.value
             val hasCache = cacheFile.exists()
 
@@ -146,7 +169,7 @@ class NewBooksViewModel(
             nextPageUrl = null
             pageCount = 0
             try {
-                val page = withTimeout(8_000) { getNewBooksUseCase.firstPage() }
+                val page = withTimeout(FIRST_PAGE_TIMEOUT_MS) { getNewBooksUseCase.firstPage() }
                 allBooks.addAll(page.books)
                 pageCount = 1
                 nextPageUrl = page.nextPageUrl
@@ -162,13 +185,18 @@ class NewBooksViewModel(
                     _state.value = NewBooksUiState.Error("Сервер не отвечает")
                 }
                 // Если есть кэш — просто не обновляем, показываем кэшированные данные
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Отменено новым вызовом или уходом с экрана: состояние
+                // выставляет уже он, ошибку показывать нельзя.
+                throw e
             } catch (e: Exception) {
                 Log.e(TAG, "loadNewBooks | error", e)
                 if (!hasCache) {
                     _state.value = NewBooksUiState.Error(e.message ?: "Ошибка загрузки")
                 }
             } finally {
-                _isRefreshing.value = false
+                // Спиннер гасим только если нас не вытеснил более свежий запрос
+                if (isActive) _isRefreshing.value = false
             }
         }
     }
@@ -177,9 +205,10 @@ class NewBooksViewModel(
         val url = nextPageUrl ?: return
         if (_isLoadingMore.value) return
         _isLoadingMore.value = true
-        viewModelScope.launch {
+        loadMoreJob?.cancel()
+        loadMoreJob = viewModelScope.launch {
             try {
-                val page = withTimeout(15_000) { getNewBooksUseCase.nextPage(url) }
+                val page = withTimeout(NEXT_PAGE_TIMEOUT_MS) { getNewBooksUseCase.nextPage(url) }
                 allBooks.addAll(page.books)
                 pageCount++
                 nextPageUrl = page.nextPageUrl
@@ -188,11 +217,14 @@ class NewBooksViewModel(
                 _state.value = NewBooksUiState.Success(deduped)
             } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
                 Log.e(TAG, "loadMore | timeout", e)
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Выдачу обновили или экран закрыли — состояние выставит тот, кто отменил
+                throw e
             } catch (e: Exception) {
                 Log.e(TAG, "loadMore | error", e)
                 nextPageUrl = null
             } finally {
-                _isLoadingMore.value = false
+                if (isActive) _isLoadingMore.value = false
             }
         }
     }
@@ -201,6 +233,6 @@ class NewBooksViewModel(
 
     fun refresh() {
         _isRefreshing.value = true
-        loadNewBooks()
+        loadNewBooks(force = true)
     }
 }
